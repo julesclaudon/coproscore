@@ -1,0 +1,184 @@
+generator client {
+  provider        = "prisma-client"
+  output          = "../src/generated/prisma"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [postgis]
+}
+
+model Copropriete {
+  id Int @id @default(autoincrement())
+
+  // Identifiers
+  numeroImmatriculation String  @map("numero_immatriculation")
+  dateImmatriculation   DateTime? @map("date_immatriculation") @db.Date
+  dateDerniereMaj       DateTime? @map("date_derniere_maj") @db.Date
+
+  // Syndic
+  typeSyndic                    String? @map("type_syndic")
+  identificationRepresentantLegal String? @map("identification_representant_legal")
+  raisonSocialeRepresentantLegal  String? @map("raison_sociale_representant_legal")
+  siretRepresentantLegal          String? @map("siret_representant_legal")
+  codeApe                         String? @map("code_ape")
+  communeRepresentantLegal        String? @map("commune_representant_legal")
+  mandatEnCours                   String? @map("mandat_en_cours")
+  dateFinDernierMandat            DateTime? @map("date_fin_dernier_mandat") @db.Date
+
+  // Adresse de référence
+  nomUsage            String? @map("nom_usage")
+  adresseReference    String? @map("adresse_reference")
+  numeroVoie          String? @map("numero_voie")
+  codePostal          String? @map("code_postal")
+  communeAdresse      String? @map("commune_adresse")
+  adresseComplementaire1 String? @map("adresse_complementaire_1")
+  adresseComplementaire2 String? @map("adresse_complementaire_2")
+  adresseComplementaire3 String? @map("adresse_complementaire_3")
+  nbAdressesComplementaires Int? @map("nb_adresses_complementaires")
+
+  // Coordonnées
+  longitude Float? @map("longitude")
+  latitude  Float? @map("latitude")
+
+  // Caractéristiques
+  dateReglementCopropriete DateTime? @map("date_reglement_copropriete") @db.Date
+  residenceService         String? @map("residence_service")
+  syndicatCooperatif       String? @map("syndicat_cooperatif")
+  syndicatType             String? @map("syndicat_type") // principal ou secondaire
+  immatriculationPrincipal String? @map("immatriculation_principal")
+  nbAsl                    Int?    @map("nb_asl")
+  nbAful                   Int?    @map("nb_aful")
+  nbUnionsSyndicats        Int?    @map("nb_unions_syndicats")
+
+  // Lots
+  nbTotalLots        Int? @map("nb_total_lots")
+  nbLotsHabBurCom    Int? @map("nb_lots_hab_bur_com")
+  nbLotsHabitation   Int? @map("nb_lots_habitation")
+  nbLotsStationnement Int? @map("nb_lots_stationnement")
+
+  // Construction
+  periodeConstruction String? @map("periode_construction")
+
+  // Parcelles cadastrales (1 à 3)
+  refCadastrale1    String? @map("ref_cadastrale_1")
+  codeInseeCommune1 String? @map("code_insee_commune_1")
+  prefixe1          String? @map("prefixe_1")
+  section1          String? @map("section_1")
+  numeroParcelle1   String? @map("numero_parcelle_1")
+
+  refCadastrale2    String? @map("ref_cadastrale_2")
+  codeInseeCommune2 String? @map("code_insee_commune_2")
+  prefixe2          String? @map("prefixe_2")
+  section2          String? @map("section_2")
+  numeroParcelle2   String? @map("numero_parcelle_2")
+
+  refCadastrale3    String? @map("ref_cadastrale_3")
+  codeInseeCommune3 String? @map("code_insee_commune_3")
+  prefixe3          String? @map("prefixe_3")
+  section3          String? @map("section_3")
+  numeroParcelle3   String? @map("numero_parcelle_3")
+
+  nbParcellesCadastrales Int? @map("nb_parcelles_cadastrales")
+
+  // Quartier prioritaire
+  nomQp2015  String? @map("nom_qp_2015")
+  codeQp2015 String? @map("code_qp_2015")
+  nomQp2024  String? @map("nom_qp_2024")
+  codeQp2024 String? @map("code_qp_2024")
+
+  // Dispositifs
+  coproDansAcv  String? @map("copro_dans_acv")
+  coproDansPvd  String? @map("copro_dans_pvd")
+  codePdp       String? @map("code_pdp")
+  coproDansPdp  Int?    @map("copro_dans_pdp")
+  coproAidee    String? @map("copro_aidee")
+
+  // Références officielles (COG)
+  codeOfficielCommune              String? @map("code_officiel_commune")
+  nomOfficielCommune               String? @map("nom_officiel_commune")
+  codeOfficielArrondissement       String? @map("code_officiel_arrondissement")
+  nomOfficielArrondissement        String? @map("nom_officiel_arrondissement")
+  codeOfficielEpci                 String? @map("code_officiel_epci")
+  nomOfficielEpci                  String? @map("nom_officiel_epci")
+  codeOfficielDepartement          String? @map("code_officiel_departement")
+  nomOfficielDepartement           String? @map("nom_officiel_departement")
+  codeOfficielRegion               String? @map("code_officiel_region")
+  nomOfficielRegion                String? @map("nom_officiel_region")
+
+  // EPCI / Commune from original columns
+  epci    String? @map("epci")
+  commune String? @map("commune")
+
+  // SEO slug
+  slug String? @map("slug") @unique
+
+  // Scores calculés
+  scoreGlobal      Int?   @map("score_global")
+  scoreTechnique   Int?   @map("score_technique")
+  scoreRisques     Int?   @map("score_risques")
+  scoreGouvernance Int?   @map("score_gouvernance")
+  scoreEnergie     Int?   @map("score_energie")
+  scoreMarche      Int?   @map("score_marche")
+  indiceConfiance  Float? @map("indice_confiance")
+
+  // Données marché (pré-calculées depuis DVF)
+  marchePrixM2       Float? @map("marche_prix_m2")
+  marcheEvolution    Float? @map("marche_evolution") // % évolution annualisée
+  marcheNbTransactions Int? @map("marche_nb_transactions")
+
+  // DPE (pré-calculé depuis ADEME)
+  dpeClasseMediane   String? @map("dpe_classe_mediane") // A-G
+  dpeNbLogements     Int?    @map("dpe_nb_logements")
+  dpeDistribution    String? @map("dpe_distribution") // JSON: {"A":2,"B":5,...}
+
+  @@unique([numeroImmatriculation])
+  @@index([codePostal])
+  @@index([codeOfficielCommune])
+  @@index([codeOfficielDepartement])
+  @@index([periodeConstruction])
+  @@index([typeSyndic])
+  @@index([longitude, latitude])
+  @@index([scoreGlobal])
+  @@map("coproprietes")
+}
+
+model DvfTransaction {
+  id             Int      @id @default(autoincrement())
+  idMutation     String   @map("id_mutation")
+  dateMutation   DateTime @map("date_mutation") @db.Date
+  prix           Float    @map("prix")
+  surface        Float?   @map("surface")
+  nbPieces       Int?     @map("nb_pieces")
+  codePostal     String?  @map("code_postal")
+  codeCommune    String?  @map("code_commune")
+  adresse        String?  @map("adresse")
+  longitude      Float?   @map("longitude")
+  latitude       Float?   @map("latitude")
+
+  @@index([longitude, latitude])
+  @@index([codeCommune])
+  @@index([dateMutation])
+  @@map("dvf_transactions")
+}
+
+model DpeLogement {
+  id            Int      @id @default(autoincrement())
+  numeroDpe     String   @map("numero_dpe")
+  dateDpe       DateTime? @map("date_dpe") @db.Date
+  classeDpe     String?  @map("classe_dpe") // A-G
+  classeGes     String?  @map("classe_ges") // A-G
+  codePostal    String?  @map("code_postal")
+  codeInsee     String?  @map("code_insee")
+  adresse       String?  @map("adresse")
+  longitude     Float?   @map("longitude")
+  latitude      Float?   @map("latitude")
+  numeroImmatriculationCopropriete String? @map("numero_immatriculation_copropriete")
+
+  @@index([longitude, latitude])
+  @@index([codeInsee])
+  @@index([numeroImmatriculationCopropriete])
+  @@map("dpe_logements")
+}
