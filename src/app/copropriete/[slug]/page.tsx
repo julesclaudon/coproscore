@@ -6,10 +6,10 @@ import { ScoreGauge } from "./score-gauge";
 import { DpeDistribution } from "./dpe-distribution";
 import { CoproMap } from "./copro-map";
 import { formatCoproName } from "@/lib/utils";
+import { isDevUnlocked } from "@/lib/dev-mode";
 import { formatPeriod } from "@/lib/format";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Footer } from "@/components/footer";
 import {
   Building2,
@@ -26,7 +26,37 @@ import {
   Hash,
   Home,
   Info,
+  Lock,
+  Download,
 } from "lucide-react";
+import {
+  detailedTechnique,
+  detailedRisques,
+  detailedGouvernance,
+  detailedEnergie,
+  detailedMarche,
+} from "@/lib/score-explanations";
+import { Sparkline } from "./sparkline";
+import { AnalyseIA } from "./analyse-ia";
+import { DownloadButton } from "./download-button";
+import { SaveHistory } from "@/components/save-history";
+import { HistoryNavLink } from "@/components/history-nav-link";
+import { FavoritesNavLink } from "@/components/favorites-nav-link";
+import { AlertModal } from "./alert-modal";
+import { FavoriteButton } from "./favorite-button";
+import { ShareButton } from "./share-button";
+import { EstimationTravauxSection } from "./estimation-travaux";
+import { estimerBudgetTravaux } from "@/lib/budget-travaux";
+import { ScoreQuartierSection } from "./score-quartier";
+import { getScoreQuartier } from "@/lib/score-quartier";
+import { TimelineSection } from "./timeline-section";
+import { buildTimeline, type DpeForTimeline } from "@/lib/timeline";
+import {
+  fetchDvfTransactions,
+  fetchDvfQuarterlyAvg,
+  type DvfRow,
+  type DvfQuarterlyRow,
+} from "@/lib/dvf-queries";
 
 // ISR: revalidate every 24h
 export const revalidate = 86400;
@@ -85,12 +115,21 @@ export async function generateMetadata({
     ? `${displayName} \u2014 Score ${copro.scoreGlobal}/100`
     : displayName;
 
+  const ogImage = `${process.env.NEXT_PUBLIC_BASE_URL || "https://coproscore.fr"}/api/og/copropriete/${slug}`;
+
   return {
     title: `${displayName} \u2014 Score copropri\u00e9t\u00e9`,
     description: `Score d\u00e9taill\u00e9 de ${displayName} \u00e0 ${ville} : technique, risques, gouvernance, \u00e9nergie, march\u00e9. ${details}.`,
     openGraph: {
       title: ogTitle,
       description: `Score d\u00e9taill\u00e9 de ${displayName} \u00e0 ${ville} : technique, risques, gouvernance, \u00e9nergie, march\u00e9.`,
+      images: [{ url: ogImage, width: 1200, height: 630, alt: ogTitle }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: ogTitle,
+      description: `Score d\u00e9taill\u00e9 de ${displayName} \u00e0 ${ville}. ${details}.`,
+      images: [ogImage],
     },
   };
 }
@@ -238,7 +277,7 @@ async function fetchNearby(coproId: number, lon: number, lat: number): Promise<N
        AND latitude IS NOT NULL AND longitude IS NOT NULL
        AND id != $5
      ORDER BY distance_m ASC
-     LIMIT 5`,
+     LIMIT 20`,
     lat,
     lon,
     dLat,
@@ -255,6 +294,61 @@ async function fetchCommuneAvgPrix(codeCommune: string): Promise<number | null> 
     codeCommune
   );
   return rows[0]?.avg_prix ?? null;
+}
+
+// DVF queries imported from @/lib/dvf-queries
+
+// Timeline helpers
+
+const TIMELINE_DVF_RADIUS = 100;
+
+async function fetchTimelineDvf(lon: number, lat: number): Promise<import("@/lib/dvf-queries").DvfRow[]> {
+  const dLat = TIMELINE_DVF_RADIUS * LAT_PER_METER;
+  const dLon = TIMELINE_DVF_RADIUS * LON_PER_METER;
+  return prisma.$queryRawUnsafe<import("@/lib/dvf-queries").DvfRow[]>(
+    `SELECT id, date_mutation, prix, surface, nb_pieces, adresse,
+            round((prix / surface)::numeric, 0)::int AS prix_m2
+     FROM dvf_transactions
+     WHERE latitude BETWEEN $1 - $3 AND $1 + $3
+       AND longitude BETWEEN $2 - $4 AND $2 + $4
+       AND surface > 0
+     ORDER BY date_mutation DESC
+     LIMIT 10`,
+    lat, lon, dLat, dLon
+  );
+}
+
+async function fetchTimelineDpe(
+  numeroImmatriculation: string,
+  lon: number | null,
+  lat: number | null
+): Promise<DpeForTimeline[]> {
+  // Try by immatriculation first
+  const byImmat = await prisma.$queryRawUnsafe<DpeForTimeline[]>(
+    `SELECT date_dpe AS "dateDpe", classe_dpe AS "classeDpe"
+     FROM dpe_logements
+     WHERE numero_immatriculation_copropriete = $1
+       AND date_dpe IS NOT NULL
+     ORDER BY date_dpe DESC
+     LIMIT 10`,
+    numeroImmatriculation
+  );
+  if (byImmat.length > 0) return byImmat;
+
+  // Fallback: geo match within 50m
+  if (lat == null || lon == null) return [];
+  const dLat = 50 * LAT_PER_METER;
+  const dLon = 50 * LON_PER_METER;
+  return prisma.$queryRawUnsafe<DpeForTimeline[]>(
+    `SELECT date_dpe AS "dateDpe", classe_dpe AS "classeDpe"
+     FROM dpe_logements
+     WHERE latitude BETWEEN $1 - $3 AND $1 + $3
+       AND longitude BETWEEN $2 - $4 AND $2 + $4
+       AND date_dpe IS NOT NULL
+     ORDER BY date_dpe DESC
+     LIMIT 10`,
+    lat, lon, dLat, dLon
+  );
 }
 
 // ---------- Page Component ----------
@@ -280,10 +374,16 @@ export default async function CoproprietePage({
   if (!copro) notFound();
 
   const hasCoords = copro.longitude != null && copro.latitude != null;
-  const nearby = hasCoords ? await fetchNearby(copro.id, copro.longitude!, copro.latitude!) : [];
-  const communeAvgPrix = copro.codeOfficielCommune
-    ? await fetchCommuneAvgPrix(copro.codeOfficielCommune)
-    : null;
+
+  const [nearby, dvfTransactions, dvfQuarterly, communeAvgPrix, scoreQuartier, timelineDvf, timelineDpe] = await Promise.all([
+    hasCoords ? fetchNearby(copro.id, copro.longitude!, copro.latitude!) : Promise.resolve([]),
+    hasCoords ? fetchDvfTransactions(copro.longitude!, copro.latitude!, 30) : Promise.resolve([]),
+    hasCoords ? fetchDvfQuarterlyAvg(copro.longitude!, copro.latitude!) : Promise.resolve([]),
+    copro.codeOfficielCommune ? fetchCommuneAvgPrix(copro.codeOfficielCommune) : Promise.resolve(null),
+    hasCoords ? getScoreQuartier(copro.latitude!, copro.longitude!) : Promise.resolve(null),
+    hasCoords ? fetchTimelineDvf(copro.longitude!, copro.latitude!) : Promise.resolve([]),
+    fetchTimelineDpe(copro.numeroImmatriculation, copro.longitude, copro.latitude),
+  ]);
 
   const hasMarketData = copro.marchePrixM2 != null;
   const hasDpe = copro.dpeClasseMediane != null;
@@ -310,6 +410,32 @@ export default async function CoproprietePage({
         }`
       : null;
 
+  const estimation = estimerBudgetTravaux({
+    periodeConstruction: copro.periodeConstruction,
+    nbLotsHabitation: copro.nbLotsHabitation,
+    dpeClasseMediane: copro.dpeClasseMediane,
+    coproDansPdp: copro.coproDansPdp,
+  });
+
+  const timelineEvents = buildTimeline(
+    {
+      periodeConstruction: copro.periodeConstruction,
+      dateImmatriculation: copro.dateImmatriculation,
+      dateDerniereMaj: copro.dateDerniereMaj,
+      dateReglementCopropriete: copro.dateReglementCopropriete,
+      dateFinDernierMandat: copro.dateFinDernierMandat,
+      coproDansPdp: copro.coproDansPdp,
+      typeSyndic: copro.typeSyndic,
+    },
+    timelineDvf,
+    timelineDpe
+  );
+
+  const sparklineData = dvfQuarterly.map((q) => ({
+    label: `T${q.quarter} ${q.year}`,
+    value: Number(q.avg_prix_m2),
+  }));
+
   const dimensions = [
     {
       key: "technique",
@@ -317,6 +443,7 @@ export default async function CoproprietePage({
       score: copro.scoreTechnique,
       max: 25,
       explanation: techniqueExplanation(copro),
+      detailedExplanation: detailedTechnique(copro),
       icon: Wrench,
       iconBg: "bg-sky-50",
       iconColor: "text-sky-500",
@@ -327,6 +454,7 @@ export default async function CoproprietePage({
       score: copro.scoreRisques,
       max: 30,
       explanation: risquesExplanation(copro),
+      detailedExplanation: detailedRisques(copro),
       icon: ShieldCheck,
       iconBg: "bg-violet-50",
       iconColor: "text-violet-500",
@@ -337,6 +465,7 @@ export default async function CoproprietePage({
       score: copro.scoreGouvernance,
       max: 25,
       explanation: gouvernanceExplanation(copro),
+      detailedExplanation: detailedGouvernance(copro),
       icon: Users,
       iconBg: "bg-indigo-50",
       iconColor: "text-indigo-500",
@@ -347,6 +476,7 @@ export default async function CoproprietePage({
       score: copro.scoreEnergie,
       max: 20,
       explanation: energieExplanation(copro),
+      detailedExplanation: detailedEnergie(copro),
       icon: Zap,
       iconBg: "bg-amber-50",
       iconColor: "text-amber-500",
@@ -357,20 +487,44 @@ export default async function CoproprietePage({
       score: copro.scoreMarche,
       max: 20,
       explanation: marcheExplanation(copro),
+      detailedExplanation: detailedMarche(copro),
       icon: TrendingUp,
       iconBg: "bg-teal-50",
       iconColor: "text-teal-600",
     },
   ];
 
+  // Find worst dimension (lowest %) — shown for free as a hook
+  const worstDimKey = dimensions
+    .filter((d) => d.score !== null)
+    .reduce((worst, d) => {
+      const pct = d.score! / d.max;
+      const worstPct = worst.score! / worst.max;
+      return pct < worstPct ? d : worst;
+    }, dimensions.filter((d) => d.score !== null)[0])?.key ?? dimensions[0].key;
+
   return (
     <div className="flex min-h-screen flex-col bg-slate-50/50">
+      <SaveHistory
+        slug={slug}
+        nom={displayName}
+        adresse={`${copro.adresseReference ?? ""}, ${copro.codePostal ?? ""} ${copro.communeAdresse ?? ""}`}
+        score={copro.scoreGlobal}
+      />
       {/* Sticky header */}
       <header className="sticky top-0 z-30 border-b bg-white/90 backdrop-blur-sm">
         <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-3">
           <Link href="/" className="text-xl font-bold text-slate-900">
             Copro<span className="text-teal-600">Score</span>
           </Link>
+          <nav className="ml-auto flex items-center gap-4 text-sm font-medium text-slate-600">
+            <Link href="/" className="transition-colors hover:text-teal-700">Rechercher</Link>
+            <Link href="/carte" className="transition-colors hover:text-teal-700">Carte</Link>
+            <Link href="/comparateur" className="transition-colors hover:text-teal-700">Comparateur</Link>
+            <Link href="/tarifs" className="transition-colors hover:text-teal-700">Tarifs</Link>
+            <FavoritesNavLink />
+            <HistoryNavLink />
+          </nav>
         </div>
       </header>
 
@@ -404,7 +558,22 @@ export default async function CoproprietePage({
           {/* Name + Score */}
           <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div className="min-w-0 flex-1">
-              <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">{displayName}</h1>
+              <div className="flex items-center gap-2">
+                <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">{displayName}</h1>
+                <AlertModal slug={slug} coproName={displayName} />
+                <FavoriteButton
+                  slug={slug}
+                  nom={displayName}
+                  adresse={copro.adresseReference || ""}
+                  commune={copro.communeAdresse || ""}
+                  score={copro.scoreGlobal}
+                  lots={copro.nbTotalLots}
+                />
+                <ShareButton
+                  title={`${displayName} \u2014 Score ${copro.scoreGlobal ?? "?"}/100 | CoproScore`}
+                  text={`Score de sant\u00e9 de ${displayName} : ${copro.scoreGlobal ?? "?"}/100`}
+                />
+              </div>
               <p className="mt-2 flex items-center gap-1.5 text-slate-500">
                 <MapPin className="h-4 w-4 shrink-0" />
                 {copro.adresseReference}, {copro.codePostal} {copro.communeAdresse}
@@ -429,6 +598,13 @@ export default async function CoproprietePage({
                   <Badge variant="destructive">Plan de p&eacute;ril</Badge>
                 )}
               </div>
+              <Link
+                href={`/comparateur?ids=${slug}`}
+                className="mt-2 inline-flex items-center gap-1.5 text-sm font-medium text-teal-700 transition-colors hover:text-teal-900"
+              >
+                <ArrowRight className="h-3.5 w-3.5" />
+                Ajouter au comparateur
+              </Link>
             </div>
 
             {copro.scoreGlobal != null && (
@@ -465,40 +641,78 @@ export default async function CoproprietePage({
                     const color = d.score != null
                       ? pct >= 0.7 ? "text-teal-700" : pct >= 0.4 ? "text-amber-600" : "text-red-600"
                       : "text-slate-400";
+                    const isWorst = d.key === worstDimKey;
+                    const isLocked = !isWorst && !isDevUnlocked();
 
                     return (
                       <div
                         key={d.key}
-                        className={`flex items-center gap-4 rounded-xl border border-slate-200 bg-white p-4 transition-shadow hover:shadow-sm${isNull ? " opacity-60" : ""}`}
+                        className={`rounded-xl border border-slate-200 bg-white p-4 transition-shadow hover:shadow-sm${isNull ? " opacity-60" : ""}`}
                       >
-                        <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${d.iconBg}`}>
-                          <Icon className={`h-5 w-5 ${d.iconColor}`} />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <p className="text-sm font-semibold text-slate-900">{d.label}</p>
-                          {isNull ? (
-                            <p className="mt-0.5 flex items-center gap-1 text-xs text-slate-400">
-                              <Info className="h-3 w-3" />
-                              Donn&eacute;es non disponibles
-                            </p>
-                          ) : (
-                            <p className="mt-0.5 truncate text-xs text-slate-500">{d.explanation}</p>
-                          )}
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <div className="text-right">
-                            <p className={`text-lg font-bold leading-tight ${color}`}>
-                              {d.score ?? "\u2014"}
-                            </p>
-                            <p className="text-[10px] text-slate-400">/{d.max}</p>
+                        <div className="flex items-start gap-4">
+                          <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${d.iconBg}`}>
+                            <Icon className={`h-5 w-5 ${d.iconColor}`} />
                           </div>
-                          <MiniGauge score={d.score} max={d.max} />
+                          <div className="min-w-0 flex-1">
+                            <p className="text-sm font-semibold text-slate-900">{d.label}</p>
+                            {isNull ? (
+                              <p className="mt-0.5 flex items-center gap-1 text-xs text-slate-400">
+                                <Info className="h-3 w-3" />
+                                Donn&eacute;es non disponibles
+                              </p>
+                            ) : (
+                              <p className="mt-0.5 truncate text-xs text-slate-500">{d.explanation}</p>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <div className="text-right">
+                              <p className={`text-lg font-bold leading-tight ${color}`}>
+                                {d.score ?? "\u2014"}
+                              </p>
+                              <p className="text-[10px] text-slate-400">/{d.max}</p>
+                            </div>
+                            <MiniGauge score={d.score} max={d.max} />
+                          </div>
                         </div>
+                        {/* Detailed explanation */}
+                        {!isNull && (
+                          <div className="relative mt-3">
+                            {isLocked ? (
+                              <div className="relative">
+                                <p className="select-none text-sm leading-relaxed text-slate-600 blur-sm">
+                                  {d.detailedExplanation}
+                                </p>
+                                <a
+                                  href="#rapport-cta"
+                                  className="absolute inset-0 flex items-center justify-center gap-1.5 rounded-lg bg-white/60 text-sm font-medium text-teal-700 transition-colors hover:text-teal-900"
+                                >
+                                  <Lock className="h-3.5 w-3.5" />
+                                  D&eacute;bloquer l&apos;analyse &mdash; 4,90&euro;
+                                </a>
+                              </div>
+                            ) : (
+                              <p className="text-sm leading-relaxed text-slate-600">
+                                {d.detailedExplanation}
+                              </p>
+                            )}
+                          </div>
+                        )}
                       </div>
                     );
                   })}
                 </div>
               </section>
+
+              {/* --- 1b. Analyse IA --- */}
+              {copro.scoreGlobal != null && <AnalyseIA slug={slug} />}
+
+              {/* --- 1c. Estimation travaux --- */}
+              <EstimationTravauxSection estimation={estimation} nbLots={copro.nbLotsHabitation} />
+
+              {/* --- 1d. Chronologie --- */}
+              {timelineEvents.length > 0 && (
+                <TimelineSection events={timelineEvents} />
+              )}
 
               {/* --- 2. DPE --- */}
               <section>
@@ -648,6 +862,185 @@ export default async function CoproprietePage({
                 </Card>
               </section>
 
+              {/* --- 3b. Historique des transactions --- */}
+              {dvfTransactions.length > 0 && (
+                <section>
+                  <div className="mb-4 flex items-center gap-3">
+                    <h2 className="flex items-center gap-2 text-lg font-semibold text-slate-900">
+                      <Building2 className="h-5 w-5 text-slate-500" />
+                      Historique des transactions
+                    </h2>
+                    <div className="ml-auto flex gap-1.5">
+                      <a
+                        href={`/api/copropriete/${slug}/export-dvf?format=csv`}
+                        className={`inline-flex items-center gap-1 rounded-md border border-slate-200 px-2.5 py-1.5 text-xs font-medium ${isDevUnlocked() ? "text-slate-700 hover:bg-slate-50" : "text-slate-400 opacity-60 pointer-events-none"}`}
+                        title={isDevUnlocked() ? "Exporter CSV" : "R\u00e9serv\u00e9 aux abonn\u00e9s Pro"}
+                      >
+                        {!isDevUnlocked() && <Lock className="h-3 w-3" />}
+                        <Download className="h-3 w-3" />
+                        CSV
+                      </a>
+                      <a
+                        href={`/api/copropriete/${slug}/export-dvf?format=xlsx`}
+                        className={`inline-flex items-center gap-1 rounded-md border border-slate-200 px-2.5 py-1.5 text-xs font-medium ${isDevUnlocked() ? "text-slate-700 hover:bg-slate-50" : "text-slate-400 opacity-60 pointer-events-none"}`}
+                        title={isDevUnlocked() ? "Exporter Excel" : "R\u00e9serv\u00e9 aux abonn\u00e9s Pro"}
+                      >
+                        {!isDevUnlocked() && <Lock className="h-3 w-3" />}
+                        <Download className="h-3 w-3" />
+                        Excel
+                      </a>
+                    </div>
+                  </div>
+                  <Card className="border-slate-200 bg-white">
+                    <CardContent className="pt-6">
+                      {/* Sparkline */}
+                      {sparklineData.length >= 2 && (
+                        <div className="mb-6">
+                          <p className="mb-2 text-xs font-medium text-slate-500">
+                            Prix moyen au m&sup2; par trimestre
+                          </p>
+                          <Sparkline data={sparklineData} />
+                        </div>
+                      )}
+
+                      {/* Desktop table */}
+                      <div className="hidden sm:block">
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-sm">
+                            <thead>
+                              <tr className="border-b border-slate-100 text-left text-xs text-slate-400">
+                                <th className="pb-2 font-medium">Date</th>
+                                <th className="pb-2 font-medium">Adresse</th>
+                                <th className="pb-2 text-right font-medium">Surface</th>
+                                <th className="pb-2 text-right font-medium">Prix</th>
+                                <th className="pb-2 text-right font-medium">Prix/m&sup2;</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {dvfTransactions.slice(0, isDevUnlocked() ? dvfTransactions.length : 3).map((t) => (
+                                <tr key={t.id} className="border-b border-slate-50">
+                                  <td className="py-2.5 text-slate-600">
+                                    {new Date(t.date_mutation).toLocaleDateString("fr-FR")}
+                                  </td>
+                                  <td className="max-w-[200px] truncate py-2.5 text-slate-900">
+                                    {t.adresse ?? "\u2014"}
+                                  </td>
+                                  <td className="py-2.5 text-right text-slate-600">
+                                    {Math.round(Number(t.surface))}&nbsp;m&sup2;
+                                  </td>
+                                  <td className="py-2.5 text-right font-medium text-slate-900">
+                                    {formatPrix(Math.round(Number(t.prix)))}
+                                  </td>
+                                  <td className="py-2.5 text-right text-teal-700">
+                                    {formatPrix(Number(t.prix_m2))}/m&sup2;
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+
+                        {/* Blurred remaining rows */}
+                        {dvfTransactions.length > 3 && !isDevUnlocked() && (
+                          <div className="relative mt-1">
+                            <div className="select-none blur-sm">
+                              <table className="w-full text-sm">
+                                <tbody>
+                                  {dvfTransactions.slice(3, 8).map((t) => (
+                                    <tr key={t.id} className="border-b border-slate-50">
+                                      <td className="py-2.5 text-slate-600">
+                                        {new Date(t.date_mutation).toLocaleDateString("fr-FR")}
+                                      </td>
+                                      <td className="max-w-[200px] truncate py-2.5 text-slate-900">
+                                        {t.adresse ?? "\u2014"}
+                                      </td>
+                                      <td className="py-2.5 text-right text-slate-600">
+                                        {Math.round(Number(t.surface))}&nbsp;m&sup2;
+                                      </td>
+                                      <td className="py-2.5 text-right font-medium text-slate-900">
+                                        {formatPrix(Math.round(Number(t.prix)))}
+                                      </td>
+                                      <td className="py-2.5 text-right text-teal-700">
+                                        {formatPrix(Number(t.prix_m2))}/m&sup2;
+                                      </td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            </div>
+                            <a
+                              href="#rapport-cta"
+                              className="absolute inset-0 flex items-center justify-center gap-1.5 rounded-lg bg-gradient-to-b from-white/40 to-white/90 text-sm font-medium text-teal-700 transition-colors hover:text-teal-900"
+                            >
+                              <Lock className="h-3.5 w-3.5" />
+                              D&eacute;bloquer les {dvfTransactions.length - 3} autres transactions &mdash; 4,90&euro;
+                            </a>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Mobile cards */}
+                      <div className="sm:hidden">
+                        <div className="flex flex-col gap-2">
+                          {dvfTransactions.slice(0, isDevUnlocked() ? dvfTransactions.length : 3).map((t) => (
+                            <div key={t.id} className="rounded-lg border border-slate-100 p-3">
+                              <div className="flex items-center justify-between">
+                                <span className="text-xs text-slate-400">
+                                  {new Date(t.date_mutation).toLocaleDateString("fr-FR")}
+                                </span>
+                                <span className="text-sm font-bold text-teal-700">
+                                  {formatPrix(Number(t.prix_m2))}/m&sup2;
+                                </span>
+                              </div>
+                              <p className="mt-1 truncate text-sm text-slate-900">{t.adresse ?? "\u2014"}</p>
+                              <div className="mt-1 flex gap-3 text-xs text-slate-500">
+                                <span>{Math.round(Number(t.surface))}&nbsp;m&sup2;</span>
+                                <span>{formatPrix(Math.round(Number(t.prix)))}</span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+
+                        {dvfTransactions.length > 3 && !isDevUnlocked() && (
+                          <div className="relative mt-2">
+                            <div className="flex select-none flex-col gap-2 blur-sm">
+                              {dvfTransactions.slice(3, 6).map((t) => (
+                                <div key={t.id} className="rounded-lg border border-slate-100 p-3">
+                                  <div className="flex items-center justify-between">
+                                    <span className="text-xs text-slate-400">
+                                      {new Date(t.date_mutation).toLocaleDateString("fr-FR")}
+                                    </span>
+                                    <span className="text-sm font-bold text-teal-700">
+                                      {formatPrix(Number(t.prix_m2))}/m&sup2;
+                                    </span>
+                                  </div>
+                                  <p className="mt-1 truncate text-sm text-slate-900">{t.adresse ?? "\u2014"}</p>
+                                  <div className="mt-1 flex gap-3 text-xs text-slate-500">
+                                    <span>{Math.round(Number(t.surface))}&nbsp;m&sup2;</span>
+                                    <span>{formatPrix(Math.round(Number(t.prix)))}</span>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                            <a
+                              href="#rapport-cta"
+                              className="absolute inset-0 flex items-center justify-center gap-1.5 rounded-lg bg-gradient-to-b from-white/40 to-white/90 text-sm font-medium text-teal-700 transition-colors hover:text-teal-900"
+                            >
+                              <Lock className="h-3.5 w-3.5" />
+                              D&eacute;bloquer les {dvfTransactions.length - 3} autres &mdash; 4,90&euro;
+                            </a>
+                          </div>
+                        )}
+                      </div>
+
+                      <p className="mt-3 text-[11px] text-slate-400">
+                        Source : DVF (demandes de valeurs fonci&egrave;res), rayon 500m, 3 derni&egrave;res ann&eacute;es
+                      </p>
+                    </CardContent>
+                  </Card>
+                </section>
+              )}
+
               {/* --- 4. Informations cl\u00e9s --- */}
               <section>
                 <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold text-slate-900">
@@ -763,42 +1156,34 @@ export default async function CoproprietePage({
                 <Card className="border-slate-200 bg-white">
                   <CardHeader className="pb-3">
                     <CardTitle className="text-base font-semibold text-slate-900">
-                      Copropri&eacute;t&eacute;s &agrave; proximit&eacute;
+                      {nearby.length} copropri&eacute;t&eacute;{nearby.length > 1 ? "s" : ""} &agrave; proximit&eacute;
                     </CardTitle>
                     <p className="text-xs text-slate-400">Dans un rayon de 500m</p>
                   </CardHeader>
                   <CardContent className="flex flex-col gap-2 pt-0">
-                    {nearby.map((n) => (
-                      <Link
-                        key={n.id}
-                        href={`/copropriete/${n.slug ?? n.id}`}
-                        className="group flex items-center gap-3 rounded-lg p-2.5 transition-colors hover:bg-slate-50"
-                      >
-                        <div
-                          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-sm font-bold ${
-                            n.score_global !== null
-                              ? n.score_global >= 70
-                                ? "bg-teal-50 text-teal-700"
-                                : n.score_global >= 40
-                                  ? "bg-amber-50 text-amber-600"
-                                  : "bg-red-50 text-red-600"
-                              : "bg-slate-100 text-slate-400"
-                          }`}
-                        >
-                          {n.score_global ?? "?"}
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <p className="truncate text-sm font-medium text-slate-900">
-                            {formatCoproName(n.nom_usage || n.adresse_reference || "Copropri\u00e9t\u00e9")}
-                          </p>
-                          <p className="flex items-center gap-2 text-xs text-slate-400">
-                            {n.nb_lots_habitation != null && <span>{n.nb_lots_habitation} lots</span>}
-                            <span>{Math.round(Number(n.distance_m))}m</span>
-                          </p>
-                        </div>
-                        <ArrowRight className="h-3.5 w-3.5 shrink-0 text-slate-300 transition-colors group-hover:text-teal-600" />
-                      </Link>
+                    {/* First visible */}
+                    {nearby.slice(0, isDevUnlocked() ? nearby.length : 3).map((n) => (
+                      <NearbyItem key={n.id} n={n} />
                     ))}
+
+                    {/* Items 4-8: blurred */}
+                    {nearby.length > 3 && !isDevUnlocked() && (
+                      <div className="relative">
+                        <div className="flex select-none flex-col gap-2 blur-sm">
+                          {nearby.slice(3, 8).map((n) => (
+                            <NearbyItem key={n.id} n={n} />
+                          ))}
+                        </div>
+                        <a
+                          href="#rapport-cta"
+                          className="absolute inset-0 flex items-center justify-center gap-1.5 rounded-lg bg-gradient-to-b from-white/40 to-white/90 text-sm font-medium text-teal-700 transition-colors hover:text-teal-900"
+                        >
+                          <Lock className="h-3.5 w-3.5" />
+                          Voir {nearby.length - 3} autres &mdash; 4,90&euro;
+                        </a>
+                      </div>
+                    )}
+
                     {villeSlug && (
                       <Link
                         href={villeSlug}
@@ -811,16 +1196,21 @@ export default async function CoproprietePage({
                 </Card>
               )}
 
+              {/* Score quartier */}
+              {scoreQuartier && scoreQuartier.nbCopros >= 3 && (
+                <ScoreQuartierSection quartier={scoreQuartier} />
+              )}
+
               {/* CTA */}
-              <Card className="border-teal-200 bg-gradient-to-br from-teal-50 to-white">
+              <Card id="rapport-cta" className="border-teal-200 bg-gradient-to-br from-teal-50 to-white">
                 <CardContent className="py-6 text-center">
                   <h3 className="mb-1 text-lg font-semibold text-slate-900">Rapport complet</h3>
                   <p className="mb-4 text-sm text-slate-500">
                     Analyse d&eacute;taill&eacute;e, historique et comparatif du quartier.
                   </p>
-                  <Button className="w-full bg-teal-500 py-5 text-base font-semibold text-white hover:bg-teal-800">
-                    T&eacute;l&eacute;charger le rapport &mdash; 9.90&euro;
-                  </Button>
+                  <DownloadButton slug={slug} className="w-full bg-teal-500 py-5 text-base font-semibold text-white hover:bg-teal-800">
+                    T&eacute;l&eacute;charger le rapport &mdash; 4,90&euro;
+                  </DownloadButton>
                   <p className="mt-2 text-[11px] text-slate-400">PDF disponible imm&eacute;diatement</p>
                 </CardContent>
               </Card>
@@ -833,9 +1223,9 @@ export default async function CoproprietePage({
 
       {/* Sticky CTA bar — mobile only */}
       <div className="fixed inset-x-0 bottom-0 z-30 border-t bg-white/95 px-4 py-3 backdrop-blur-sm lg:hidden">
-        <Button className="w-full bg-teal-700 py-5 text-base font-semibold text-white hover:bg-teal-800">
-          T&eacute;l&eacute;charger le rapport &mdash; 9.90&euro;
-        </Button>
+        <DownloadButton slug={slug} className="w-full bg-teal-700 py-5 text-base font-semibold text-white hover:bg-teal-800">
+          T&eacute;l&eacute;charger le rapport &mdash; 4,90&euro;
+        </DownloadButton>
       </div>
       {/* Bottom spacer for sticky CTA */}
       <div className="h-[72px] lg:hidden" />
@@ -844,6 +1234,39 @@ export default async function CoproprietePage({
 }
 
 // ---------- Sub-components ----------
+
+function NearbyItem({ n }: { n: NearbyRow }) {
+  return (
+    <Link
+      href={`/copropriete/${n.slug ?? n.id}`}
+      className="group flex items-center gap-3 rounded-lg p-2.5 transition-colors hover:bg-slate-50"
+    >
+      <div
+        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-sm font-bold ${
+          n.score_global !== null
+            ? n.score_global >= 70
+              ? "bg-teal-50 text-teal-700"
+              : n.score_global >= 40
+                ? "bg-amber-50 text-amber-600"
+                : "bg-red-50 text-red-600"
+            : "bg-slate-100 text-slate-400"
+        }`}
+      >
+        {n.score_global ?? "?"}
+      </div>
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-sm font-medium text-slate-900">
+          {formatCoproName(n.nom_usage || n.adresse_reference || "Copropri\u00e9t\u00e9")}
+        </p>
+        <p className="flex items-center gap-2 text-xs text-slate-400">
+          {n.nb_lots_habitation != null && <span>{n.nb_lots_habitation} lots</span>}
+          <span>{Math.round(Number(n.distance_m))}m</span>
+        </p>
+      </div>
+      <ArrowRight className="h-3.5 w-3.5 shrink-0 text-slate-300 transition-colors group-hover:text-teal-600" />
+    </Link>
+  );
+}
 
 function InfoRow({ label, value }: { label: string; value: string | number | null | undefined }) {
   return (

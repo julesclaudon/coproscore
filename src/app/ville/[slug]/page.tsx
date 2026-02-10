@@ -25,6 +25,8 @@ import {
   Home,
   Crown,
 } from "lucide-react";
+import { HistoryNavLink } from "@/components/history-nav-link";
+import { FavoritesNavLink } from "@/components/favorites-nav-link";
 
 export const revalidate = 86400;
 
@@ -199,12 +201,22 @@ export async function generateMetadata({
     ? `Copropri\u00e9t\u00e9s \u00e0 ${displayName} \u2014 Score moyen ${info.avg_score}/100`
     : `Copropri\u00e9t\u00e9s \u00e0 ${displayName}`;
 
+  const cpParam = effectiveCp ? `?cp=${effectiveCp}` : "";
+  const ogImage = `${process.env.NEXT_PUBLIC_BASE_URL || "https://coproscore.fr"}/api/og/ville/${slug}${cpParam}`;
+
   return {
     title: `Copropri\u00e9t\u00e9s \u00e0 ${displayName} : score, DPE, prix`,
     description: `${Number(info.total)} copropri\u00e9t\u00e9s analys\u00e9es \u00e0 ${displayName} (${info.nom_dept}). ${scoreText}${prixPart}${dpePart}. Consultez scores et d\u00e9tails.`,
     openGraph: {
       title: ogTitle,
       description: `${Number(info.total)} copropri\u00e9t\u00e9s analys\u00e9es \u00e0 ${displayName}. ${scoreText}.`,
+      images: [{ url: ogImage, width: 1200, height: 630, alt: ogTitle }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: ogTitle,
+      description: `${Number(info.total)} copropri\u00e9t\u00e9s \u00e0 ${displayName}. ${scoreText}.`,
+      images: [ogImage],
     },
   };
 }
@@ -430,6 +442,10 @@ export default async function VillePage({
           ) : (
             <span className="truncate text-sm text-slate-500">{communeName}</span>
           )}
+          <nav className="ml-auto flex items-center gap-4 text-sm font-medium text-slate-600">
+            <FavoritesNavLink />
+            <HistoryNavLink />
+          </nav>
         </div>
       </header>
 
@@ -709,7 +725,7 @@ export default async function VillePage({
             </h2>
             <Card className="border-slate-200 bg-white">
               <CardContent className="pt-5">
-                <VilleCoproList copros={clientCopros} totalCount={total} />
+                <VilleCoproList copros={clientCopros} totalCount={total} villeSlug={slug} cp={effectiveCp} />
               </CardContent>
             </Card>
           </section>

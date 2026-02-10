@@ -1,6 +1,14 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  turbopack: {
+    resolveAlias: {
+      // pdfkit uses __dirname to load .afm font files, but Turbopack rewrites
+      // __dirname to /ROOT/, breaking font resolution. The standalone build
+      // embeds all font data inline, avoiding this issue.
+      pdfkit: "pdfkit/js/pdfkit.standalone.js",
+    },
+  },
   reactCompiler: true,
   images: {
     formats: ["image/webp"],

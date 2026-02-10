@@ -17,6 +17,8 @@ import {
   Map,
   ChevronRight,
 } from "lucide-react";
+import { HistoryNavLink } from "@/components/history-nav-link";
+import { FavoritesNavLink } from "@/components/favorites-nav-link";
 
 /* ─── Mini score bar for the example section ─── */
 function MiniBar({ label, value, max, color }: { label: string; value: number; max: number; color: string }) {
@@ -80,6 +82,13 @@ export default function Home() {
           <Link href="/" className="text-xl font-bold text-slate-900">
             Copro<span className="text-teal-700">Score</span>
           </Link>
+          <div className="flex items-center gap-4 text-sm font-medium text-slate-600">
+            <Link href="/carte" className="transition-colors hover:text-teal-700">Carte</Link>
+            <Link href="/comparateur" className="transition-colors hover:text-teal-700">Comparateur</Link>
+            <Link href="/tarifs" className="transition-colors hover:text-teal-700">Tarifs</Link>
+            <FavoritesNavLink />
+            <HistoryNavLink />
+          </div>
         </div>
       </nav>
 

@@ -21,6 +21,7 @@ import {
   Search,
   SearchX,
 } from "lucide-react";
+import { FavoriteToggle } from "@/components/favorite-toggle";
 
 const SearchMap = lazy(() => import("@/components/search-map"));
 
@@ -297,6 +298,14 @@ function RechercheContent() {
                     </div>
                   </div>
                   <div className="ml-3 flex items-center gap-2 sm:ml-4 sm:gap-3">
+                    <FavoriteToggle
+                      slug={r.slug ?? String(r.id)}
+                      nom={formatCoproName(r.nomUsage || r.adresse || "Copropri\u00e9t\u00e9")}
+                      adresse={r.adresse || ""}
+                      commune={r.commune || ""}
+                      score={r.scoreGlobal}
+                      lots={r.nbLots}
+                    />
                     <div
                       className={`flex h-10 w-10 items-center justify-center rounded-lg sm:h-12 sm:w-12 ${scoreBg(r.scoreGlobal)}`}
                     >

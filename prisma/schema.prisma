@@ -164,6 +164,16 @@ model DvfTransaction {
   @@map("dvf_transactions")
 }
 
+model CoproAnalyse {
+  id            Int      @id @default(autoincrement())
+  coproId       Int      @unique @map("copro_id")
+  analyseJson   String   @map("analyse_json") // JSON string
+  generatedAt   DateTime @default(now()) @map("generated_at")
+  modelVersion  String   @map("model_version")
+
+  @@map("copro_analyses")
+}
+
 model DpeLogement {
   id            Int      @id @default(autoincrement())
   numeroDpe     String   @map("numero_dpe")
@@ -181,4 +191,30 @@ model DpeLogement {
   @@index([codeInsee])
   @@index([numeroImmatriculationCopropriete])
   @@map("dpe_logements")
+}
+
+model ScoreAlert {
+  id              Int       @id @default(autoincrement())
+  email           String    @map("email")
+  coproId         Int       @map("copro_id")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  lastNotifiedAt  DateTime? @map("last_notified_at")
+  active          Boolean   @default(false) @map("active")
+  confirmations   AlertConfirmation[]
+  @@unique([email, coproId])
+  @@index([email])
+  @@index([coproId])
+  @@index([active])
+  @@map("score_alerts")
+}
+
+model AlertConfirmation {
+  id          Int       @id @default(autoincrement())
+  alertId     Int       @map("alert_id")
+  token       String    @unique @map("token")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  confirmedAt DateTime? @map("confirmed_at")
+  alert       ScoreAlert @relation(fields: [alertId], references: [id], onDelete: Cascade)
+  @@index([alertId])
+  @@map("alert_confirmations")
 }

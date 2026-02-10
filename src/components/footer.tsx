@@ -43,6 +43,31 @@ export function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/carte" className="transition-colors hover:text-teal-400">
+                  Carte heatmap
+                </Link>
+              </li>
+              <li>
+                <Link href="/comparateur" className="transition-colors hover:text-teal-400">
+                  Comparateur
+                </Link>
+              </li>
+              <li>
+                <Link href="/historique" className="transition-colors hover:text-teal-400">
+                  Historique
+                </Link>
+              </li>
+              <li>
+                <Link href="/favoris" className="transition-colors hover:text-teal-400">
+                  Favoris
+                </Link>
+              </li>
+              <li>
+                <Link href="/alertes" className="transition-colors hover:text-teal-400">
+                  Mes alertes
+                </Link>
+              </li>
+              <li>
                 <Link href="/methodologie" className="transition-colors hover:text-teal-400">
                   M&eacute;thodologie
                 </Link>

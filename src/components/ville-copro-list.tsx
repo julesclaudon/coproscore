@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { scoreColor, scoreBg, formatPeriod } from "@/lib/format";
 import { formatCoproName } from "@/lib/utils";
-import { Building2, ArrowRight, Search, Crown } from "lucide-react";
+import { Building2, ArrowRight, Search, Crown, Download, Lock } from "lucide-react";
+import { FavoriteToggle } from "@/components/favorite-toggle";
 
 export interface VilleCoproItem {
   id: number;
@@ -27,9 +28,13 @@ const PAGE_SIZE = 20;
 export function VilleCoproList({
   copros,
   totalCount,
+  villeSlug,
+  cp,
 }: {
   copros: VilleCoproItem[];
   totalCount: number;
+  villeSlug?: string;
+  cp?: string;
 }) {
   const [query, setQuery] = useState("");
   const [syndic, setSyndic] = useState("");
@@ -129,22 +134,46 @@ export function VilleCoproList({
   return (
     <div>
       {/* Pro CTA banner */}
-      <div className="mb-4 flex items-center gap-3 rounded-lg border border-teal-200 bg-teal-50/60 px-4 py-2.5">
-        <Crown className="h-4 w-4 shrink-0 text-teal-600" />
-        <p className="min-w-0 flex-1 text-xs text-slate-600 sm:text-sm">
-          D&eacute;bloquez les filtres avanc&eacute;s et l&apos;export CSV avec
-          l&apos;acc&egrave;s Pro &mdash; 29&nbsp;&euro;/mois
-        </p>
-        <Link href="/tarifs">
-          <Button
-            variant="outline"
-            size="sm"
-            className="shrink-0 border-teal-300 text-xs text-teal-700 hover:bg-teal-100"
+      {process.env.NEXT_PUBLIC_DEV_UNLOCK !== "true" && (
+        <div className="mb-4 flex items-center gap-3 rounded-lg border border-teal-200 bg-teal-50/60 px-4 py-2.5">
+          <Crown className="h-4 w-4 shrink-0 text-teal-600" />
+          <p className="min-w-0 flex-1 text-xs text-slate-600 sm:text-sm">
+            D&eacute;bloquez les filtres avanc&eacute;s et l&apos;export CSV avec
+            l&apos;acc&egrave;s Pro &mdash; 29&nbsp;&euro;/mois
+          </p>
+          {villeSlug ? (
+            <a
+              href={`/api/ville/${villeSlug}/export?format=csv${cp ? `&cp=${cp}` : ""}`}
+              className="inline-flex shrink-0 items-center gap-1.5 rounded-md border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-400 opacity-60 pointer-events-none"
+              title="R&eacute;serv&eacute; aux abonn&eacute;s Pro"
+            >
+              <Lock className="h-3 w-3" />
+              Exporter CSV
+            </a>
+          ) : (
+            <Link href="/tarifs">
+              <Button
+                variant="outline"
+                size="sm"
+                className="shrink-0 border-teal-300 text-xs text-teal-700 hover:bg-teal-100"
+              >
+                En savoir plus
+              </Button>
+            </Link>
+          )}
+        </div>
+      )}
+      {process.env.NEXT_PUBLIC_DEV_UNLOCK === "true" && villeSlug && (
+        <div className="mb-4 flex justify-end">
+          <a
+            href={`/api/ville/${villeSlug}/export?format=csv${cp ? `&cp=${cp}` : ""}`}
+            className="inline-flex items-center gap-1.5 rounded-md border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
           >
-            En savoir plus
-          </Button>
-        </Link>
-      </div>
+            <Download className="h-3 w-3" />
+            Exporter CSV
+          </a>
+        </div>
+      )}
 
       {/* Search + filters */}
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
@@ -268,6 +297,14 @@ export function VilleCoproList({
                 {c.typeSyndic && <span className="hidden sm:inline">{c.typeSyndic}</span>}
               </div>
             </div>
+            <FavoriteToggle
+              slug={c.slug ?? String(c.id)}
+              nom={formatCoproName(c.nomUsage || c.adresseReference || "Copropri\u00e9t\u00e9")}
+              adresse={c.adresseReference || ""}
+              commune={c.codePostal || ""}
+              score={c.scoreGlobal}
+              lots={c.nbLotsHabitation}
+            />
             <ArrowRight className="h-4 w-4 shrink-0 text-slate-300 transition-colors group-hover:text-teal-600" />
           </Link>
         ))}
