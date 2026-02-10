@@ -13,9 +13,38 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "CoproScore - La sant\u00e9 de votre copropri\u00e9t\u00e9",
+  metadataBase: new URL("https://coproscore.fr"),
+  title: {
+    default: "CoproScore — Le score de santé de votre copropriété",
+    template: "%s | CoproScore",
+  },
   description:
-    "Score de sant\u00e9 de 0 \u00e0 100 pour les copropri\u00e9t\u00e9s en France, bas\u00e9 sur les donn\u00e9es ouvertes du RNIC, DVF et ADEME. 619 402 copropri\u00e9t\u00e9s analys\u00e9es.",
+    "Score de santé de 0 à 100 pour les copropriétés en France, basé sur les données ouvertes du RNIC, DVF et ADEME. 619 402 copropriétés analysées.",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "32x32" },
+      { url: "/favicon-32.png", type: "image/png", sizes: "32x32" },
+      { url: "/icon-192.png", type: "image/png", sizes: "192x192" },
+      { url: "/icon-512.png", type: "image/png", sizes: "512x512" },
+    ],
+    apple: "/apple-touch-icon.png",
+  },
+  openGraph: {
+    siteName: "CoproScore",
+    type: "website",
+    locale: "fr_FR",
+    images: [
+      {
+        url: "/og-default.png",
+        width: 1200,
+        height: 630,
+        alt: "CoproScore — Le score de santé de votre copropriété",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+  },
 };
 
 export default function RootLayout({

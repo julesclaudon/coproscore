@@ -1,7 +1,7 @@
 "use client";
 
 function getColor(score: number): string {
-  if (score >= 70) return "#10B981"; // emerald-500
+  if (score >= 70) return "#0D9488"; // teal-600
   if (score >= 40) return "#f59e0b"; // amber-500
   return "#ef4444"; // red-500
 }

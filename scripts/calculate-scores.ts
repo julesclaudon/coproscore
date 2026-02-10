@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 const BATCH_SIZE = 5000;
 
 async function main() {
-  console.log("Calculating scores for all copropriétés (5 dimensions, /120→100)...");
+  console.log("Calculating scores v2 for all copropriétés (5 dimensions, /120→100)...");
   const startTime = Date.now();
 
   let cursor: number | undefined;
@@ -23,6 +23,7 @@ async function main() {
         coproDansPdp: true,
         typeSyndic: true,
         syndicatCooperatif: true,
+        nbTotalLots: true,
         marcheEvolution: true,
         marcheNbTransactions: true,
         dpeClasseMediane: true,
@@ -48,6 +49,7 @@ async function main() {
         coproDansPdp: row.coproDansPdp,
         typeSyndic: row.typeSyndic,
         syndicatCooperatif: row.syndicatCooperatif,
+        nbLots: row.nbTotalLots,
         marcheEvolution: row.marcheEvolution,
         marcheNbTransactions: row.marcheNbTransactions,
         dpe: row.dpeClasseMediane,
@@ -88,18 +90,39 @@ async function main() {
   const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
   console.log(`\nDone! ${processed.toLocaleString()} rows scored in ${elapsed}s`);
 
+  // Stats
   const stats = await prisma.$queryRawUnsafe<Array<Record<string, unknown>>>(`
     SELECT
-      round(avg(score_global), 1) as avg_score,
+      round(avg(score_global)::numeric, 1) as avg_score,
       min(score_global) as min_score,
       max(score_global) as max_score,
-      count(*) FILTER (WHERE score_global >= 70) as bon,
-      count(*) FILTER (WHERE score_global >= 40 AND score_global < 70) as moyen,
-      count(*) FILTER (WHERE score_global < 40) as mauvais
+      round(avg(score_technique)::numeric, 1) as avg_technique,
+      round(avg(score_risques)::numeric, 1) as avg_risques,
+      round(avg(score_gouvernance)::numeric, 1) as avg_gouvernance,
+      round(avg(score_energie)::numeric, 1) as avg_energie,
+      round(avg(score_marche)::numeric, 1) as avg_marche,
+      round(avg(indice_confiance)::numeric, 1) as avg_confiance,
+      count(*) FILTER (WHERE score_global > 85) as excellent,
+      count(*) FILTER (WHERE score_global > 70 AND score_global <= 85) as bon,
+      count(*) FILTER (WHERE score_global > 55 AND score_global <= 70) as moyen,
+      count(*) FILTER (WHERE score_global >= 40 AND score_global <= 55) as passable,
+      count(*) FILTER (WHERE score_global < 40) as attention
     FROM coproprietes
     WHERE score_global IS NOT NULL
   `);
-  console.log("\nDistribution des scores :", stats[0]);
+
+  console.log("\n=== Scoring v2 Statistics ===");
+  const s = stats[0];
+  console.log(`Global: avg=${s.avg_score} | min=${s.min_score} | max=${s.max_score}`);
+  console.log(`Technique: avg=${s.avg_technique} | Risques: avg=${s.avg_risques} | Gouvernance: avg=${s.avg_gouvernance}`);
+  console.log(`Énergie: avg=${s.avg_energie} | Marché: avg=${s.avg_marche}`);
+  console.log(`Confiance moyenne: ${s.avg_confiance}%`);
+  console.log(`\nDistribution:`);
+  console.log(`  >85 (Excellent) : ${s.excellent}`);
+  console.log(`  70-85 (Bon)     : ${s.bon}`);
+  console.log(`  55-70 (Moyen)   : ${s.moyen}`);
+  console.log(`  40-55 (Passable): ${s.passable}`);
+  console.log(`  <40 (Attention) : ${s.attention}`);
 
   await prisma.$disconnect();
 }
