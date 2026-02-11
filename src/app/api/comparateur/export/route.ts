@@ -4,6 +4,7 @@ import { generateCsv } from "@/lib/csv-export";
 import { generateComparateurPdf } from "@/lib/pdf-comparateur";
 import { formatCoproName } from "@/lib/utils";
 import { formatPeriod } from "@/lib/format";
+import { checkAccess } from "@/lib/api-auth";
 
 const SELECT_FIELDS = {
   id: true,
@@ -70,6 +71,12 @@ const ROW_DEFS: { label: string; getValue: (c: Copro) => string }[] = [
 ];
 
 export async function GET(request: NextRequest) {
+  // Pro-only endpoint
+  const access = await checkAccess("pro");
+  if (!access) {
+    return NextResponse.json({ error: "Accès réservé aux abonnés Pro" }, { status: 403 });
+  }
+
   const idsParam = request.nextUrl.searchParams.get("ids");
   const format = request.nextUrl.searchParams.get("format") ?? "csv";
 

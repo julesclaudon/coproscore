@@ -4,11 +4,18 @@ import { fetchDvfTransactions } from "@/lib/dvf-queries";
 import { generateCsv } from "@/lib/csv-export";
 import { generateXlsx } from "@/lib/xlsx-export";
 import { formatCoproName } from "@/lib/utils";
+import { checkAccess } from "@/lib/api-auth";
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
+  // Pro-only endpoint
+  const access = await checkAccess("pro");
+  if (!access) {
+    return NextResponse.json({ error: "Accès réservé aux abonnés Pro" }, { status: 403 });
+  }
+
   const { slug } = await params;
   const format = request.nextUrl.searchParams.get("format") ?? "csv";
 

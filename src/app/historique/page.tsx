@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
@@ -60,11 +61,13 @@ export default function HistoriquePage() {
     setHistory([]);
   }
 
-  const devUnlocked = process.env.NEXT_PUBLIC_DEV_UNLOCK === "true";
-  const isFree = true;
-  const visibleCount = (isFree && !devUnlocked) ? 5 : history.length;
+  const { data: session } = useSession();
+  const role = (session?.user as { role?: string } | undefined)?.role;
+  const isPro = role === "PRO" || role === "ADMIN";
+  const isFree = !isPro;
+  const visibleCount = isPro ? history.length : 5;
   const visible = history.slice(0, visibleCount);
-  const blurred = (isFree && !devUnlocked) ? history.slice(visibleCount, visibleCount + 5) : [];
+  const blurred = isFree ? history.slice(visibleCount, visibleCount + 5) : [];
 
   return (
     <div className="flex min-h-screen flex-col bg-slate-50/50">
@@ -112,11 +115,11 @@ export default function HistoriquePage() {
               <Button
                 variant="outline"
                 size="sm"
-                disabled={!devUnlocked}
-                className={`gap-1.5 ${devUnlocked ? "text-slate-700" : "text-slate-400"}`}
+                disabled={!isPro}
+                className={`gap-1.5 ${isPro ? "text-slate-700" : "text-slate-400"}`}
               >
-                {!devUnlocked && <Lock className="h-3.5 w-3.5" />}
-                {devUnlocked && <Download className="h-3.5 w-3.5" />}
+                {!isPro && <Lock className="h-3.5 w-3.5" />}
+                {isPro && <Download className="h-3.5 w-3.5" />}
                 Exporter CSV
               </Button>
             </div>

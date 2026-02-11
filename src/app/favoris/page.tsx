@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
@@ -55,8 +56,10 @@ export default function FavorisPage() {
     setFavorites([]);
   }
 
-  const devUnlocked = process.env.NEXT_PUBLIC_DEV_UNLOCK === "true";
-  const isFree = !devUnlocked;
+  const { data: session } = useSession();
+  const role = (session?.user as { role?: string } | undefined)?.role;
+  const isPro = role === "PRO" || role === "ADMIN";
+  const isFree = !isPro;
   const limitReached = isFree && favorites.length >= MAX_FREE;
 
   // Build comparateur URL with all favorite slugs (max 5)

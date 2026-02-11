@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useSession, signOut } from "next-auth/react";
 import {
   Menu,
   X,
@@ -14,6 +15,9 @@ import {
   Search,
   BookOpen,
   Scale,
+  LogIn,
+  LogOut,
+  User,
 } from "lucide-react";
 import { FavoritesNavLink } from "@/components/favorites-nav-link";
 import { HistoryNavLink } from "@/components/history-nav-link";
@@ -43,8 +47,11 @@ const desktopLinks = [
 export function Header({ variant = "default", rightSlot }: HeaderProps) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const { data: session, status } = useSession();
 
   const isHomepage = variant === "homepage";
+  const isLoading = status === "loading";
+  const isLoggedIn = !!session?.user;
 
   return (
     <>
@@ -81,6 +88,37 @@ export function Header({ variant = "default", rightSlot }: HeaderProps) {
             ))}
             <FavoritesNavLink />
             <HistoryNavLink />
+            {!isLoading && (
+              isLoggedIn ? (
+                <div className="flex items-center gap-2 border-l border-slate-200 pl-4">
+                  <span className="text-xs text-slate-400 truncate max-w-[120px]">
+                    {session.user?.email}
+                  </span>
+                  <button
+                    onClick={() => signOut({ callbackUrl: "/" })}
+                    className="flex items-center gap-1 text-slate-500 transition-colors hover:text-red-600"
+                    title="Se d&eacute;connecter"
+                  >
+                    <LogOut className="h-4 w-4" />
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 border-l border-slate-200 pl-4">
+                  <Link
+                    href="/connexion"
+                    className="text-sm font-medium text-slate-600 transition-colors hover:text-teal-700"
+                  >
+                    Connexion
+                  </Link>
+                  <Link
+                    href="/inscription"
+                    className="rounded-lg bg-teal-700 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-teal-800"
+                  >
+                    Inscription
+                  </Link>
+                </div>
+              )
+            )}
           </nav>
 
           {/* Mobile hamburger */}
@@ -144,6 +182,46 @@ export function Header({ variant = "default", rightSlot }: HeaderProps) {
                   </Link>
                 );
               })}
+
+              {/* Auth section */}
+              <div className="mt-auto border-t border-slate-100 pt-2">
+                {!isLoading && (
+                  isLoggedIn ? (
+                    <>
+                      <div className="px-5 py-2 text-xs text-slate-400 truncate">
+                        {session.user?.email}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => { setOpen(false); signOut({ callbackUrl: "/" }); }}
+                        className="flex min-h-[44px] w-full items-center gap-3 px-5 text-sm font-medium text-red-600 transition-colors hover:bg-red-50"
+                      >
+                        <LogOut className="h-4 w-4 shrink-0" />
+                        Se d&eacute;connecter
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <Link
+                        href="/connexion"
+                        onClick={() => setOpen(false)}
+                        className="flex min-h-[44px] items-center gap-3 px-5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50 hover:text-teal-700"
+                      >
+                        <LogIn className="h-4 w-4 shrink-0" />
+                        Connexion
+                      </Link>
+                      <Link
+                        href="/inscription"
+                        onClick={() => setOpen(false)}
+                        className="flex min-h-[44px] items-center gap-3 px-5 text-sm font-medium text-teal-700 transition-colors hover:bg-teal-50"
+                      >
+                        <User className="h-4 w-4 shrink-0" />
+                        Cr&eacute;er un compte
+                      </Link>
+                    </>
+                  )
+                )}
+              </div>
             </nav>
           </div>
         </>

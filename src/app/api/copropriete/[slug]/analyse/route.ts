@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCachedAnalyse, generateAnalyse, type AnalyseResult } from "@/lib/generate-analyse";
+import { checkAccess } from "@/lib/api-auth";
 
 const RATE_LIMIT_MAX = 10;
 const RATE_LIMIT_WINDOW_MS = 60_000;
@@ -28,6 +29,12 @@ export async function GET(
   _request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
+  // Pro-only endpoint
+  const access = await checkAccess("pro");
+  if (!access) {
+    return NextResponse.json({ error: "Accès réservé aux abonnés Pro" }, { status: 403 });
+  }
+
   const { slug } = await params;
 
   const copro = await prisma.copropriete.findUnique({ where: { slug } });

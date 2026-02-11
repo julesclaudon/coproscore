@@ -14,6 +14,7 @@ import {
 import { fetchDvfTransactions } from "@/lib/dvf-queries";
 import { estimerBudgetTravaux } from "@/lib/budget-travaux";
 import { buildTimeline, type DpeForTimeline } from "@/lib/timeline";
+import { checkAccess } from "@/lib/api-auth";
 
 const LAT_PER_METER = 1 / 111320;
 const LON_PER_METER = 1 / 77370;
@@ -131,6 +132,12 @@ export async function GET(
   { params }: { params: Promise<{ slug: string }> }
 ) {
  try {
+  // Pro-only endpoint
+  const access = await checkAccess("pro");
+  if (!access) {
+    return NextResponse.json({ error: "Accès réservé aux abonnés Pro" }, { status: 403 });
+  }
+
   const { slug } = await params;
 
   const copro = await prisma.copropriete.findUnique({ where: { slug } });

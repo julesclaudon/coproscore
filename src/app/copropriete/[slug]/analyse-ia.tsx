@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { Lock, CheckCircle2, AlertTriangle, Lightbulb } from "lucide-react";
+import Link from "next/link";
+import type { AccessLevel } from "@/lib/access";
 
 interface AnalyseResult {
   points_forts: string[];
@@ -44,12 +46,14 @@ function Skeleton() {
   );
 }
 
-export function AnalyseIA({ slug }: { slug: string }) {
+export function AnalyseIA({ slug, accessLevel }: { slug: string; accessLevel: AccessLevel }) {
   const [data, setData] = useState<AnalyseResponse | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(accessLevel === "pro");
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (accessLevel !== "pro") return;
+
     let cancelled = false;
 
     async function fetchAnalyse() {
@@ -74,8 +78,36 @@ export function AnalyseIA({ slug }: { slug: string }) {
 
     fetchAnalyse();
     return () => { cancelled = true; };
-  }, [slug]);
+  }, [slug, accessLevel]);
 
+  // Free users: show placeholder
+  if (accessLevel === "free") {
+    return (
+      <section>
+        <h2 className="mb-1 text-lg font-semibold text-slate-900">
+          Analyse CoproScore
+        </h2>
+        <p className="mb-4 text-xs text-slate-400">
+          G&eacute;n&eacute;r&eacute;e par intelligence artificielle &agrave; partir des donn&eacute;es publiques
+        </p>
+        <div className="flex flex-col items-center gap-3 rounded-xl border border-slate-200 bg-white px-6 py-8 text-center">
+          <Lock className="h-6 w-6 text-slate-400" />
+          <p className="text-sm font-medium text-slate-700">
+            Disponible avec l&apos;abonnement Pro
+          </p>
+          <Link
+            href="/tarifs"
+            className="text-sm font-medium text-teal-700 transition-colors hover:text-teal-900"
+          >
+            D&eacute;couvrir les offres &rarr;
+          </Link>
+        </div>
+      </section>
+    );
+  }
+
+  // Visitor: don't render at all (handled in parent)
+  // Pro: full access
   return (
     <section>
       <h2 className="mb-1 text-lg font-semibold text-slate-900">
@@ -93,76 +125,59 @@ export function AnalyseIA({ slug }: { slug: string }) {
 
       {data && (
         <div className="space-y-4">
-          {/* Resume — always visible */}
+          {/* Resume */}
           <div className="rounded-lg border border-teal-100 bg-teal-50/60 p-4">
             <p className="text-sm leading-relaxed text-slate-700">{data.analyse.resume}</p>
           </div>
 
-          {/* 3 detail blocks — blurred unless dev unlocked */}
-          <div className={process.env.NEXT_PUBLIC_DEV_UNLOCK === "true" ? "" : "relative"}>
-            <div className={process.env.NEXT_PUBLIC_DEV_UNLOCK === "true" ? "space-y-3" : "select-none space-y-3 blur-sm"}>
-              {/* Points forts */}
-              <div className="rounded-lg border border-slate-200 bg-white p-4">
-                <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-900">
-                  <CheckCircle2 className="h-4 w-4 text-teal-600" />
-                  Points forts
-                </h3>
-                <ul className="space-y-1.5">
-                  {data.analyse.points_forts.map((p, i) => (
-                    <li key={i} className="flex items-start gap-2 text-sm text-slate-600">
-                      <span className="mt-1 block h-1.5 w-1.5 shrink-0 rounded-full bg-teal-400" />
-                      {p}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* Vigilances */}
-              <div className="rounded-lg border border-slate-200 bg-white p-4">
-                <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-900">
-                  <AlertTriangle className="h-4 w-4 text-amber-500" />
-                  Points de vigilance
-                </h3>
-                <ul className="space-y-1.5">
-                  {data.analyse.vigilances.map((v, i) => (
-                    <li key={i} className="flex items-start gap-2 text-sm text-slate-600">
-                      <span className="mt-1 block h-1.5 w-1.5 shrink-0 rounded-full bg-amber-400" />
-                      {v}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* Recommandations */}
-              <div className="rounded-lg border border-slate-200 bg-white p-4">
-                <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-900">
-                  <Lightbulb className="h-4 w-4 text-blue-500" />
-                  Recommandations
-                </h3>
-                <ul className="space-y-1.5">
-                  {data.analyse.recommandations.map((r, i) => (
-                    <li key={i} className="flex items-start gap-2 text-sm text-slate-600">
-                      <span className="mt-1 block h-1.5 w-1.5 shrink-0 rounded-full bg-blue-400" />
-                      {r}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+          <div className="space-y-3">
+            {/* Points forts */}
+            <div className="rounded-lg border border-slate-200 bg-white p-4">
+              <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-900">
+                <CheckCircle2 className="h-4 w-4 text-teal-600" />
+                Points forts
+              </h3>
+              <ul className="space-y-1.5">
+                {data.analyse.points_forts.map((p, i) => (
+                  <li key={i} className="flex items-start gap-2 text-sm text-slate-600">
+                    <span className="mt-1 block h-1.5 w-1.5 shrink-0 rounded-full bg-teal-400" />
+                    {p}
+                  </li>
+                ))}
+              </ul>
             </div>
 
-            {/* Overlay CTA */}
-            {process.env.NEXT_PUBLIC_DEV_UNLOCK !== "true" && (
-              <a
-                href="#rapport-cta"
-                className="absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-lg bg-gradient-to-b from-white/40 to-white/90"
-              >
-                <div className="flex items-center gap-1.5 text-sm font-medium text-teal-700 transition-colors hover:text-teal-900">
-                  <Lock className="h-4 w-4" />
-                  D&eacute;bloquez l&apos;analyse compl&egrave;te
-                </div>
-                <span className="text-xs text-slate-500">Rapport &agrave; 4,90&euro;</span>
-              </a>
-            )}
+            {/* Vigilances */}
+            <div className="rounded-lg border border-slate-200 bg-white p-4">
+              <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-900">
+                <AlertTriangle className="h-4 w-4 text-amber-500" />
+                Points de vigilance
+              </h3>
+              <ul className="space-y-1.5">
+                {data.analyse.vigilances.map((v, i) => (
+                  <li key={i} className="flex items-start gap-2 text-sm text-slate-600">
+                    <span className="mt-1 block h-1.5 w-1.5 shrink-0 rounded-full bg-amber-400" />
+                    {v}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Recommandations */}
+            <div className="rounded-lg border border-slate-200 bg-white p-4">
+              <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-900">
+                <Lightbulb className="h-4 w-4 text-blue-500" />
+                Recommandations
+              </h3>
+              <ul className="space-y-1.5">
+                {data.analyse.recommandations.map((r, i) => (
+                  <li key={i} className="flex items-start gap-2 text-sm text-slate-600">
+                    <span className="mt-1 block h-1.5 w-1.5 shrink-0 rounded-full bg-blue-400" />
+                    {r}
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
 
           {/* Footer */}

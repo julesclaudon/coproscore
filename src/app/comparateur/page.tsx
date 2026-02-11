@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { Footer } from "@/components/footer";
 import { AddressAutocomplete } from "@/components/address-autocomplete";
@@ -360,9 +361,11 @@ function ComparateurPage() {
     }
   }
 
-  const devUnlocked = process.env.NEXT_PUBLIC_DEV_UNLOCK === "true";
-  const isFree = true; // For now, always free (no auth)
-  const maxCopros = (isFree && !devUnlocked) ? 2 : 5;
+  const { data: session } = useSession();
+  const role = (session?.user as { role?: string } | undefined)?.role;
+  const isPro = role === "PRO" || role === "ADMIN";
+  const isFree = !isPro;
+  const maxCopros = isPro ? 5 : 2;
   const canAdd = copros.length < maxCopros;
 
   // Group rows
@@ -443,7 +446,7 @@ function ComparateurPage() {
             )}
 
             {/* Pro upsell for more than 2 */}
-            {isFree && !devUnlocked && copros.length >= 2 && (
+            {isFree && copros.length >= 2 && (
               <div className="flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-4 py-2.5 text-sm text-amber-800">
                 <Lock className="h-4 w-4 shrink-0" />
                 <span>
@@ -469,7 +472,7 @@ function ComparateurPage() {
             <>
               {/* Export buttons */}
               <div className="mt-6 flex gap-2">
-                {isFree && !devUnlocked ? (
+                {isFree ? (
                   <>
                     <Button variant="outline" size="sm" disabled className="gap-1.5 text-slate-400">
                       <Lock className="h-3.5 w-3.5" />
@@ -522,7 +525,7 @@ function ComparateurPage() {
                   <tbody>
                     {groups.map(([groupName, rows], gi) => {
                       const isScoreGroup = groupName === "Scores";
-                      const isBlurred = isFree && !devUnlocked && !isScoreGroup && groupName !== "Identit\u00e9";
+                      const isBlurred = isFree && !isScoreGroup && groupName !== "Identit\u00e9";
 
                       return (
                         <GroupRows

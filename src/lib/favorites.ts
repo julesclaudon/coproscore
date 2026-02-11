@@ -12,11 +12,6 @@ const STORAGE_KEY = "coproscore_favorites";
 const MAX_FREE = 5;
 const MAX_PRO = 50;
 
-function getMax(): number {
-  if (typeof window !== "undefined" && process.env.NEXT_PUBLIC_DEV_UNLOCK === "true") return MAX_PRO;
-  return MAX_FREE;
-}
-
 export function getFavorites(): FavoriteEntry[] {
   if (typeof window === "undefined") return [];
   try {
@@ -29,7 +24,8 @@ export function getFavorites(): FavoriteEntry[] {
 }
 
 export function addFavorite(
-  entry: Omit<FavoriteEntry, "addedAt">
+  entry: Omit<FavoriteEntry, "addedAt">,
+  isPro = false
 ): { ok: boolean; limitReached?: boolean } {
   if (typeof window === "undefined") return { ok: false };
   try {
@@ -37,7 +33,8 @@ export function addFavorite(
     if (favorites.some((f) => f.slug === entry.slug)) {
       return { ok: true }; // already exists
     }
-    if (favorites.length >= getMax()) {
+    const max = isPro ? MAX_PRO : MAX_FREE;
+    if (favorites.length >= max) {
       return { ok: false, limitReached: true };
     }
     favorites.unshift({ ...entry, addedAt: new Date().toISOString() });

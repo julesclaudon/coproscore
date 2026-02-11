@@ -1,6 +1,7 @@
 import { Lock, CheckCircle2, ShieldAlert, AlertTriangle } from "lucide-react";
 import Link from "next/link";
 import type { EstimationTravaux } from "@/lib/budget-travaux";
+import type { AccessLevel } from "@/lib/access";
 
 function fmtEur(n: number): string {
   return Math.round(n).toLocaleString("fr-FR") + "\u00a0\u20ac";
@@ -70,9 +71,11 @@ function PosteCard({
 export function EstimationTravauxSection({
   estimation,
   nbLots,
+  accessLevel,
 }: {
   estimation: EstimationTravaux;
   nbLots: number | null;
+  accessLevel: AccessLevel;
 }) {
   const { postes, totalMin, totalMax, fiabilite } = estimation;
   const lots = nbLots ?? 1;
@@ -104,8 +107,15 @@ export function EstimationTravauxSection({
 
   // Sort postes by max descending for display
   const sorted = [...postes].sort((a, b) => b.max - a.max);
-  const firstPoste = sorted[0];
-  const restPostes = sorted.slice(1);
+
+  // Determine visible postes based on access level
+  const visiblePostes = accessLevel === "pro" ? sorted : sorted.slice(0, 1);
+  const hiddenPostes = accessLevel === "pro" ? [] : sorted.slice(1);
+
+  const ctaHref = accessLevel === "visitor" ? "/inscription" : "/tarifs";
+  const ctaText = accessLevel === "visitor"
+    ? "Créez un compte gratuit pour voir le détail"
+    : "Passez Pro pour voir le détail";
 
   return (
     <section>
@@ -117,20 +127,23 @@ export function EstimationTravauxSection({
       </p>
 
       <div className="space-y-3">
-        {/* First poste — always visible */}
-        <PosteCard
-          nom={firstPoste.nom}
-          description={firstPoste.description}
-          min={firstPoste.min}
-          max={firstPoste.max}
-          totalMax={totalMax}
-        />
+        {/* Visible postes */}
+        {visiblePostes.map((p, i) => (
+          <PosteCard
+            key={i}
+            nom={p.nom}
+            description={p.description}
+            min={p.min}
+            max={p.max}
+            totalMax={totalMax}
+          />
+        ))}
 
-        {/* Rest — blurred with paywall (unless dev unlocked) */}
-        {restPostes.length > 0 && (
-          process.env.NEXT_PUBLIC_DEV_UNLOCK === "true" ? (
-            <div className="space-y-3">
-              {restPostes.map((p, i) => (
+        {/* Hidden postes — blurred with paywall */}
+        {hiddenPostes.length > 0 && (
+          <div className="relative">
+            <div className="select-none space-y-3 blur-sm" aria-hidden="true">
+              {hiddenPostes.map((p, i) => (
                 <PosteCard
                   key={i}
                   nom={p.nom}
@@ -141,32 +154,16 @@ export function EstimationTravauxSection({
                 />
               ))}
             </div>
-          ) : (
-            <div className="relative">
-              <div className="select-none space-y-3 blur-sm">
-                {restPostes.map((p, i) => (
-                  <PosteCard
-                    key={i}
-                    nom={p.nom}
-                    description={p.description}
-                    min={p.min}
-                    max={p.max}
-                    totalMax={totalMax}
-                  />
-                ))}
+            <Link
+              href={ctaHref}
+              className="absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-lg bg-gradient-to-b from-white/40 to-white/90"
+            >
+              <div className="flex items-center gap-1.5 text-sm font-medium text-teal-700 transition-colors hover:text-teal-900">
+                <Lock className="h-4 w-4" />
+                {ctaText}
               </div>
-              <Link
-                href="/tarifs"
-                className="absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-lg bg-gradient-to-b from-white/40 to-white/90"
-              >
-                <div className="flex items-center gap-1.5 text-sm font-medium text-teal-700 transition-colors hover:text-teal-900">
-                  <Lock className="h-4 w-4" />
-                  Voir le d&eacute;tail des travaux
-                </div>
-                <span className="text-xs text-slate-500">Rapport &agrave; 4,90&euro;</span>
-              </Link>
-            </div>
-          )
+            </Link>
+          </div>
         )}
 
         {/* Total */}

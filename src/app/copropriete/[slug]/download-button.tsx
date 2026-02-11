@@ -1,19 +1,34 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { Loader2, Lock } from "lucide-react";
+import type { AccessLevel } from "@/lib/access";
 
 interface DownloadButtonProps {
   slug: string;
   className?: string;
   children: React.ReactNode;
+  accessLevel: AccessLevel;
 }
 
-export function DownloadButton({ slug, className, children }: DownloadButtonProps) {
+export function DownloadButton({ slug, className, children, accessLevel }: DownloadButtonProps) {
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   async function handleDownload() {
+    if (accessLevel === "visitor") {
+      router.push("/connexion");
+      return;
+    }
+
+    if (accessLevel === "free") {
+      router.push("/tarifs");
+      return;
+    }
+
+    // Pro: actual download
     setLoading(true);
     try {
       const res = await fetch(`/api/copropriete/${slug}/rapport`);
@@ -35,12 +50,19 @@ export function DownloadButton({ slug, className, children }: DownloadButtonProp
     }
   }
 
+  const isPro = accessLevel === "pro";
+
   return (
     <Button onClick={handleDownload} disabled={loading} className={className}>
       {loading ? (
         <>
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
           G&eacute;n&eacute;ration en cours...
+        </>
+      ) : !isPro ? (
+        <>
+          <Lock className="mr-2 h-4 w-4" />
+          {children}
         </>
       ) : (
         children

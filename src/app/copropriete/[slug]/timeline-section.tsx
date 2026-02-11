@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import type { TimelineEvent, TimelineEventType } from "@/lib/timeline";
 import { formatEventDateDisplay } from "@/lib/timeline";
+import type { AccessLevel } from "@/lib/access";
 
 // ─── Config ─────────────────────────────────────────────────────────────────
 
@@ -58,8 +59,6 @@ const TYPE_CONFIG: Record<
     icon: Users,
   },
 };
-
-const FREE_LIMIT = process.env.NEXT_PUBLIC_DEV_UNLOCK === "true" ? Infinity : 3;
 
 // ─── Fade-in hook ───────────────────────────────────────────────────────────
 
@@ -145,12 +144,23 @@ function TimelineItem({
 
 // ─── Main component ─────────────────────────────────────────────────────────
 
-export function TimelineSection({ events }: { events: TimelineEvent[] }) {
+export function TimelineSection({
+  events,
+  totalCount,
+  accessLevel,
+}: {
+  events: TimelineEvent[];
+  totalCount: number;
+  accessLevel: AccessLevel;
+}) {
   if (events.length === 0) return null;
 
-  const visibleEvents = events.slice(0, FREE_LIMIT);
-  const hiddenCount = events.length - FREE_LIMIT;
+  const hiddenCount = totalCount - events.length;
   const hasHidden = hiddenCount > 0;
+  const ctaHref = accessLevel === "visitor" ? "/inscription" : "/tarifs";
+  const ctaText = accessLevel === "visitor"
+    ? "Créez un compte pour voir l'historique complet"
+    : "Passez Pro pour voir l'historique complet";
 
   return (
     <section>
@@ -159,7 +169,7 @@ export function TimelineSection({ events }: { events: TimelineEvent[] }) {
         Chronologie de la copropri&eacute;t&eacute;
       </h2>
 
-      {events.length <= 2 && (
+      {totalCount <= 2 && (
         <p className="mb-4 text-sm text-slate-400">
           Peu de donn&eacute;es historiques disponibles pour cette copropri&eacute;t&eacute;.
         </p>
@@ -171,7 +181,7 @@ export function TimelineSection({ events }: { events: TimelineEvent[] }) {
         <div className="absolute left-[17px] top-0 h-full w-px bg-slate-200 lg:left-1/2 lg:-translate-x-px" />
 
         <div className="space-y-6 pb-4">
-          {visibleEvents.map((event, i) => (
+          {events.map((event, i) => (
             <TimelineItem key={`${event.date}-${event.type}-${i}`} event={event} index={i} />
           ))}
         </div>
@@ -179,22 +189,19 @@ export function TimelineSection({ events }: { events: TimelineEvent[] }) {
         {/* Paywall overlay */}
         {hasHidden && (
           <div className="relative mt-2">
-            {/* Blurred preview of next 2 events */}
-            <div className="select-none blur-sm">
-              {events.slice(FREE_LIMIT, FREE_LIMIT + 2).map((event, i) => (
-                <div
-                  key={`blur-${i}`}
-                  className="mb-4 flex items-start gap-4"
-                >
+            {/* Blurred placeholder */}
+            <div className="select-none blur-sm" aria-hidden="true">
+              {[0, 1].map((i) => (
+                <div key={`blur-${i}`} className="mb-4 flex items-start gap-4">
                   <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-100">
                     <div className="h-4 w-4 rounded-full bg-slate-300" />
                   </div>
                   <div className="min-w-0 flex-1 overflow-hidden rounded-lg border border-slate-100 bg-white px-4 py-3">
-                    <p className="break-words text-sm font-medium text-slate-900">
-                      {event.titre}
+                    <p className="text-sm font-medium text-slate-900">
+                      &Eacute;v&eacute;nement masqu&eacute;
                     </p>
-                    <p className="mt-0.5 break-words text-sm text-slate-500">
-                      {event.description}
+                    <p className="mt-0.5 text-sm text-slate-500">
+                      D&eacute;tail disponible avec un acc&egrave;s sup&eacute;rieur
                     </p>
                   </div>
                 </div>
@@ -202,11 +209,11 @@ export function TimelineSection({ events }: { events: TimelineEvent[] }) {
             </div>
             <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-b from-white/40 to-white/90">
               <Link
-                href="/tarifs"
+                href={ctaHref}
                 className="flex items-center gap-1.5 rounded-full bg-white px-5 py-2.5 text-sm font-medium text-teal-700 shadow-sm transition-colors hover:text-teal-900"
               >
                 <Lock className="h-3.5 w-3.5" />
-                Voir l&apos;historique complet &mdash; Rapport &agrave; 4,90&euro;
+                {ctaText}
               </Link>
             </div>
           </div>

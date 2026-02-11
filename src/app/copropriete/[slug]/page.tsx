@@ -6,7 +6,7 @@ import { ScoreGauge } from "./score-gauge";
 import { DpeDistribution } from "./dpe-distribution";
 import { CoproMap } from "./copro-map";
 import { formatCoproName } from "@/lib/utils";
-import { isDevUnlocked } from "@/lib/dev-mode";
+import { getAccessLevel, type AccessLevel } from "@/lib/access";
 import { formatPeriod } from "@/lib/format";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -56,9 +56,10 @@ import {
   type DvfRow,
   type DvfQuarterlyRow,
 } from "@/lib/dvf-queries";
+import { PaywallOverlay } from "@/components/paywall-overlay";
 
-// ISR: revalidate every 24h
-export const revalidate = 86400;
+// Dynamic — session-based access control
+export const dynamic = "force-dynamic";
 
 export async function generateStaticParams() {
   return [];
@@ -304,8 +305,6 @@ async function fetchCommuneAvgPrix(codeCommune: string): Promise<number | null> 
   return rows[0]?.avg_prix ?? null;
 }
 
-// DVF queries imported from @/lib/dvf-queries
-
 // Timeline helpers
 
 const TIMELINE_DVF_RADIUS = 100;
@@ -331,7 +330,6 @@ async function fetchTimelineDpe(
   lon: number | null,
   lat: number | null
 ): Promise<DpeForTimeline[]> {
-  // Try by immatriculation first
   const byImmat = await prisma.$queryRawUnsafe<DpeForTimeline[]>(
     `SELECT date_dpe AS "dateDpe", classe_dpe AS "classeDpe"
      FROM dpe_logements
@@ -343,7 +341,6 @@ async function fetchTimelineDpe(
   );
   if (byImmat.length > 0) return byImmat;
 
-  // Fallback: geo match within 50m
   if (lat == null || lon == null) return [];
   const dLat = 50 * LAT_PER_METER;
   const dLon = 50 * LON_PER_METER;
@@ -357,6 +354,25 @@ async function fetchTimelineDpe(
      LIMIT 10`,
     lat, lon, dLat, dLon
   );
+}
+
+// ---------- Access-based data slicing ----------
+
+function getTimelineLimit(accessLevel: AccessLevel): number {
+  if (accessLevel === "pro") return Infinity;
+  if (accessLevel === "free") return 3;
+  return 2;
+}
+
+function getDvfLimit(accessLevel: AccessLevel): number {
+  if (accessLevel === "pro") return Infinity;
+  if (accessLevel === "free") return 3;
+  return 0; // visitor: no rows, just count
+}
+
+function getNearbyLimit(accessLevel: AccessLevel): number {
+  if (accessLevel === "pro") return Infinity;
+  return 3;
 }
 
 // ---------- Page Component ----------
@@ -381,6 +397,7 @@ export default async function CoproprietePage({
   const copro = await prisma.copropriete.findUnique({ where: { slug } });
   if (!copro) notFound();
 
+  const accessLevel = await getAccessLevel();
   const hasCoords = copro.longitude != null && copro.latitude != null;
 
   const [nearby, dvfTransactions, dvfQuarterly, communeAvgPrix, scoreQuartier, timelineDvf, timelineDpe] = await Promise.all([
@@ -425,7 +442,7 @@ export default async function CoproprietePage({
     coproDansPdp: copro.coproDansPdp,
   });
 
-  const timelineEvents = buildTimeline(
+  const allTimelineEvents = buildTimeline(
     {
       periodeConstruction: copro.periodeConstruction,
       dateImmatriculation: copro.dateImmatriculation,
@@ -438,6 +455,18 @@ export default async function CoproprietePage({
     timelineDvf,
     timelineDpe
   );
+
+  // Slice data based on access level (server-side — data not sent to client)
+  const timelineLimit = getTimelineLimit(accessLevel);
+  const visibleTimeline = allTimelineEvents.slice(0, timelineLimit);
+  const timelineTotalCount = allTimelineEvents.length;
+
+  const dvfLimit = getDvfLimit(accessLevel);
+  const visibleDvf = dvfTransactions.slice(0, dvfLimit);
+  const dvfTotalCount = dvfTransactions.length;
+
+  const nearbyLimit = getNearbyLimit(accessLevel);
+  const visibleNearby = nearby.slice(0, nearbyLimit);
 
   const sparklineData = dvfQuarterly.map((q) => ({
     label: `T${q.quarter} ${q.year}`,
@@ -502,15 +531,6 @@ export default async function CoproprietePage({
     },
   ];
 
-  // Find worst dimension (lowest %) — shown for free as a hook
-  const worstDimKey = dimensions
-    .filter((d) => d.score !== null)
-    .reduce((worst, d) => {
-      const pct = d.score! / d.max;
-      const worstPct = worst.score! / worst.max;
-      return pct < worstPct ? d : worst;
-    }, dimensions.filter((d) => d.score !== null)[0])?.key ?? dimensions[0].key;
-
   const jsonLdResidence = {
     "@context": "https://schema.org",
     "@type": "Residence",
@@ -570,6 +590,11 @@ export default async function CoproprietePage({
     ],
   };
 
+  // CTA links based on access
+  const dvfExportEnabled = accessLevel === "pro";
+  const ctaHref = accessLevel === "visitor" ? "/inscription" : "/tarifs";
+  const ctaLabel = accessLevel === "visitor" ? "Cr\u00e9ez un compte gratuit" : "Passez Pro";
+
   return (
     <div className="flex min-h-screen flex-col overflow-x-hidden bg-slate-50/50">
       <script
@@ -622,7 +647,7 @@ export default async function CoproprietePage({
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
                 <h1 className="break-words text-2xl font-bold text-slate-900 sm:text-3xl">{displayName}</h1>
                 <div className="flex gap-2">
-                  <AlertModal slug={slug} coproName={displayName} />
+                  <AlertModal slug={slug} coproName={displayName} accessLevel={accessLevel} />
                   <FavoriteButton
                     slug={slug}
                     nom={displayName}
@@ -630,6 +655,7 @@ export default async function CoproprietePage({
                     commune={copro.communeAdresse || ""}
                     score={copro.scoreGlobal}
                     lots={copro.nbTotalLots}
+                    accessLevel={accessLevel}
                   />
                   <ShareButton
                     title={`${displayName} \u2014 Score ${copro.scoreGlobal ?? "?"}/100 | CoproScore`}
@@ -704,8 +730,9 @@ export default async function CoproprietePage({
                     const color = d.score != null
                       ? pct >= 0.7 ? "text-teal-700" : pct >= 0.4 ? "text-amber-600" : "text-red-600"
                       : "text-slate-400";
-                    const isWorst = d.key === worstDimKey;
-                    const isLocked = !isWorst && !isDevUnlocked();
+                    // Visitor: hide scores and explanations
+                    const showScore = accessLevel !== "visitor";
+                    const showDetail = accessLevel !== "visitor";
 
                     return (
                       <div
@@ -729,35 +756,36 @@ export default async function CoproprietePage({
                           </div>
                           <div className="flex items-center gap-3">
                             <div className="text-right">
-                              <p className={`text-lg font-bold leading-tight ${color}`}>
-                                {d.score ?? "\u2014"}
+                              <p className={`text-lg font-bold leading-tight ${showScore ? color : "text-slate-300"}`}>
+                                {showScore ? (d.score ?? "\u2014") : "\u2014"}
                               </p>
                               <p className="text-[10px] text-slate-400">/{d.max}</p>
                             </div>
-                            <MiniGauge score={d.score} max={d.max} />
+                            {showScore ? (
+                              <MiniGauge score={d.score} max={d.max} />
+                            ) : (
+                              <MiniGauge score={null} max={d.max} />
+                            )}
                           </div>
                         </div>
                         {/* Detailed explanation */}
-                        {!isNull && (
-                          <div className="relative mt-3">
-                            {isLocked ? (
-                              <div className="relative">
-                                <p className="select-none break-words text-sm leading-relaxed text-slate-600 blur-sm">
-                                  {d.detailedExplanation}
-                                </p>
-                                <a
-                                  href="#rapport-cta"
-                                  className="absolute inset-0 flex items-center justify-center gap-1.5 rounded-lg bg-white/60 text-sm font-medium text-teal-700 transition-colors hover:text-teal-900"
-                                >
-                                  <Lock className="h-3.5 w-3.5" />
-                                  D&eacute;bloquer l&apos;analyse &mdash; 4,90&euro;
-                                </a>
-                              </div>
-                            ) : (
-                              <p className="break-words text-sm leading-relaxed text-slate-600">
-                                {d.detailedExplanation}
-                              </p>
-                            )}
+                        {!isNull && showDetail && (
+                          <div className="mt-3">
+                            <p className="break-words text-sm leading-relaxed text-slate-600">
+                              {d.detailedExplanation}
+                            </p>
+                          </div>
+                        )}
+                        {/* Visitor CTA */}
+                        {!isNull && !showDetail && (
+                          <div className="mt-3">
+                            <Link
+                              href="/inscription"
+                              className="flex items-center gap-1.5 text-sm font-medium text-teal-700 transition-colors hover:text-teal-900"
+                            >
+                              <Lock className="h-3.5 w-3.5" />
+                              Cr&eacute;ez un compte gratuit pour voir le d&eacute;tail
+                            </Link>
                           </div>
                         )}
                       </div>
@@ -767,14 +795,16 @@ export default async function CoproprietePage({
               </section>
 
               {/* --- 1b. Analyse IA --- */}
-              {copro.scoreGlobal != null && <AnalyseIA slug={slug} />}
+              {copro.scoreGlobal != null && accessLevel !== "visitor" && (
+                <AnalyseIA slug={slug} accessLevel={accessLevel} />
+              )}
 
               {/* --- 1c. Estimation travaux --- */}
-              <EstimationTravauxSection estimation={estimation} nbLots={copro.nbLotsHabitation} />
+              <EstimationTravauxSection estimation={estimation} nbLots={copro.nbLotsHabitation} accessLevel={accessLevel} />
 
               {/* --- 1d. Chronologie --- */}
-              {timelineEvents.length > 0 && (
-                <TimelineSection events={timelineEvents} />
+              {timelineTotalCount > 0 && (
+                <TimelineSection events={visibleTimeline} totalCount={timelineTotalCount} accessLevel={accessLevel} />
               )}
 
               {/* --- 2. DPE --- */}
@@ -886,7 +916,6 @@ export default async function CoproprietePage({
                           </div>
                         </div>
 
-                        {/* Commune comparison */}
                         {prixDiffPct !== null && (
                           <div className="mt-5 overflow-hidden rounded-lg bg-slate-50 px-4 py-3">
                             <p className="break-words text-sm text-slate-600">
@@ -926,29 +955,34 @@ export default async function CoproprietePage({
               </section>
 
               {/* --- 3b. Historique des transactions --- */}
-              {dvfTransactions.length > 0 && (
+              {dvfTotalCount > 0 && (
                 <section>
                   <div className="mb-4 flex flex-wrap items-center gap-3">
                     <h2 className="flex items-center gap-2 text-lg font-semibold text-slate-900">
                       <Building2 className="h-5 w-5 shrink-0 text-slate-500" />
                       Historique des transactions
+                      {accessLevel === "visitor" && (
+                        <span className="ml-2 text-sm font-normal text-slate-400">
+                          ({dvfTotalCount} transactions)
+                        </span>
+                      )}
                     </h2>
                     <div className="ml-auto flex gap-1.5">
                       <a
-                        href={`/api/copropriete/${slug}/export-dvf?format=csv`}
-                        className={`inline-flex items-center gap-1 rounded-md border border-slate-200 px-2.5 py-1.5 text-xs font-medium ${isDevUnlocked() ? "text-slate-700 hover:bg-slate-50" : "text-slate-400 opacity-60 pointer-events-none"}`}
-                        title={isDevUnlocked() ? "Exporter CSV" : "R\u00e9serv\u00e9 aux abonn\u00e9s Pro"}
+                        href={dvfExportEnabled ? `/api/copropriete/${slug}/export-dvf?format=csv` : undefined}
+                        className={`inline-flex items-center gap-1 rounded-md border border-slate-200 px-2.5 py-1.5 text-xs font-medium ${dvfExportEnabled ? "text-slate-700 hover:bg-slate-50" : "text-slate-400 opacity-60 pointer-events-none"}`}
+                        title={dvfExportEnabled ? "Exporter CSV" : "R\u00e9serv\u00e9 aux abonn\u00e9s Pro"}
                       >
-                        {!isDevUnlocked() && <Lock className="h-3 w-3" />}
+                        {!dvfExportEnabled && <Lock className="h-3 w-3" />}
                         <Download className="h-3 w-3" />
                         CSV
                       </a>
                       <a
-                        href={`/api/copropriete/${slug}/export-dvf?format=xlsx`}
-                        className={`inline-flex items-center gap-1 rounded-md border border-slate-200 px-2.5 py-1.5 text-xs font-medium ${isDevUnlocked() ? "text-slate-700 hover:bg-slate-50" : "text-slate-400 opacity-60 pointer-events-none"}`}
-                        title={isDevUnlocked() ? "Exporter Excel" : "R\u00e9serv\u00e9 aux abonn\u00e9s Pro"}
+                        href={dvfExportEnabled ? `/api/copropriete/${slug}/export-dvf?format=xlsx` : undefined}
+                        className={`inline-flex items-center gap-1 rounded-md border border-slate-200 px-2.5 py-1.5 text-xs font-medium ${dvfExportEnabled ? "text-slate-700 hover:bg-slate-50" : "text-slate-400 opacity-60 pointer-events-none"}`}
+                        title={dvfExportEnabled ? "Exporter Excel" : "R\u00e9serv\u00e9 aux abonn\u00e9s Pro"}
                       >
-                        {!isDevUnlocked() && <Lock className="h-3 w-3" />}
+                        {!dvfExportEnabled && <Lock className="h-3 w-3" />}
                         <Download className="h-3 w-3" />
                         Excel
                       </a>
@@ -956,8 +990,8 @@ export default async function CoproprietePage({
                   </div>
                   <Card className="border-slate-200 bg-white">
                     <CardContent className="pt-6">
-                      {/* Sparkline */}
-                      {sparklineData.length >= 2 && (
+                      {/* Sparkline — only if user can see it */}
+                      {sparklineData.length >= 2 && accessLevel !== "visitor" && (
                         <div className="mb-6">
                           <p className="mb-2 text-xs font-medium text-slate-500">
                             Prix moyen au m&sup2; par trimestre
@@ -966,50 +1000,37 @@ export default async function CoproprietePage({
                         </div>
                       )}
 
-                      {/* Desktop table */}
-                      <div className="hidden sm:block">
-                        <div className="overflow-x-auto">
-                          <table className="w-full text-sm">
-                            <thead>
-                              <tr className="border-b border-slate-100 text-left text-xs text-slate-400">
-                                <th className="pb-2 font-medium">Date</th>
-                                <th className="pb-2 font-medium">Adresse</th>
-                                <th className="pb-2 text-right font-medium">Surface</th>
-                                <th className="pb-2 text-right font-medium">Prix</th>
-                                <th className="pb-2 text-right font-medium">Prix/m&sup2;</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {dvfTransactions.slice(0, isDevUnlocked() ? dvfTransactions.length : 3).map((t) => (
-                                <tr key={t.id} className="border-b border-slate-50">
-                                  <td className="py-2.5 text-slate-600">
-                                    {new Date(t.date_mutation).toLocaleDateString("fr-FR")}
-                                  </td>
-                                  <td className="max-w-[200px] truncate py-2.5 text-slate-900">
-                                    {t.adresse ?? "\u2014"}
-                                  </td>
-                                  <td className="py-2.5 text-right text-slate-600">
-                                    {Math.round(Number(t.surface))}&nbsp;m&sup2;
-                                  </td>
-                                  <td className="py-2.5 text-right font-medium text-slate-900">
-                                    {formatPrix(Math.round(Number(t.prix)))}
-                                  </td>
-                                  <td className="py-2.5 text-right text-teal-700">
-                                    {formatPrix(Number(t.prix_m2))}/m&sup2;
-                                  </td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
+                      {/* Visitor: just show count + CTA */}
+                      {accessLevel === "visitor" ? (
+                        <div className="py-4 text-center">
+                          <p className="text-sm text-slate-600">
+                            {dvfTotalCount} transaction{dvfTotalCount > 1 ? "s" : ""} trouv&eacute;e{dvfTotalCount > 1 ? "s" : ""} &agrave; proximit&eacute;
+                          </p>
+                          <Link
+                            href="/inscription"
+                            className="mt-3 inline-flex items-center gap-1.5 text-sm font-medium text-teal-700 transition-colors hover:text-teal-900"
+                          >
+                            <Lock className="h-3.5 w-3.5" />
+                            Cr&eacute;ez un compte pour voir le d&eacute;tail
+                          </Link>
                         </div>
-
-                        {/* Blurred remaining rows */}
-                        {dvfTransactions.length > 3 && !isDevUnlocked() && (
-                          <div className="relative mt-1">
-                            <div className="select-none blur-sm">
+                      ) : (
+                        <>
+                          {/* Desktop table */}
+                          <div className="hidden sm:block">
+                            <div className="overflow-x-auto">
                               <table className="w-full text-sm">
+                                <thead>
+                                  <tr className="border-b border-slate-100 text-left text-xs text-slate-400">
+                                    <th className="pb-2 font-medium">Date</th>
+                                    <th className="pb-2 font-medium">Adresse</th>
+                                    <th className="pb-2 text-right font-medium">Surface</th>
+                                    <th className="pb-2 text-right font-medium">Prix</th>
+                                    <th className="pb-2 text-right font-medium">Prix/m&sup2;</th>
+                                  </tr>
+                                </thead>
                                 <tbody>
-                                  {dvfTransactions.slice(3, 8).map((t) => (
+                                  {visibleDvf.map((t) => (
                                     <tr key={t.id} className="border-b border-slate-50">
                                       <td className="py-2.5 text-slate-600">
                                         {new Date(t.date_mutation).toLocaleDateString("fr-FR")}
@@ -1031,43 +1052,40 @@ export default async function CoproprietePage({
                                 </tbody>
                               </table>
                             </div>
-                            <a
-                              href="#rapport-cta"
-                              className="absolute inset-0 flex items-center justify-center gap-1.5 rounded-lg bg-gradient-to-b from-white/40 to-white/90 text-sm font-medium text-teal-700 transition-colors hover:text-teal-900"
-                            >
-                              <Lock className="h-3.5 w-3.5" />
-                              D&eacute;bloquer les {dvfTransactions.length - 3} autres transactions &mdash; 4,90&euro;
-                            </a>
+
+                            {/* Blurred overlay for free users */}
+                            {dvfTotalCount > visibleDvf.length && accessLevel === "free" && (
+                              <div className="relative mt-1">
+                                <div className="select-none blur-sm" aria-hidden="true">
+                                  <table className="w-full text-sm">
+                                    <tbody>
+                                      {[0, 1, 2].map((i) => (
+                                        <tr key={i} className="border-b border-slate-50">
+                                          <td className="py-2.5 text-slate-600">01/01/2024</td>
+                                          <td className="py-2.5 text-slate-900">Adresse masqu&eacute;e</td>
+                                          <td className="py-2.5 text-right text-slate-600">60&nbsp;m&sup2;</td>
+                                          <td className="py-2.5 text-right font-medium text-slate-900">250&nbsp;000&nbsp;&euro;</td>
+                                          <td className="py-2.5 text-right text-teal-700">4&nbsp;166&nbsp;&euro;/m&sup2;</td>
+                                        </tr>
+                                      ))}
+                                    </tbody>
+                                  </table>
+                                </div>
+                                <Link
+                                  href="/tarifs"
+                                  className="absolute inset-0 flex items-center justify-center gap-1.5 rounded-lg bg-gradient-to-b from-white/40 to-white/90 text-sm font-medium text-teal-700 transition-colors hover:text-teal-900"
+                                >
+                                  <Lock className="h-3.5 w-3.5" />
+                                  Voir les {dvfTotalCount - visibleDvf.length} autres transactions &mdash; Pro
+                                </Link>
+                              </div>
+                            )}
                           </div>
-                        )}
-                      </div>
 
-                      {/* Mobile cards */}
-                      <div className="sm:hidden">
-                        <div className="flex flex-col gap-2">
-                          {dvfTransactions.slice(0, isDevUnlocked() ? dvfTransactions.length : 3).map((t) => (
-                            <div key={t.id} className="rounded-lg border border-slate-100 p-3">
-                              <div className="flex items-center justify-between">
-                                <span className="text-xs text-slate-400">
-                                  {new Date(t.date_mutation).toLocaleDateString("fr-FR")}
-                                </span>
-                                <span className="text-sm font-bold text-teal-700">
-                                  {formatPrix(Number(t.prix_m2))}/m&sup2;
-                                </span>
-                              </div>
-                              <p className="mt-1 truncate text-sm text-slate-900">{t.adresse ?? "\u2014"}</p>
-                              <div className="mt-1 flex gap-3 text-xs text-slate-500">
-                                <span>{Math.round(Number(t.surface))}&nbsp;m&sup2;</span>
-                                <span>{formatPrix(Math.round(Number(t.prix)))}</span>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-
-                        {dvfTransactions.length > 3 && !isDevUnlocked() && (
-                          <div className="relative mt-2">
-                            <div className="flex select-none flex-col gap-2 blur-sm">
-                              {dvfTransactions.slice(3, 6).map((t) => (
+                          {/* Mobile cards */}
+                          <div className="sm:hidden">
+                            <div className="flex flex-col gap-2">
+                              {visibleDvf.map((t) => (
                                 <div key={t.id} className="rounded-lg border border-slate-100 p-3">
                                   <div className="flex items-center justify-between">
                                     <span className="text-xs text-slate-400">
@@ -1085,16 +1103,21 @@ export default async function CoproprietePage({
                                 </div>
                               ))}
                             </div>
-                            <a
-                              href="#rapport-cta"
-                              className="absolute inset-0 flex items-center justify-center gap-1.5 rounded-lg bg-gradient-to-b from-white/40 to-white/90 text-sm font-medium text-teal-700 transition-colors hover:text-teal-900"
-                            >
-                              <Lock className="h-3.5 w-3.5" />
-                              D&eacute;bloquer les {dvfTransactions.length - 3} autres &mdash; 4,90&euro;
-                            </a>
+
+                            {dvfTotalCount > visibleDvf.length && accessLevel === "free" && (
+                              <div className="mt-3 text-center">
+                                <Link
+                                  href="/tarifs"
+                                  className="inline-flex items-center gap-1.5 text-sm font-medium text-teal-700 transition-colors hover:text-teal-900"
+                                >
+                                  <Lock className="h-3.5 w-3.5" />
+                                  Voir les {dvfTotalCount - visibleDvf.length} autres &mdash; Pro
+                                </Link>
+                              </div>
+                            )}
                           </div>
-                        )}
-                      </div>
+                        </>
+                      )}
 
                       <p className="mt-3 text-[11px] text-slate-400">
                         Source : DVF (demandes de valeurs fonci&egrave;res), rayon 500m, 3 derni&egrave;res ann&eacute;es
@@ -1111,7 +1134,6 @@ export default async function CoproprietePage({
                   Informations cl&eacute;s
                 </h2>
                 <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-                  {/* Identification */}
                   <Card className="border-slate-200 bg-white">
                     <CardHeader className="pb-3">
                       <CardTitle className="flex items-center gap-2 text-sm font-semibold text-slate-700">
@@ -1139,8 +1161,6 @@ export default async function CoproprietePage({
                       />
                     </CardContent>
                   </Card>
-
-                  {/* Structure */}
                   <Card className="border-slate-200 bg-white">
                     <CardHeader className="pb-3">
                       <CardTitle className="flex items-center gap-2 text-sm font-semibold text-slate-700">
@@ -1158,8 +1178,6 @@ export default async function CoproprietePage({
                       />
                     </CardContent>
                   </Card>
-
-                  {/* Gestion */}
                   <Card className="border-slate-200 bg-white">
                     <CardHeader className="pb-3">
                       <CardTitle className="flex items-center gap-2 text-sm font-semibold text-slate-700">
@@ -1224,27 +1242,22 @@ export default async function CoproprietePage({
                     <p className="text-xs text-slate-400">Dans un rayon de 500m</p>
                   </CardHeader>
                   <CardContent className="flex flex-col gap-2 pt-0">
-                    {/* First visible */}
-                    {nearby.slice(0, isDevUnlocked() ? nearby.length : 3).map((n) => (
+                    {visibleNearby.map((n) => (
                       <NearbyItem key={n.id} n={n} />
                     ))}
 
-                    {/* Items 4-8: blurred */}
-                    {nearby.length > 3 && !isDevUnlocked() && (
-                      <div className="relative">
-                        <div className="flex select-none flex-col gap-2 blur-sm">
-                          {nearby.slice(3, 8).map((n) => (
+                    {nearby.length > visibleNearby.length && (
+                      <PaywallOverlay
+                        level={accessLevel}
+                        ctaFreeText={`Voir ${nearby.length - visibleNearby.length} autres — Inscription gratuite`}
+                        ctaProText={`Voir ${nearby.length - visibleNearby.length} autres — Pro`}
+                      >
+                        <div className="flex flex-col gap-2">
+                          {nearby.slice(visibleNearby.length, visibleNearby.length + 5).map((n) => (
                             <NearbyItem key={n.id} n={n} />
                           ))}
                         </div>
-                        <a
-                          href="#rapport-cta"
-                          className="absolute inset-0 flex items-center justify-center gap-1.5 rounded-lg bg-gradient-to-b from-white/40 to-white/90 text-sm font-medium text-teal-700 transition-colors hover:text-teal-900"
-                        >
-                          <Lock className="h-3.5 w-3.5" />
-                          Voir {nearby.length - 3} autres &mdash; 4,90&euro;
-                        </a>
-                      </div>
+                      </PaywallOverlay>
                     )}
 
                     {villeSlug && (
@@ -1261,7 +1274,7 @@ export default async function CoproprietePage({
 
               {/* Score quartier */}
               {scoreQuartier && scoreQuartier.nbCopros >= 3 && (
-                <ScoreQuartierSection quartier={scoreQuartier} />
+                <ScoreQuartierSection quartier={scoreQuartier} accessLevel={accessLevel} />
               )}
 
               {/* CTA */}
@@ -1271,7 +1284,7 @@ export default async function CoproprietePage({
                   <p className="mb-4 text-sm text-slate-500">
                     Analyse d&eacute;taill&eacute;e, historique et comparatif du quartier.
                   </p>
-                  <DownloadButton slug={slug} className="w-full bg-teal-500 py-5 text-base font-semibold text-white hover:bg-teal-800">
+                  <DownloadButton slug={slug} accessLevel={accessLevel} className="w-full bg-teal-500 py-5 text-base font-semibold text-white hover:bg-teal-800">
                     T&eacute;l&eacute;charger le rapport &mdash; 4,90&euro;
                   </DownloadButton>
                   <p className="mt-2 text-[11px] text-slate-400">PDF disponible imm&eacute;diatement</p>
@@ -1286,7 +1299,7 @@ export default async function CoproprietePage({
 
       {/* Sticky CTA bar — mobile only */}
       <div className="fixed inset-x-0 bottom-0 z-30 border-t bg-white/95 px-4 py-3 pb-[max(12px,var(--sab))] backdrop-blur-sm lg:hidden">
-        <DownloadButton slug={slug} className="w-full bg-teal-700 py-5 text-base font-semibold text-white hover:bg-teal-800">
+        <DownloadButton slug={slug} accessLevel={accessLevel} className="w-full bg-teal-700 py-5 text-base font-semibold text-white hover:bg-teal-800">
           T&eacute;l&eacute;charger le rapport &mdash; 4,90&euro;
         </DownloadButton>
       </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { useSession } from "next-auth/react";
 import dynamic from "next/dynamic";
 import { useCarteFilters } from "@/hooks/use-carte-filters";
 import { CarteSidebar } from "@/components/carte-sidebar";
@@ -23,9 +24,11 @@ const CarteMap = dynamic(() => import("@/components/carte-map"), {
   ),
 });
 
-const isPro = process.env.NEXT_PUBLIC_DEV_UNLOCK === "true";
-
 export default function CartePage() {
+  const { data: session } = useSession();
+  const role = (session?.user as { role?: string } | undefined)?.role;
+  const isPro = role === "PRO" || role === "ADMIN";
+
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [flyTo, setFlyTo] = useState<{ lat: number; lng: number; zoom: number } | null>(null);
 

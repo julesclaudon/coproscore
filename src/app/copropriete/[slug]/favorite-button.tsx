@@ -4,12 +4,14 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Star } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   isFavorite,
   addFavorite,
   removeFavorite,
   type FavoriteEntry,
 } from "@/lib/favorites";
+import type { AccessLevel } from "@/lib/access";
 
 interface FavoriteButtonProps {
   slug: string;
@@ -18,6 +20,7 @@ interface FavoriteButtonProps {
   commune: string;
   score: number | null;
   lots: number | null;
+  accessLevel: AccessLevel;
 }
 
 export function FavoriteButton({
@@ -27,10 +30,12 @@ export function FavoriteButton({
   commune,
   score,
   lots,
+  accessLevel,
 }: FavoriteButtonProps) {
   const [saved, setSaved] = useState(false);
   const [animate, setAnimate] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     setSaved(isFavorite(slug));
@@ -44,6 +49,11 @@ export function FavoriteButton({
   }, [toast]);
 
   function handleClick() {
+    if (accessLevel === "visitor") {
+      router.push("/connexion");
+      return;
+    }
+
     if (saved) {
       removeFavorite(slug);
       setSaved(false);
@@ -56,7 +66,7 @@ export function FavoriteButton({
         score,
         lots,
       };
-      const result = addFavorite(entry);
+      const result = addFavorite(entry, accessLevel === "pro");
       if (result.limitReached) {
         setToast("limit");
         return;

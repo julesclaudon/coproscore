@@ -2,6 +2,7 @@
 
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
@@ -105,9 +106,11 @@ function AlertesContent() {
     }
   }
 
-  const devUnlocked = process.env.NEXT_PUBLIC_DEV_UNLOCK === "true";
-  const isFree = !devUnlocked;
-  const visibleCount = isFree ? 3 : alerts.length;
+  const { data: session } = useSession();
+  const role = (session?.user as { role?: string } | undefined)?.role;
+  const isPro = role === "PRO" || role === "ADMIN";
+  const isFree = !isPro;
+  const visibleCount = isPro ? alerts.length : 3;
   const visible = alerts.slice(0, visibleCount);
   const blurred = isFree ? alerts.slice(visibleCount, visibleCount + 3) : [];
 

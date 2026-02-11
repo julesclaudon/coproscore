@@ -1,6 +1,7 @@
 import { Lock, MapPin } from "lucide-react";
 import Link from "next/link";
 import type { ScoreQuartier } from "@/lib/score-quartier";
+import type { AccessLevel } from "@/lib/access";
 
 function scoreColor(score: number): string {
   if (score >= 70) return "text-teal-600";
@@ -27,8 +28,19 @@ function interpretation(q: ScoreQuartier): string {
   return "Quartier avec de nombreuses copropri\u00e9t\u00e9s en difficult\u00e9. Vigilance accrue recommand\u00e9e.";
 }
 
-export function ScoreQuartierSection({ quartier }: { quartier: ScoreQuartier }) {
+export function ScoreQuartierSection({
+  quartier,
+  accessLevel,
+}: {
+  quartier: ScoreQuartier;
+  accessLevel: AccessLevel;
+}) {
   const score = Math.round(quartier.scoreMoyen);
+  const isLocked = accessLevel !== "pro";
+  const ctaHref = accessLevel === "visitor" ? "/inscription" : "/tarifs";
+  const ctaText = accessLevel === "visitor"
+    ? "Cr\u00e9ez un compte pour voir l'analyse"
+    : "Passez Pro pour voir l'analyse";
 
   return (
     <section>
@@ -60,7 +72,7 @@ export function ScoreQuartierSection({ quartier }: { quartier: ScoreQuartier }) 
               {quartier.nbCopros > 1 ? "s" : ""} dans un rayon de {quartier.rayon}m
             </p>
 
-            {/* Repartition bar — visible part */}
+            {/* Repartition bar */}
             <div className="mt-3 flex h-2.5 overflow-hidden rounded-full">
               {quartier.pctBon > 0 && (
                 <div
@@ -103,21 +115,10 @@ export function ScoreQuartierSection({ quartier }: { quartier: ScoreQuartier }) 
           </div>
         </div>
 
-        {/* Interpretation — blurred with paywall (unless dev unlocked) */}
-        {process.env.NEXT_PUBLIC_DEV_UNLOCK === "true" ? (
-          <div className="mt-4">
-            <div className="rounded-lg border border-slate-100 bg-slate-50 p-3">
-              <p className="text-sm leading-relaxed text-slate-600">
-                {interpretation(quartier)}
-              </p>
-              <p className="mt-2 text-xs text-slate-400">
-                Score m&eacute;dian : {quartier.scoreMedian}/100
-              </p>
-            </div>
-          </div>
-        ) : (
+        {/* Interpretation */}
+        {isLocked ? (
           <div className="relative mt-4">
-            <div className="select-none blur-sm">
+            <div className="select-none blur-sm" aria-hidden="true">
               <div className="rounded-lg border border-slate-100 bg-slate-50 p-3">
                 <p className="text-sm leading-relaxed text-slate-600">
                   {interpretation(quartier)}
@@ -128,12 +129,23 @@ export function ScoreQuartierSection({ quartier }: { quartier: ScoreQuartier }) 
               </div>
             </div>
             <Link
-              href="/tarifs"
+              href={ctaHref}
               className="absolute inset-0 flex items-center justify-center gap-1.5 rounded-lg bg-gradient-to-b from-white/40 to-white/90 text-sm font-medium text-teal-700 transition-colors hover:text-teal-900"
             >
               <Lock className="h-3.5 w-3.5" />
-              Voir l&apos;analyse du quartier &mdash; 4,90&euro;
+              {ctaText}
             </Link>
+          </div>
+        ) : (
+          <div className="mt-4">
+            <div className="rounded-lg border border-slate-100 bg-slate-50 p-3">
+              <p className="text-sm leading-relaxed text-slate-600">
+                {interpretation(quartier)}
+              </p>
+              <p className="mt-2 text-xs text-slate-400">
+                Score m&eacute;dian : {quartier.scoreMedian}/100
+              </p>
+            </div>
           </div>
         )}
 

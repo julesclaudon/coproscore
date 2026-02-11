@@ -2,12 +2,21 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { sendConfirmationEmail } from "@/lib/email";
 import { formatCoproName } from "@/lib/utils";
+import { checkAccess } from "@/lib/api-auth";
 import crypto from "crypto";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const MAX_FREE_ALERTS = 3;
+const MAX_FREE_ALERTS = 2;
+const MAX_PRO_ALERTS = 999;
 
 export async function POST(request: NextRequest) {
+  // Require at least free (logged in) access
+  const access = await checkAccess("free");
+  if (!access) {
+    return NextResponse.json({ error: "Connectez-vous pour créer une alerte" }, { status: 401 });
+  }
+
+  const maxAlerts = access === "pro" ? MAX_PRO_ALERTS : MAX_FREE_ALERTS;
   let body: { email?: string; slug?: string };
   try {
     body = await request.json();
@@ -39,11 +48,11 @@ export async function POST(request: NextRequest) {
     where: { email: email.toLowerCase() },
   });
 
-  if (alertCount >= MAX_FREE_ALERTS) {
+  if (alertCount >= maxAlerts) {
     return NextResponse.json(
       {
         error: "Limite atteinte",
-        message: "Vous avez atteint la limite de 3 alertes gratuites. Passez Pro pour en cr\u00e9er davantage.",
+        message: `Vous avez atteint la limite de ${maxAlerts} alertes. ${access === "free" ? "Passez Pro pour en créer davantage." : ""}`,
       },
       { status: 403 }
     );

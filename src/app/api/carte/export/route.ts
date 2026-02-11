@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { generateCsv } from "@/lib/csv-export";
 import { formatCoproName } from "@/lib/utils";
 import { formatPeriod } from "@/lib/format";
-import { isDevUnlocked } from "@/lib/dev-mode";
+import { checkAccess } from "@/lib/api-auth";
 
 const MAX_EXPORT = 10_000;
 
@@ -20,9 +20,10 @@ interface ExportRow {
 }
 
 export async function GET(request: NextRequest) {
-  if (!isDevUnlocked()) {
+  const access = await checkAccess("pro");
+  if (!access) {
     return NextResponse.json(
-      { error: "Accès réservé aux utilisateurs Pro" },
+      { error: "Accès réservé aux abonnés Pro" },
       { status: 403 }
     );
   }

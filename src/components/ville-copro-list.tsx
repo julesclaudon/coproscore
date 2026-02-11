@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -131,10 +132,14 @@ export function VilleCoproList({
     setPage(1);
   }
 
+  const { data: session } = useSession();
+  const role = (session?.user as { role?: string } | undefined)?.role;
+  const isPro = role === "PRO" || role === "ADMIN";
+
   return (
     <div>
       {/* Pro CTA banner */}
-      {process.env.NEXT_PUBLIC_DEV_UNLOCK !== "true" && (
+      {!isPro && (
         <div className="mb-4 flex items-center gap-3 rounded-lg border border-teal-200 bg-teal-50/60 px-4 py-2.5">
           <Crown className="h-4 w-4 shrink-0 text-teal-600" />
           <p className="min-w-0 flex-1 text-xs text-slate-600 sm:text-sm">
@@ -163,7 +168,7 @@ export function VilleCoproList({
           )}
         </div>
       )}
-      {process.env.NEXT_PUBLIC_DEV_UNLOCK === "true" && villeSlug && (
+      {isPro && villeSlug && (
         <div className="mb-4 flex justify-end">
           <a
             href={`/api/ville/${villeSlug}/export?format=csv${cp ? `&cp=${cp}` : ""}`}
