@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Lock, CheckCircle2, AlertTriangle, Lightbulb } from "lucide-react";
+import { Lock, CheckCircle2, AlertTriangle, Lightbulb, Sparkles } from "lucide-react";
 import Link from "next/link";
 import type { AccessLevel } from "@/lib/access";
 
@@ -26,21 +26,33 @@ function formatDate(iso: string): string {
   });
 }
 
+function ShimmerBar({ className }: { className?: string }) {
+  return (
+    <div className={`relative overflow-hidden rounded bg-teal-100/60 ${className ?? ""}`}>
+      <div
+        className="absolute inset-0 bg-gradient-to-r from-transparent via-teal-200/50 to-transparent"
+        style={{ animation: "shimmer 2s infinite" }}
+      />
+    </div>
+  );
+}
+
 function Skeleton() {
   return (
-    <div className="animate-pulse space-y-4">
-      <div className="h-20 rounded-lg bg-teal-50" />
+    <div className="space-y-4">
+      <ShimmerBar className="h-24 rounded-lg" />
       <div className="space-y-3">
-        <div className="h-4 w-2/3 rounded bg-slate-100" />
-        <div className="h-4 w-5/6 rounded bg-slate-100" />
-        <div className="h-4 w-3/4 rounded bg-slate-100" />
+        <ShimmerBar className="h-4 w-2/3" />
+        <ShimmerBar className="h-4 w-5/6" />
+        <ShimmerBar className="h-4 w-3/4" />
       </div>
       <div className="space-y-3">
-        <div className="h-4 w-3/5 rounded bg-slate-100" />
-        <div className="h-4 w-4/5 rounded bg-slate-100" />
+        <ShimmerBar className="h-4 w-3/5" />
+        <ShimmerBar className="h-4 w-4/5" />
       </div>
-      <p className="text-center text-sm text-slate-400">
-        Analyse en cours de g&eacute;n&eacute;ration...
+      <p className="flex items-center justify-center gap-2 text-sm text-teal-600">
+        <Sparkles className="h-4 w-4 animate-pulse" />
+        Analyse en cours de g&eacute;n&eacute;ration&hellip;
       </p>
     </div>
   );
@@ -80,27 +92,63 @@ export function AnalyseIA({ slug, accessLevel }: { slug: string; accessLevel: Ac
     return () => { cancelled = true; };
   }, [slug, accessLevel]);
 
-  // Free users: show placeholder
+  // Free users: attractive blurred placeholder with CTA
   if (accessLevel === "free") {
     return (
-      <section>
-        <h2 className="mb-1 text-lg font-semibold text-slate-900">
+      <section className="rounded-2xl border border-teal-200 bg-gradient-to-br from-teal-50 to-slate-50 p-6">
+        {/* Badge */}
+        <div className="mb-3 flex items-center gap-2">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-teal-600 px-3 py-1 text-xs font-bold text-white">
+            <Sparkles className="h-3 w-3" />
+            Analyse IA
+          </span>
+        </div>
+        <h2 className="mb-0.5 text-xl font-bold text-slate-900">
           Analyse CoproScore
         </h2>
-        <p className="mb-4 text-xs text-slate-400">
-          G&eacute;n&eacute;r&eacute;e par intelligence artificielle &agrave; partir des donn&eacute;es publiques
+        <p className="mb-5 text-sm font-medium text-teal-600">
+          G&eacute;n&eacute;r&eacute;e par intelligence artificielle
         </p>
-        <div className="flex flex-col items-center gap-3 rounded-xl border border-slate-200 bg-white px-6 py-8 text-center">
-          <Lock className="h-6 w-6 text-slate-400" />
-          <p className="text-sm font-medium text-slate-700">
-            Disponible avec l&apos;abonnement Pro
-          </p>
-          <Link
-            href="/tarifs"
-            className="text-sm font-medium text-teal-700 transition-colors hover:text-teal-900"
-          >
-            D&eacute;couvrir les offres &rarr;
-          </Link>
+
+        {/* Blurred fake content */}
+        <div className="relative">
+          <div className="select-none space-y-3 blur-sm" aria-hidden="true">
+            <div className="rounded-lg border border-teal-100 bg-white/80 p-4">
+              <p className="text-base leading-relaxed text-slate-700">
+                Cette copropri&eacute;t&eacute; pr&eacute;sente un profil globalement positif avec une bonne gestion
+                et un entretien r&eacute;gulier. Quelques points de vigilance sont &agrave; noter concernant
+                la performance &eacute;nerg&eacute;tique du b&acirc;timent.
+              </p>
+            </div>
+            <div className="rounded-lg border border-slate-200 bg-white p-4">
+              <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-900">
+                <CheckCircle2 className="h-4 w-4 text-teal-600" />
+                Points forts
+              </h3>
+              <ul className="space-y-1.5">
+                <li className="flex items-start gap-2 text-sm text-slate-600">
+                  <span className="mt-1 block h-1.5 w-1.5 shrink-0 rounded-full bg-teal-400" />
+                  Syndic professionnel avec bonne gouvernance
+                </li>
+                <li className="flex items-start gap-2 text-sm text-slate-600">
+                  <span className="mt-1 block h-1.5 w-1.5 shrink-0 rounded-full bg-teal-400" />
+                  March&eacute; immobilier dynamique dans le secteur
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 rounded-lg bg-gradient-to-b from-white/30 via-white/70 to-white/90">
+            <p className="text-sm font-medium text-slate-700">
+              D&eacute;bloquez l&apos;analyse compl&egrave;te de cette copropri&eacute;t&eacute;
+            </p>
+            <Link
+              href="/tarifs"
+              className="group inline-flex items-center gap-2 rounded-xl bg-teal-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-teal-200 transition-all hover:bg-teal-700 hover:shadow-xl hover:shadow-teal-200"
+            >
+              <Lock className="h-4 w-4 text-teal-200 transition-transform group-hover:scale-110" />
+              Passer Pro &mdash; D&eacute;couvrir les offres
+            </Link>
+          </div>
         </div>
       </section>
     );
@@ -109,12 +157,19 @@ export function AnalyseIA({ slug, accessLevel }: { slug: string; accessLevel: Ac
   // Visitor: don't render at all (handled in parent)
   // Pro: full access
   return (
-    <section>
-      <h2 className="mb-1 text-lg font-semibold text-slate-900">
+    <section className="rounded-2xl border border-teal-200 bg-gradient-to-br from-teal-50 to-slate-50 p-6">
+      {/* Badge */}
+      <div className="mb-3 flex items-center gap-2">
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-teal-600 px-3 py-1 text-xs font-bold text-white">
+          <Sparkles className="h-3 w-3" />
+          Analyse IA
+        </span>
+      </div>
+      <h2 className="mb-0.5 text-xl font-bold text-slate-900">
         Analyse CoproScore
       </h2>
-      <p className="mb-4 text-xs text-slate-400">
-        G&eacute;n&eacute;r&eacute;e par intelligence artificielle &agrave; partir des donn&eacute;es publiques
+      <p className="mb-5 text-sm font-medium text-teal-600">
+        G&eacute;n&eacute;r&eacute;e par intelligence artificielle
       </p>
 
       {loading && <Skeleton />}
@@ -126,8 +181,8 @@ export function AnalyseIA({ slug, accessLevel }: { slug: string; accessLevel: Ac
       {data && (
         <div className="space-y-4">
           {/* Resume */}
-          <div className="rounded-lg border border-teal-100 bg-teal-50/60 p-4">
-            <p className="text-sm leading-relaxed text-slate-700">{data.analyse.resume}</p>
+          <div className="rounded-lg border border-teal-100 bg-white/80 p-4">
+            <p className="text-base leading-relaxed text-slate-700">{data.analyse.resume}</p>
           </div>
 
           <div className="space-y-3">
@@ -139,8 +194,8 @@ export function AnalyseIA({ slug, accessLevel }: { slug: string; accessLevel: Ac
               </h3>
               <ul className="space-y-1.5">
                 {data.analyse.points_forts.map((p, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm text-slate-600">
-                    <span className="mt-1 block h-1.5 w-1.5 shrink-0 rounded-full bg-teal-400" />
+                  <li key={i} className="flex items-start gap-2 text-base leading-relaxed text-slate-700">
+                    <span className="mt-2 block h-1.5 w-1.5 shrink-0 rounded-full bg-teal-400" />
                     {p}
                   </li>
                 ))}
@@ -155,8 +210,8 @@ export function AnalyseIA({ slug, accessLevel }: { slug: string; accessLevel: Ac
               </h3>
               <ul className="space-y-1.5">
                 {data.analyse.vigilances.map((v, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm text-slate-600">
-                    <span className="mt-1 block h-1.5 w-1.5 shrink-0 rounded-full bg-amber-400" />
+                  <li key={i} className="flex items-start gap-2 text-base leading-relaxed text-slate-700">
+                    <span className="mt-2 block h-1.5 w-1.5 shrink-0 rounded-full bg-amber-400" />
                     {v}
                   </li>
                 ))}
@@ -171,8 +226,8 @@ export function AnalyseIA({ slug, accessLevel }: { slug: string; accessLevel: Ac
               </h3>
               <ul className="space-y-1.5">
                 {data.analyse.recommandations.map((r, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm text-slate-600">
-                    <span className="mt-1 block h-1.5 w-1.5 shrink-0 rounded-full bg-blue-400" />
+                  <li key={i} className="flex items-start gap-2 text-base leading-relaxed text-slate-700">
+                    <span className="mt-2 block h-1.5 w-1.5 shrink-0 rounded-full bg-blue-400" />
                     {r}
                   </li>
                 ))}

@@ -59,7 +59,7 @@ export function Header({ variant = "default", rightSlot }: HeaderProps) {
         className={
           isHomepage
             ? "absolute top-0 z-10 w-full"
-            : "sticky top-0 z-30 border-t-2 border-t-teal-500 border-b bg-white/90 backdrop-blur-sm"
+            : "sticky top-0 z-30 border-b bg-white/90 backdrop-blur-sm"
         }
       >
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
