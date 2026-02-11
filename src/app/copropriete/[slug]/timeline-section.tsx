@@ -178,7 +178,7 @@ export function TimelineSection({
       {/* Timeline */}
       <div className="relative">
         {/* Vertical line */}
-        <div className="absolute left-[17px] top-0 h-full w-px bg-slate-200 lg:left-1/2 lg:-translate-x-px" />
+        <div className="absolute left-[17px] top-0 h-full w-0.5 bg-teal-200 lg:left-1/2 lg:-translate-x-px" />
 
         <div className="space-y-6 pb-4">
           {events.map((event, i) => (
@@ -210,9 +210,9 @@ export function TimelineSection({
             <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-b from-white/40 to-white/90">
               <Link
                 href={ctaHref}
-                className="flex items-center gap-1.5 rounded-full bg-white px-5 py-2.5 text-sm font-medium text-teal-700 shadow-sm transition-colors hover:text-teal-900"
+                className="flex items-center gap-1.5 rounded-lg bg-teal-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-teal-700"
               >
-                <Lock className="h-3.5 w-3.5" />
+                <Lock className="h-3.5 w-3.5 text-teal-200" />
                 {ctaText}
               </Link>
             </div>

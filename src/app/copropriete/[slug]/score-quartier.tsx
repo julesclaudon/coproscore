@@ -128,13 +128,15 @@ export function ScoreQuartierSection({
                 </p>
               </div>
             </div>
-            <Link
-              href={ctaHref}
-              className="absolute inset-0 flex items-center justify-center gap-1.5 rounded-lg bg-gradient-to-b from-white/40 to-white/90 text-sm font-medium text-teal-700 transition-colors hover:text-teal-900"
-            >
-              <Lock className="h-3.5 w-3.5" />
-              {ctaText}
-            </Link>
+            <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-gradient-to-b from-white/40 to-white/90">
+              <Link
+                href={ctaHref}
+                className="flex items-center gap-1.5 rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-teal-700"
+              >
+                <Lock className="h-3.5 w-3.5 text-teal-200" />
+                {ctaText}
+              </Link>
+            </div>
           </div>
         ) : (
           <div className="mt-4">

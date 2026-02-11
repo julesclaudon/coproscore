@@ -98,7 +98,7 @@ export default function Home() {
       <Header variant="homepage" />
 
       {/* ─── Hero ─── */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-teal-50/80 via-white to-white pt-24 pb-14 sm:pt-32 sm:pb-20">
+      <section className="relative overflow-hidden bg-gradient-to-br from-slate-50 via-teal-50/30 to-white pt-24 pb-14 sm:pt-32 sm:pb-20">
         <div className="pointer-events-none absolute inset-0">
           <div className="absolute -top-24 right-0 h-96 w-96 rounded-full bg-teal-100/40 blur-3xl" />
           <div className="absolute top-32 -left-24 h-64 w-64 rounded-full bg-teal-50/60 blur-3xl" />
@@ -112,8 +112,9 @@ export default function Home() {
             </div>
 
             <h1 className="mb-5 text-3xl font-bold tracking-tight text-slate-900 sm:text-5xl lg:text-6xl">
-              &Eacute;valuez la sant&eacute; de votre{" "}
-              <span className="text-teal-700">copropri&eacute;t&eacute;</span>
+              Analysez la{" "}
+              <span className="text-teal-600">sant&eacute;</span>{" "}
+              de votre copropri&eacute;t&eacute;
             </h1>
             <p className="mx-auto mb-8 max-w-lg text-base leading-relaxed text-slate-500 sm:mb-10 sm:text-lg">
               Un score de 0 &agrave; 100 calcul&eacute; &agrave; partir du registre national, d&apos;1 million
@@ -192,11 +193,11 @@ export default function Home() {
               },
             ].map((step) => (
               <div key={step.num} className="text-center">
-                <span className="mb-3 inline-block text-4xl font-black text-teal-100">
+                <span className="mb-3 inline-block text-4xl font-black text-teal-200">
                   {step.num}
                 </span>
-                <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-teal-50">
-                  <step.icon className="h-6 w-6 text-teal-700" />
+                <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-teal-100">
+                  <step.icon className="h-6 w-6 text-teal-600" />
                 </div>
                 <h3 className="mb-2 text-lg font-semibold text-slate-900">
                   {step.title}
@@ -305,10 +306,10 @@ export default function Home() {
             ].map((src) => (
               <div
                 key={src.title}
-                className="rounded-xl border border-slate-200 bg-white p-6 transition-shadow hover:shadow-md"
+                className="rounded-xl border border-teal-100 bg-teal-50/50 p-6 transition-shadow hover:shadow-md"
               >
-                <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-lg bg-teal-50">
-                  <src.icon className="h-5 w-5 text-teal-700" />
+                <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-lg bg-teal-100">
+                  <src.icon className="h-5 w-5 text-teal-600" />
                 </div>
                 <h3 className="mb-1 text-sm font-bold text-slate-900">{src.title}</h3>
                 <p className="mb-3 text-2xl font-bold text-teal-700">

@@ -59,7 +59,7 @@ export function Header({ variant = "default", rightSlot }: HeaderProps) {
         className={
           isHomepage
             ? "absolute top-0 z-10 w-full"
-            : "sticky top-0 z-30 border-b bg-white/90 backdrop-blur-sm"
+            : "sticky top-0 z-30 border-t-2 border-t-teal-500 border-b bg-white/90 backdrop-blur-sm"
         }
       >
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
@@ -79,7 +79,7 @@ export function Header({ variant = "default", rightSlot }: HeaderProps) {
                 href={l.href}
                 className={
                   pathname === l.href
-                    ? "text-teal-700"
+                    ? "text-teal-600 font-semibold underline underline-offset-4 decoration-2 decoration-teal-500"
                     : "transition-colors hover:text-teal-700"
                 }
               >

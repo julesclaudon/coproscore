@@ -181,10 +181,12 @@ export default function TarifsPage() {
               return (
                 <div
                   key={tier.id}
-                  className={`relative rounded-2xl border bg-white p-6 sm:p-8 ${
+                  className={`relative rounded-2xl border p-6 sm:p-8 ${
                     isRapport
-                      ? "border-teal-300 shadow-lg shadow-teal-100/50 lg:-mt-4 lg:mb-4"
-                      : "border-slate-200"
+                      ? "border-2 border-teal-500 bg-white shadow-lg shadow-teal-100/50 lg:-mt-4 lg:mb-4"
+                      : isPro
+                        ? "border-slate-200 bg-slate-900 text-white"
+                        : "border-slate-200 bg-white"
                   }`}
                 >
                   {/* Badge */}
@@ -200,16 +202,16 @@ export default function TarifsPage() {
                   <div className="mb-4 flex items-center gap-3">
                     <div
                       className={`flex h-10 w-10 items-center justify-center rounded-lg ${
-                        isRapport ? "bg-teal-50" : "bg-slate-50"
+                        isRapport ? "bg-teal-50" : isPro ? "bg-teal-600" : "bg-slate-50"
                       }`}
                     >
                       <Icon
                         className={`h-5 w-5 ${
-                          isRapport ? "text-teal-600" : "text-slate-500"
+                          isRapport ? "text-teal-600" : isPro ? "text-white" : "text-slate-500"
                         }`}
                       />
                     </div>
-                    <h2 className="text-lg font-bold text-slate-900">
+                    <h2 className={`text-lg font-bold ${isPro ? "text-white" : "text-slate-900"}`}>
                       {tier.name}
                     </h2>
                   </div>
@@ -230,7 +232,7 @@ export default function TarifsPage() {
                       </p>
                     )}
                     {isPro && (
-                      <p className="text-3xl font-bold text-slate-900 sm:text-4xl">
+                      <p className="text-3xl font-bold text-white sm:text-4xl">
                         {proPrice}&nbsp;&euro;
                         <span className="text-base font-normal text-slate-400">
                           {" "}{proPeriod}
@@ -240,7 +242,7 @@ export default function TarifsPage() {
                   </div>
 
                   {/* Audience */}
-                  <p className="mb-6 text-sm text-slate-500">{tier.audience}</p>
+                  <p className={`mb-6 text-sm ${isPro ? "text-slate-400" : "text-slate-500"}`}>{tier.audience}</p>
 
                   {/* CTA */}
                   {tier.ctaHref === "/recherche" ? (
@@ -257,7 +259,7 @@ export default function TarifsPage() {
                       className={`w-full py-5 text-sm font-semibold ${
                         isRapport
                           ? "bg-teal-600 text-white hover:bg-teal-700"
-                          : "bg-slate-900 text-white hover:bg-slate-800"
+                          : "bg-teal-500 text-white hover:bg-teal-600"
                       }`}
                     >
                       {tier.cta}
@@ -266,17 +268,17 @@ export default function TarifsPage() {
 
                   {/* Trial note */}
                   {tier.trial && (
-                    <p className="mt-2 text-center text-xs text-slate-400">
+                    <p className={`mt-2 text-center text-xs ${isPro ? "text-slate-400" : "text-slate-400"}`}>
                       {tier.trial}
                     </p>
                   )}
 
                   {/* Divider */}
-                  <div className="my-6 border-t border-slate-100" />
+                  <div className={`my-6 border-t ${isPro ? "border-slate-700" : "border-slate-100"}`} />
 
                   {/* Includes mention */}
                   {tier.includes && (
-                    <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                    <p className={`mb-3 text-xs font-semibold uppercase tracking-wider ${isPro ? "text-slate-500" : "text-slate-400"}`}>
                       {tier.includes}
                     </p>
                   )}
@@ -284,11 +286,9 @@ export default function TarifsPage() {
                   {/* Feature list */}
                   <ul className="space-y-3">
                     {tier.features.map((f) => (
-                      <li key={f} className="flex gap-2.5 text-sm text-slate-600">
+                      <li key={f} className={`flex gap-2.5 text-sm ${isPro ? "text-slate-300" : "text-slate-600"}`}>
                         <Check
-                          className={`mt-0.5 h-4 w-4 shrink-0 ${
-                            isRapport ? "text-teal-500" : "text-slate-400"
-                          }`}
+                          className="mt-0.5 h-4 w-4 shrink-0 text-teal-500"
                         />
                         <span>{f}</span>
                       </li>

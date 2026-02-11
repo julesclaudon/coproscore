@@ -118,11 +118,11 @@ export function EstimationTravauxSection({
     : "Passez Pro pour voir le détail";
 
   return (
-    <section>
+    <section className="rounded-2xl bg-amber-50/50 p-5 sm:p-6">
       <h2 className="mb-1 flex items-center gap-2 text-lg font-semibold text-slate-900">
         Estimation des travaux potentiels
       </h2>
-      <p className="mb-4 text-xs text-slate-400">
+      <p className="mb-4 text-xs text-slate-500">
         Fourchette estim&eacute;e &agrave; partir de la p&eacute;riode de construction, du DPE et des moyennes nationales (ANAH/ADEME)
       </p>
 
@@ -154,15 +154,15 @@ export function EstimationTravauxSection({
                 />
               ))}
             </div>
-            <Link
-              href={ctaHref}
-              className="absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-lg bg-gradient-to-b from-white/40 to-white/90"
-            >
-              <div className="flex items-center gap-1.5 text-sm font-medium text-teal-700 transition-colors hover:text-teal-900">
-                <Lock className="h-4 w-4" />
+            <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-gradient-to-b from-white/40 to-white/90">
+              <Link
+                href={ctaHref}
+                className="flex items-center gap-1.5 rounded-lg bg-teal-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-teal-700"
+              >
+                <Lock className="h-4 w-4 text-teal-200" />
                 {ctaText}
-              </div>
-            </Link>
+              </Link>
+            </div>
           </div>
         )}
 

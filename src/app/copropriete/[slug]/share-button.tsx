@@ -72,9 +72,9 @@ export function ShareButton({ title, text }: ShareButtonProps) {
   return (
     <div className="relative" ref={dropdownRef}>
       <Button
-        variant="ghost"
+        variant="outline"
         size="sm"
-        className="h-8 gap-1.5 px-2 text-slate-500 hover:text-teal-700"
+        className="h-8 gap-1.5 px-2 border-teal-200 text-teal-700 hover:bg-teal-50 hover:text-teal-800"
         onClick={handleShare}
         title="Partager"
       >

@@ -81,7 +81,7 @@ export function AlertModal({ slug, coproName, accessLevel }: AlertModalProps) {
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="sm" onClick={handleTriggerClick} className="gap-1.5 text-slate-500 hover:text-teal-700">
+        <Button variant="outline" size="sm" onClick={handleTriggerClick} className="gap-1.5 border-teal-200 text-teal-700 hover:bg-teal-50 hover:text-teal-800">
           <Bell className="h-4 w-4" />
           <span className="hidden sm:inline">Alerte</span>
         </Button>

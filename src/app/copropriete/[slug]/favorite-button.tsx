@@ -82,13 +82,13 @@ export function FavoriteButton({
   return (
     <div className="relative">
       <Button
-        variant="ghost"
+        variant="outline"
         size="sm"
         onClick={handleClick}
         className={`gap-1.5 transition-transform ${
           saved
-            ? "text-amber-500 hover:text-amber-600"
-            : "text-slate-500 hover:text-amber-500"
+            ? "border-amber-300 bg-amber-50 text-amber-600 hover:bg-amber-100"
+            : "border-teal-200 text-teal-700 hover:bg-teal-50"
         } ${animate ? "scale-125" : ""}`}
       >
         <Star

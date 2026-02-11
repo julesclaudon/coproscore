@@ -615,7 +615,7 @@ export default async function CoproprietePage({
       <Header />
 
       {/* Hero band */}
-      <section className="border-b bg-white">
+      <section className="border-b border-t-4 border-t-teal-500 bg-gradient-to-b from-teal-50/50 to-white">
         <div className="mx-auto max-w-6xl px-3 pb-6 pt-4 sm:px-4 sm:pb-8 sm:pt-6">
           {/* Breadcrumb */}
           <nav className="mb-6 flex items-center gap-1.5 overflow-hidden text-sm text-slate-400">
@@ -699,7 +699,13 @@ export default async function CoproprietePage({
             {copro.scoreGlobal != null && (
               <div className="flex flex-col items-center gap-1">
                 <ScoreGauge score={copro.scoreGlobal} />
-                <p className={`text-sm font-semibold ${scoreColorClass(copro.scoreGlobal)}`}>
+                <p className={`rounded-full px-3 py-0.5 text-sm font-semibold ${
+                  copro.scoreGlobal >= 70
+                    ? "bg-teal-100 text-teal-800"
+                    : copro.scoreGlobal >= 40
+                      ? "bg-amber-100 text-amber-800"
+                      : "bg-red-100 text-red-800"
+                }`}>
                   {scoreLabel(copro.scoreGlobal)}
                 </p>
                 {copro.indiceConfiance != null && (
@@ -737,7 +743,15 @@ export default async function CoproprietePage({
                     return (
                       <div
                         key={d.key}
-                        className={`overflow-hidden rounded-xl border border-slate-200 bg-white p-4 transition-shadow hover:shadow-sm${isNull ? " opacity-60" : ""}`}
+                        className={`overflow-hidden rounded-xl border border-slate-200 bg-white p-4 transition-shadow hover:shadow-sm${isNull ? " opacity-60" : ""} ${
+                          !isNull && d.score != null
+                            ? pct >= 0.7
+                              ? "border-l-4 border-l-teal-500"
+                              : pct >= 0.4
+                                ? "border-l-4 border-l-amber-400"
+                                : "border-l-4 border-l-red-400"
+                            : ""
+                        }`}
                       >
                         <div className="flex items-start gap-4">
                           <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${d.iconBg}`}>
@@ -781,9 +795,9 @@ export default async function CoproprietePage({
                           <div className="mt-3">
                             <Link
                               href="/inscription"
-                              className="flex items-center gap-1.5 text-sm font-medium text-teal-700 transition-colors hover:text-teal-900"
+                              className="inline-flex items-center gap-1.5 rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-teal-700"
                             >
-                              <Lock className="h-3.5 w-3.5" />
+                              <Lock className="h-3.5 w-3.5 text-teal-200" />
                               Cr&eacute;ez un compte gratuit pour voir le d&eacute;tail
                             </Link>
                           </div>
@@ -956,7 +970,7 @@ export default async function CoproprietePage({
 
               {/* --- 3b. Historique des transactions --- */}
               {dvfTotalCount > 0 && (
-                <section>
+                <section className="rounded-2xl bg-slate-50 p-5 sm:p-6">
                   <div className="mb-4 flex flex-wrap items-center gap-3">
                     <h2 className="flex items-center gap-2 text-lg font-semibold text-slate-900">
                       <Building2 className="h-5 w-5 shrink-0 text-slate-500" />
@@ -1008,9 +1022,9 @@ export default async function CoproprietePage({
                           </p>
                           <Link
                             href="/inscription"
-                            className="mt-3 inline-flex items-center gap-1.5 text-sm font-medium text-teal-700 transition-colors hover:text-teal-900"
+                            className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-teal-700"
                           >
-                            <Lock className="h-3.5 w-3.5" />
+                            <Lock className="h-3.5 w-3.5 text-teal-200" />
                             Cr&eacute;ez un compte pour voir le d&eacute;tail
                           </Link>
                         </div>
@@ -1071,13 +1085,15 @@ export default async function CoproprietePage({
                                     </tbody>
                                   </table>
                                 </div>
-                                <Link
-                                  href="/tarifs"
-                                  className="absolute inset-0 flex items-center justify-center gap-1.5 rounded-lg bg-gradient-to-b from-white/40 to-white/90 text-sm font-medium text-teal-700 transition-colors hover:text-teal-900"
-                                >
-                                  <Lock className="h-3.5 w-3.5" />
-                                  Voir les {dvfTotalCount - visibleDvf.length} autres transactions &mdash; Pro
-                                </Link>
+                                <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-gradient-to-b from-white/40 to-white/90">
+                                  <Link
+                                    href="/tarifs"
+                                    className="flex items-center gap-1.5 rounded-lg bg-teal-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-teal-700"
+                                  >
+                                    <Lock className="h-4 w-4 text-teal-200" />
+                                    Voir les {dvfTotalCount - visibleDvf.length} autres transactions &mdash; Pro
+                                  </Link>
+                                </div>
                               </div>
                             )}
                           </div>
@@ -1108,9 +1124,9 @@ export default async function CoproprietePage({
                               <div className="mt-3 text-center">
                                 <Link
                                   href="/tarifs"
-                                  className="inline-flex items-center gap-1.5 text-sm font-medium text-teal-700 transition-colors hover:text-teal-900"
+                                  className="inline-flex items-center gap-1.5 rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-teal-700"
                                 >
-                                  <Lock className="h-3.5 w-3.5" />
+                                  <Lock className="h-3.5 w-3.5 text-teal-200" />
                                   Voir les {dvfTotalCount - visibleDvf.length} autres &mdash; Pro
                                 </Link>
                               </div>
@@ -1298,8 +1314,8 @@ export default async function CoproprietePage({
       <Footer />
 
       {/* Sticky CTA bar — mobile only */}
-      <div className="fixed inset-x-0 bottom-0 z-30 border-t bg-white/95 px-4 py-3 pb-[max(12px,var(--sab))] backdrop-blur-sm lg:hidden">
-        <DownloadButton slug={slug} accessLevel={accessLevel} className="w-full bg-teal-700 py-5 text-base font-semibold text-white hover:bg-teal-800">
+      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-teal-200 bg-teal-600 px-4 py-3 pb-[max(12px,var(--sab))] lg:hidden">
+        <DownloadButton slug={slug} accessLevel={accessLevel} className="w-full bg-white py-5 text-base font-semibold text-teal-700 shadow-sm hover:bg-teal-50">
           T&eacute;l&eacute;charger le rapport &mdash; 4,90&euro;
         </DownloadButton>
       </div>
