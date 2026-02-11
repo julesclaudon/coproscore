@@ -54,7 +54,7 @@ async function fetchNearby(
        AND latitude IS NOT NULL AND longitude IS NOT NULL
        AND id != $5
      ORDER BY distance_m ASC
-     LIMIT 20`,
+     LIMIT 10`,
     lat,
     lon,
     dLat,
@@ -152,7 +152,7 @@ export async function GET(
     await Promise.all([
       getOrGenerateAnalyse(copro).catch(() => null),
       hasCoords
-        ? fetchDvfTransactions(copro.longitude!, copro.latitude!, 30)
+        ? fetchDvfTransactions(copro.longitude!, copro.latitude!, 10)
         : Promise.resolve([]),
       hasCoords
         ? fetchNearby(copro.id, copro.longitude!, copro.latitude!)

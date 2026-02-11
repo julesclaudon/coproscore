@@ -103,7 +103,8 @@ function sl(score: number): string {
 }
 
 function fmtPrix(n: number): string {
-  return Math.round(n).toLocaleString("fr-FR") + " \u20ac";
+  // Replace U+202F (narrow no-break space) with regular space — Helvetica lacks U+202F glyph
+  return Math.round(n).toLocaleString("fr-FR").replace(/\u202F/g, " ") + " \u20ac";
 }
 
 function fmtEvo(n: number): string {
@@ -280,17 +281,15 @@ function renderCover(doc: Doc, data: ReportInput) {
       align: "center",
     });
 
-  // Address
-  doc
-    .font("Helvetica")
-    .fontSize(11)
-    .fillColor(TEXT_SEC)
-    .text(
-      `${data.address}, ${data.codePostal} ${data.commune}`,
-      M,
-      doc.y + 8,
-      { width: CW, align: "center" }
-    );
+  // City / postal code (only — address is already in displayName)
+  const cityLine = [data.codePostal, data.commune].filter(Boolean).join(" ");
+  if (cityLine) {
+    doc
+      .font("Helvetica")
+      .fontSize(11)
+      .fillColor(TEXT_SEC)
+      .text(cityLine, M, doc.y + 8, { width: CW, align: "center" });
+  }
 
   // Confidence
   if (data.indiceConfiance != null) {
@@ -819,10 +818,10 @@ function renderDisclaimer(doc: Doc, data: ReportInput) {
     "Il ne constitue pas un diagnostic technique global (DTG) ni un avis professionnel.",
     "",
     "Sources :",
-    "\u2022 RNIC \u2014 Registre National d'Immatriculation des Copropri\u00e9t\u00e9s",
-    "\u2022 DVF \u2014 Demandes de Valeurs Fonci\u00e8res (data.gouv.fr)",
-    "\u2022 DPE ADEME \u2014 Diagnostics de Performance \u00c9nerg\u00e9tique",
-    "\u2022 BAN \u2014 Base Adresse Nationale",
+    "\u2014  RNIC \u2014 Registre National d'Immatriculation des Copropri\u00e9t\u00e9s",
+    "\u2014  DVF \u2014 Demandes de Valeurs Fonci\u00e8res (data.gouv.fr)",
+    "\u2014  DPE ADEME \u2014 Diagnostics de Performance \u00c9nerg\u00e9tique",
+    "\u2014  BAN \u2014 Base Adresse Nationale",
     "",
     `\u00a9 CoproScore ${new Date().getFullYear()} \u2014 coproscore.fr`,
     "",
@@ -848,7 +847,10 @@ export async function generatePdfReport(
   return new Promise((resolve, reject) => {
     const doc = new PDFDocument({
       size: "A4",
-      margins: { top: M, bottom: M, left: M, right: M },
+      // Bottom margin set to 0 to prevent PDFKit auto page-breaks when
+      // drawing the footer below the content area. Manual CB constant
+      // controls where content stops.
+      margins: { top: M, bottom: 0, left: M, right: M },
       info: {
         Title: `Rapport CoproScore \u2014 ${input.displayName}`,
         Author: "CoproScore",
