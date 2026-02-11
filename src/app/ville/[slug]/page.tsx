@@ -27,12 +27,9 @@ import {
 } from "lucide-react";
 import { Header } from "@/components/header";
 
-export const revalidate = 86400;
-export const dynamicParams = true;
-
-export async function generateStaticParams() {
-  return [];
-}
+// Force dynamic: searchParams (?cp=) makes ISR impossible
+// (ISR cache key doesn't include search params → wrong content)
+export const dynamic = "force-dynamic";
 
 /* ---------- Types ---------- */
 
