@@ -9,18 +9,9 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-function Placeholder({ children }: { children: React.ReactNode }) {
-  return (
-    <span className="rounded bg-yellow-50 px-2 py-0.5 text-yellow-800">
-      {children}
-    </span>
-  );
-}
-
 export default function MentionsLegalesPage() {
   return (
     <div className="flex min-h-screen flex-col bg-white">
-      {/* Header */}
       <Header />
 
       {/* Hero */}
@@ -51,23 +42,37 @@ export default function MentionsLegalesPage() {
               <h2 className="mb-4 text-xl font-bold text-slate-900">
                 &Eacute;diteur du site
               </h2>
-              <div className="mb-4 rounded-lg border border-yellow-200 bg-yellow-50 p-4 text-sm text-yellow-800">
-                &Agrave; compl&eacute;ter avant mise en production
-              </div>
               <div className="space-y-2 text-base leading-relaxed text-slate-600">
                 <p>
-                  CoproScore est &eacute;dit&eacute; par{" "}
-                  <Placeholder>[NOM SOCI&Eacute;T&Eacute; / NOM PERSONNE]</Placeholder>
+                  Le site{" "}
+                  <strong>coproscore.fr</strong> est &eacute;dit&eacute; par :
                 </p>
                 <p>
-                  Adresse : <Placeholder>[Adresse]</Placeholder>
+                  <strong>Jules Claudon</strong> &mdash; ComKeys, entrepreneur
+                  individuel
                 </p>
-                <p>Email : contact@coproscore.fr</p>
+                <p>Adresse : [adresse &agrave; compl&eacute;ter]</p>
+                <p>SIRET : [&agrave; compl&eacute;ter]</p>
                 <p>
-                  Directeur de publication :{" "}
-                  <Placeholder>[Nom]</Placeholder>
+                  Email :{" "}
+                  <a
+                    href="mailto:contact@coproscore.fr"
+                    className="text-teal-700 hover:underline"
+                  >
+                    contact@coproscore.fr
+                  </a>
                 </p>
               </div>
+            </section>
+
+            {/* Directeur de la publication */}
+            <section>
+              <h2 className="mb-4 text-xl font-bold text-slate-900">
+                Directeur de la publication
+              </h2>
+              <p className="text-base leading-relaxed text-slate-600">
+                Jules Claudon
+              </p>
             </section>
 
             {/* Hébergement */}
@@ -77,35 +82,50 @@ export default function MentionsLegalesPage() {
               </h2>
               <div className="space-y-2 text-base leading-relaxed text-slate-600">
                 <p>
-                  <strong>Vercel Inc.</strong>
+                  <strong>OVH SAS</strong>
                 </p>
-                <p>340 S Lemon Ave #4133, Walnut, CA 91789, USA</p>
+                <p>2 rue Kellermann, 59100 Roubaix, France</p>
                 <p>
                   <a
-                    href="https://vercel.com"
+                    href="https://www.ovhcloud.com"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-teal-700 hover:underline"
                   >
-                    https://vercel.com
+                    www.ovhcloud.com
                   </a>
                 </p>
               </div>
             </section>
 
-            {/* Données personnelles */}
+            {/* Nature du site */}
             <section>
               <h2 className="mb-4 text-xl font-bold text-slate-900">
-                Donn&eacute;es personnelles
+                Nature du site
               </h2>
               <div className="space-y-3 text-base leading-relaxed text-slate-600">
                 <p>
-                  CoproScore ne collecte aucune donn&eacute;e personnelle lors de
-                  la consultation des scores.
+                  CoproScore est une plateforme d&apos;information bas&eacute;e
+                  sur des donn&eacute;es publiques ouvertes :
                 </p>
+                <ul className="list-disc space-y-1 pl-6">
+                  <li>
+                    <strong>RNIC</strong> &mdash; Registre National
+                    d&apos;Immatriculation des Copropri&eacute;t&eacute;s
+                  </li>
+                  <li>
+                    <strong>DVF</strong> &mdash; Demandes de Valeurs
+                    Fonci&egrave;res
+                  </li>
+                  <li>
+                    <strong>ADEME / DPE</strong> &mdash; Diagnostics de
+                    Performance &Eacute;nerg&eacute;tique
+                  </li>
+                </ul>
                 <p>
-                  Les donn&eacute;es affich&eacute;es sont exclusivement des
-                  donn&eacute;es publiques issues de{" "}
+                  Ces donn&eacute;es sont mises &agrave; disposition sous{" "}
+                  <strong>Licence Ouverte / Open Licence version 2.0</strong>{" "}
+                  via{" "}
                   <a
                     href="https://data.gouv.fr"
                     target="_blank"
@@ -123,18 +143,53 @@ export default function MentionsLegalesPage() {
                   >
                     data.ademe.fr
                   </a>
-                  , mises &agrave; disposition sous{" "}
-                  <strong>Licence Ouverte / Open Licence version 2.0</strong>.
+                  .
+                </p>
+              </div>
+            </section>
+
+            {/* Scores et avertissement */}
+            <section>
+              <h2 className="mb-4 text-xl font-bold text-slate-900">
+                Scores et avertissement
+              </h2>
+              <div className="space-y-3 text-base leading-relaxed text-slate-600">
+                <p>
+                  Les scores CoproScore sont calcul&eacute;s
+                  algorithmiquement &agrave; titre purement indicatif. Ils{" "}
+                  <strong>
+                    ne constituent en aucun cas un diagnostic immobilier
+                  </strong>
+                  , un conseil financier ou juridique.
                 </p>
                 <p>
-                  En cas d&apos;exercice de vos droits (acc&egrave;s,
-                  rectification, suppression), contactez :{" "}
-                  <a
-                    href="mailto:contact@coproscore.fr"
-                    className="text-teal-700 hover:underline"
-                  >
-                    contact@coproscore.fr
-                  </a>
+                  Les donn&eacute;es utilis&eacute;es sont d&eacute;claratives
+                  et peuvent &ecirc;tre incompl&egrave;tes ou erron&eacute;es.
+                  CoproScore ne saurait &ecirc;tre tenu responsable des
+                  d&eacute;cisions prises sur la base de ces informations.
+                </p>
+                <p>
+                  Pour tout projet immobilier, il est recommand&eacute; de
+                  consulter un professionnel qualifi&eacute;.
+                </p>
+              </div>
+            </section>
+
+            {/* Propriété intellectuelle */}
+            <section>
+              <h2 className="mb-4 text-xl font-bold text-slate-900">
+                Propri&eacute;t&eacute; intellectuelle
+              </h2>
+              <div className="space-y-3 text-base leading-relaxed text-slate-600">
+                <p>
+                  Le contenu du site (textes, design, code, algorithmes de
+                  scoring) est prot&eacute;g&eacute; par le droit
+                  d&apos;auteur. Toute reproduction non autoris&eacute;e est
+                  interdite.
+                </p>
+                <p>
+                  Les donn&eacute;es brutes proviennent de sources publiques
+                  sous Licence Ouverte.
                 </p>
               </div>
             </section>
@@ -150,57 +205,36 @@ export default function MentionsLegalesPage() {
                   publicitaire.
                 </p>
                 <p>
-                  Seuls des cookies techniques strictement n&eacute;cessaires au
-                  fonctionnement du site peuvent &ecirc;tre utilis&eacute;s.
+                  Seuls des cookies techniques strictement n&eacute;cessaires
+                  au fonctionnement du site (session d&apos;authentification)
+                  sont utilis&eacute;s.
                 </p>
               </div>
             </section>
 
-            {/* Propriété intellectuelle */}
+            {/* Liens */}
             <section>
               <h2 className="mb-4 text-xl font-bold text-slate-900">
-                Propri&eacute;t&eacute; intellectuelle
+                Liens utiles
               </h2>
-              <div className="space-y-3 text-base leading-relaxed text-slate-600">
-                <p>
-                  Le contenu du site (textes, design, code) est prot&eacute;g&eacute;
-                  par le droit d&apos;auteur.
-                </p>
-                <p>
-                  Les donn&eacute;es brutes proviennent de sources publiques sous
-                  Licence Ouverte.
-                </p>
-                <p>
-                  Le score CoproScore est un indicateur calcul&eacute; et ne
-                  constitue pas un diagnostic officiel.
-                </p>
-              </div>
-            </section>
-
-            {/* Responsabilité */}
-            <section>
-              <h2 className="mb-4 text-xl font-bold text-slate-900">
-                Responsabilit&eacute;
-              </h2>
-              <div className="space-y-3 text-base leading-relaxed text-slate-600">
-                <p>
-                  CoproScore fournit des informations &agrave; titre indicatif
-                  uniquement.
-                </p>
-                <p>
-                  Les scores sont calcul&eacute;s &agrave; partir de donn&eacute;es
-                  d&eacute;claratives qui peuvent &ecirc;tre incompl&egrave;tes ou
-                  erron&eacute;es.
-                </p>
-                <p>
-                  CoproScore ne saurait &ecirc;tre tenu responsable des
-                  d&eacute;cisions prises sur la base de ces informations.
-                </p>
-                <p>
-                  Pour tout projet immobilier, il est recommand&eacute; de
-                  consulter un professionnel.
-                </p>
-              </div>
+              <ul className="space-y-2 text-base text-slate-600">
+                <li>
+                  <Link
+                    href="/cgv"
+                    className="text-teal-700 hover:underline"
+                  >
+                    Conditions G&eacute;n&eacute;rales de Vente
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/confidentialite"
+                    className="text-teal-700 hover:underline"
+                  >
+                    Politique de Confidentialit&eacute;
+                  </Link>
+                </li>
+              </ul>
             </section>
           </div>
         </article>

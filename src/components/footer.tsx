@@ -94,6 +94,11 @@ export function Footer() {
                   CGV
                 </Link>
               </li>
+              <li>
+                <Link href="/confidentialite" className="transition-colors hover:text-teal-400">
+                  Confidentialit&eacute;
+                </Link>
+              </li>
               <li>Les scores sont calcul&eacute;s &agrave; titre indicatif</li>
               <li>Pas de conseil financier ou juridique</li>
             </ul>
