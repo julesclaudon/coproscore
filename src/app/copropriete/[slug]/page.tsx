@@ -74,7 +74,8 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  if (/^\d+$/.test(slug)) return {};
+  // Numeric IDs and RNIC identifiers will be redirected by the page function
+  if (/^\d+$/.test(slug) || !slug.includes("-")) return {};
 
   const copro = await prisma.copropriete.findUnique({
     where: { slug },
@@ -385,10 +386,21 @@ export default async function CoproprietePage({
 }) {
   const { slug } = await params;
 
+  // Numeric ID redirect (legacy links)
   if (/^\d+$/.test(slug)) {
     const numId = parseInt(slug, 10);
     const row = await prisma.copropriete.findUnique({
       where: { id: numId },
+      select: { slug: true },
+    });
+    if (row?.slug) redirect(`/copropriete/${row.slug}`);
+    notFound();
+  }
+
+  // RNIC identifier redirect (e.g. AE5707963 — no hyphens, unlike slugs)
+  if (!slug.includes("-")) {
+    const row = await prisma.copropriete.findUnique({
+      where: { numeroImmatriculation: slug },
       select: { slug: true },
     });
     if (row?.slug) redirect(`/copropriete/${row.slug}`);

@@ -107,7 +107,7 @@ export async function GET(request: NextRequest) {
       longitude AS lng,
       score_global AS score,
       nb_lots_habitation AS lots,
-      numero_immatriculation AS slug,
+      slug,
       nom_usage AS nom,
       adresse_reference AS adresse,
       commune,
