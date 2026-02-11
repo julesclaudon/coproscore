@@ -40,8 +40,7 @@ import { Sparkline } from "./sparkline";
 import { AnalyseIA } from "./analyse-ia";
 import { DownloadButton } from "./download-button";
 import { SaveHistory } from "@/components/save-history";
-import { HistoryNavLink } from "@/components/history-nav-link";
-import { FavoritesNavLink } from "@/components/favorites-nav-link";
+import { Header } from "@/components/header";
 import { AlertModal } from "./alert-modal";
 import { FavoriteButton } from "./favorite-button";
 import { ShareButton } from "./share-button";
@@ -504,7 +503,7 @@ export default async function CoproprietePage({
     }, dimensions.filter((d) => d.score !== null)[0])?.key ?? dimensions[0].key;
 
   return (
-    <div className="flex min-h-screen flex-col bg-slate-50/50">
+    <div className="flex min-h-screen flex-col overflow-x-hidden bg-slate-50/50">
       <SaveHistory
         slug={slug}
         nom={displayName}
@@ -512,21 +511,7 @@ export default async function CoproprietePage({
         score={copro.scoreGlobal}
       />
       {/* Sticky header */}
-      <header className="sticky top-0 z-30 border-b bg-white/90 backdrop-blur-sm">
-        <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-3">
-          <Link href="/" className="text-xl font-bold text-slate-900">
-            Copro<span className="text-teal-600">Score</span>
-          </Link>
-          <nav className="ml-auto flex items-center gap-4 text-sm font-medium text-slate-600">
-            <Link href="/" className="transition-colors hover:text-teal-700">Rechercher</Link>
-            <Link href="/carte" className="transition-colors hover:text-teal-700">Carte</Link>
-            <Link href="/comparateur" className="transition-colors hover:text-teal-700">Comparateur</Link>
-            <Link href="/tarifs" className="transition-colors hover:text-teal-700">Tarifs</Link>
-            <FavoritesNavLink />
-            <HistoryNavLink />
-          </nav>
-        </div>
-      </header>
+      <Header />
 
       {/* Hero band */}
       <section className="border-b bg-white">
@@ -558,25 +543,27 @@ export default async function CoproprietePage({
           {/* Name + Score */}
           <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-2">
-                <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">{displayName}</h1>
-                <AlertModal slug={slug} coproName={displayName} />
-                <FavoriteButton
-                  slug={slug}
-                  nom={displayName}
-                  adresse={copro.adresseReference || ""}
-                  commune={copro.communeAdresse || ""}
-                  score={copro.scoreGlobal}
-                  lots={copro.nbTotalLots}
-                />
-                <ShareButton
-                  title={`${displayName} \u2014 Score ${copro.scoreGlobal ?? "?"}/100 | CoproScore`}
-                  text={`Score de sant\u00e9 de ${displayName} : ${copro.scoreGlobal ?? "?"}/100`}
-                />
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                <h1 className="break-words text-2xl font-bold text-slate-900 sm:text-3xl">{displayName}</h1>
+                <div className="flex gap-2">
+                  <AlertModal slug={slug} coproName={displayName} />
+                  <FavoriteButton
+                    slug={slug}
+                    nom={displayName}
+                    adresse={copro.adresseReference || ""}
+                    commune={copro.communeAdresse || ""}
+                    score={copro.scoreGlobal}
+                    lots={copro.nbTotalLots}
+                  />
+                  <ShareButton
+                    title={`${displayName} \u2014 Score ${copro.scoreGlobal ?? "?"}/100 | CoproScore`}
+                    text={`Score de sant\u00e9 de ${displayName} : ${copro.scoreGlobal ?? "?"}/100`}
+                  />
+                </div>
               </div>
-              <p className="mt-2 flex items-center gap-1.5 text-slate-500">
+              <p className="mt-2 flex items-center gap-1.5 break-words text-slate-500">
                 <MapPin className="h-4 w-4 shrink-0" />
-                {copro.adresseReference}, {copro.codePostal} {copro.communeAdresse}
+                <span className="min-w-0">{copro.adresseReference}, {copro.codePostal} {copro.communeAdresse}</span>
               </p>
               <div className="mt-3 flex flex-wrap gap-2">
                 {copro.typeSyndic && (
@@ -629,7 +616,7 @@ export default async function CoproprietePage({
         <div className="mx-auto max-w-6xl px-3 py-6 sm:px-4 sm:py-8">
           <div className="grid gap-6 sm:gap-8 lg:grid-cols-[1fr_360px]">
             {/* ===== LEFT COLUMN ===== */}
-            <div className="space-y-8">
+            <div className="min-w-0 space-y-8">
               {/* --- 1. Score d\u00e9taill\u00e9 --- */}
               <section>
                 <h2 className="mb-4 text-lg font-semibold text-slate-900">Score d&eacute;taill&eacute;</h2>
@@ -647,7 +634,7 @@ export default async function CoproprietePage({
                     return (
                       <div
                         key={d.key}
-                        className={`rounded-xl border border-slate-200 bg-white p-4 transition-shadow hover:shadow-sm${isNull ? " opacity-60" : ""}`}
+                        className={`overflow-hidden rounded-xl border border-slate-200 bg-white p-4 transition-shadow hover:shadow-sm${isNull ? " opacity-60" : ""}`}
                       >
                         <div className="flex items-start gap-4">
                           <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${d.iconBg}`}>
@@ -679,7 +666,7 @@ export default async function CoproprietePage({
                           <div className="relative mt-3">
                             {isLocked ? (
                               <div className="relative">
-                                <p className="select-none text-sm leading-relaxed text-slate-600 blur-sm">
+                                <p className="select-none break-words text-sm leading-relaxed text-slate-600 blur-sm">
                                   {d.detailedExplanation}
                                 </p>
                                 <a
@@ -691,7 +678,7 @@ export default async function CoproprietePage({
                                 </a>
                               </div>
                             ) : (
-                              <p className="text-sm leading-relaxed text-slate-600">
+                              <p className="break-words text-sm leading-relaxed text-slate-600">
                                 {d.detailedExplanation}
                               </p>
                             )}
@@ -825,8 +812,8 @@ export default async function CoproprietePage({
 
                         {/* Commune comparison */}
                         {prixDiffPct !== null && (
-                          <div className="mt-5 rounded-lg bg-slate-50 px-4 py-3">
-                            <p className="text-sm text-slate-600">
+                          <div className="mt-5 overflow-hidden rounded-lg bg-slate-50 px-4 py-3">
+                            <p className="break-words text-sm text-slate-600">
                               {prixDiffPct >= 0 ? (
                                 <>
                                   <span className="font-semibold text-slate-900">
@@ -865,9 +852,9 @@ export default async function CoproprietePage({
               {/* --- 3b. Historique des transactions --- */}
               {dvfTransactions.length > 0 && (
                 <section>
-                  <div className="mb-4 flex items-center gap-3">
+                  <div className="mb-4 flex flex-wrap items-center gap-3">
                     <h2 className="flex items-center gap-2 text-lg font-semibold text-slate-900">
-                      <Building2 className="h-5 w-5 text-slate-500" />
+                      <Building2 className="h-5 w-5 shrink-0 text-slate-500" />
                       Historique des transactions
                     </h2>
                     <div className="ml-auto flex gap-1.5">
@@ -1129,7 +1116,7 @@ export default async function CoproprietePage({
             </div>
 
             {/* ===== RIGHT SIDEBAR ===== */}
-            <div className="space-y-6">
+            <div className="min-w-0 space-y-6">
               {/* Map */}
               {hasCoords && (
                 <Card className="overflow-hidden border-slate-200">
@@ -1222,7 +1209,7 @@ export default async function CoproprietePage({
       <Footer />
 
       {/* Sticky CTA bar — mobile only */}
-      <div className="fixed inset-x-0 bottom-0 z-30 border-t bg-white/95 px-4 py-3 backdrop-blur-sm lg:hidden">
+      <div className="fixed inset-x-0 bottom-0 z-30 border-t bg-white/95 px-4 py-3 pb-[max(12px,var(--sab))] backdrop-blur-sm lg:hidden">
         <DownloadButton slug={slug} className="w-full bg-teal-700 py-5 text-base font-semibold text-white hover:bg-teal-800">
           T&eacute;l&eacute;charger le rapport &mdash; 4,90&euro;
         </DownloadButton>
@@ -1270,9 +1257,9 @@ function NearbyItem({ n }: { n: NearbyRow }) {
 
 function InfoRow({ label, value }: { label: string; value: string | number | null | undefined }) {
   return (
-    <div className="flex items-center justify-between">
-      <span className="text-slate-500">{label}</span>
-      <span className="font-medium text-slate-900">{value ?? "\u2014"}</span>
+    <div className="flex items-center justify-between gap-2">
+      <span className="shrink-0 text-slate-500">{label}</span>
+      <span className="min-w-0 truncate font-medium text-slate-900">{value ?? "\u2014"}</span>
     </div>
   );
 }

@@ -128,7 +128,7 @@ function TimelineItem({
 
       {/* Content */}
       <div
-        className={`min-w-0 flex-1 rounded-lg border border-slate-100 bg-white px-4 py-3 shadow-sm ${
+        className={`min-w-0 flex-1 overflow-hidden rounded-lg border border-slate-100 bg-white px-4 py-3 shadow-sm ${
           isLeft ? "order-3" : "order-1 lg:text-right"
         }`}
       >
@@ -136,8 +136,8 @@ function TimelineItem({
         <p className="mb-1 text-xs text-slate-400 lg:hidden">
           {formatEventDateDisplay(event.date)}
         </p>
-        <p className="text-sm font-medium text-slate-900">{event.titre}</p>
-        <p className="mt-0.5 text-sm text-slate-500">{event.description}</p>
+        <p className="break-words text-sm font-medium text-slate-900">{event.titre}</p>
+        <p className="mt-0.5 break-words text-sm text-slate-500">{event.description}</p>
       </div>
     </div>
   );
@@ -189,11 +189,11 @@ export function TimelineSection({ events }: { events: TimelineEvent[] }) {
                   <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-100">
                     <div className="h-4 w-4 rounded-full bg-slate-300" />
                   </div>
-                  <div className="flex-1 rounded-lg border border-slate-100 bg-white px-4 py-3">
-                    <p className="text-sm font-medium text-slate-900">
+                  <div className="min-w-0 flex-1 overflow-hidden rounded-lg border border-slate-100 bg-white px-4 py-3">
+                    <p className="break-words text-sm font-medium text-slate-900">
                       {event.titre}
                     </p>
-                    <p className="mt-0.5 text-sm text-slate-500">
+                    <p className="mt-0.5 break-words text-sm text-slate-500">
                       {event.description}
                     </p>
                   </div>

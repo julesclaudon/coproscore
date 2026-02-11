@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import {
   Home,
@@ -112,15 +113,7 @@ export default function TarifsPage() {
   return (
     <div className="flex min-h-screen flex-col bg-white">
       {/* Header */}
-      <header className="sticky top-0 z-30 border-b bg-white/90 backdrop-blur-sm">
-        <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-4">
-          <Link href="/" className="text-xl font-bold text-slate-900">
-            Copro<span className="text-teal-600">Score</span>
-          </Link>
-          <span className="text-sm text-slate-300">/</span>
-          <span className="text-sm text-slate-500">Tarifs</span>
-        </div>
-      </header>
+      <Header />
 
       {/* Hero */}
       <section className="border-b bg-gradient-to-b from-slate-50 to-white py-10 sm:py-16">
@@ -179,7 +172,7 @@ export default function TarifsPage() {
       {/* Pricing cards */}
       <main className="flex-1">
         <div className="mx-auto max-w-6xl px-3 py-10 sm:px-4 sm:py-16">
-          <div className="grid items-start gap-6 lg:grid-cols-3">
+          <div className="grid items-start gap-6 md:grid-cols-2 lg:grid-cols-3">
             {TIERS.map((tier) => {
               const Icon = tier.icon;
               const isRapport = tier.id === "rapport";

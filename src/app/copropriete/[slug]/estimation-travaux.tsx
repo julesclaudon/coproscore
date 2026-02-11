@@ -47,17 +47,17 @@ function PosteCard({
   const pct = totalMax > 0 ? Math.round((max / totalMax) * 100) : 0;
 
   return (
-    <div className="rounded-lg border border-slate-200 bg-white p-4">
-      <div className="flex items-start justify-between gap-2">
+    <div className="overflow-hidden rounded-lg border border-slate-200 bg-white p-4">
+      <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between sm:gap-2">
         <div className="min-w-0 flex-1">
           <p className="text-sm font-semibold text-slate-900">{nom}</p>
           <p className="mt-0.5 text-xs text-slate-400">{description}</p>
         </div>
-        <p className="shrink-0 text-right text-sm font-bold text-slate-900">
+        <p className="text-sm font-bold text-slate-900 sm:shrink-0 sm:text-right">
           {fmtEur(min)} &mdash; {fmtEur(max)}
         </p>
       </div>
-      <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-slate-100">
+      <div className="mt-3 h-1.5 max-w-full overflow-hidden rounded-full bg-slate-100">
         <div
           className="h-full rounded-full bg-amber-400"
           style={{ width: `${Math.max(pct, 4)}%` }}
@@ -170,20 +170,20 @@ export function EstimationTravauxSection({
         )}
 
         {/* Total */}
-        <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
-          <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <div className="overflow-hidden rounded-lg border border-slate-200 bg-slate-50 p-4">
+          <div className="flex flex-col gap-1 sm:flex-row sm:flex-wrap sm:items-baseline sm:justify-between sm:gap-2">
             <p className="text-sm font-medium text-slate-600">Total estim&eacute;</p>
-            <p className="text-xl font-bold text-slate-900">
+            <p className="break-words text-xl font-bold text-slate-900">
               {fmtEur(totalMin)} &mdash; {fmtEur(totalMax)}
             </p>
           </div>
           {lots > 1 && (
-            <p className="mt-1 text-right text-xs text-slate-400">
+            <p className="mt-1 break-words text-right text-xs text-slate-400">
               soit {fmtEur(Math.round(totalMin / lots))} &mdash;{" "}
               {fmtEur(Math.round(totalMax / lots))} par lot
             </p>
           )}
-          <div className="mt-3 flex items-center justify-between">
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
             <FiabiliteBadge fiabilite={fiabilite} />
             <p className="text-[11px] text-slate-400">
               Moyennes ANAH/ADEME, ne remplace pas un devis

@@ -59,9 +59,12 @@ export function FavoriteToggle({
   }
 
   return (
-    <button
+    <div
+      role="button"
+      tabIndex={0}
       onClick={handleClick}
-      className={`shrink-0 rounded-md p-1.5 transition-all ${
+      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); handleClick(e as unknown as React.MouseEvent); } }}
+      className={`shrink-0 cursor-pointer rounded-md p-1.5 transition-all ${
         saved
           ? "text-amber-500 hover:text-amber-600"
           : "text-slate-300 hover:text-amber-400"
@@ -71,6 +74,6 @@ export function FavoriteToggle({
       <Star
         className={`h-4 w-4 ${saved ? "fill-amber-400" : ""}`}
       />
-    </button>
+    </div>
   );
 }

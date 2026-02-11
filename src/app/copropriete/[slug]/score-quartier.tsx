@@ -86,7 +86,7 @@ export function ScoreQuartierSection({ quartier }: { quartier: ScoreQuartier }) 
             </div>
 
             {/* Legend */}
-            <div className="mt-1.5 flex gap-3 text-[11px] text-slate-500">
+            <div className="mt-1.5 flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-slate-500">
               <span className="flex items-center gap-1">
                 <span className="inline-block h-2 w-2 rounded-full bg-teal-500" />
                 {quartier.pctBon}% Bon

@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { AddressAutocomplete } from "@/components/address-autocomplete";
 import { Button } from "@/components/ui/button";
+import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { Home } from "lucide-react";
 
@@ -25,13 +26,7 @@ export default function NotFound() {
 
   return (
     <div className="flex min-h-screen flex-col bg-white">
-      <header className="border-b bg-white/90 backdrop-blur-sm">
-        <div className="mx-auto flex max-w-5xl items-center px-4 py-3">
-          <Link href="/" className="text-xl font-bold text-slate-900">
-            Copro<span className="text-teal-600">Score</span>
-          </Link>
-        </div>
-      </header>
+      <Header />
 
       <main className="flex flex-1 flex-col items-center justify-center px-4 py-16">
         <p className="text-8xl font-black text-teal-100 sm:text-9xl">404</p>

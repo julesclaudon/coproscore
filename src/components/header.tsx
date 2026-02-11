@@ -1,0 +1,153 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import {
+  Menu,
+  X,
+  Map,
+  BarChart3,
+  CreditCard,
+  Star,
+  Clock,
+  Search,
+  BookOpen,
+  Scale,
+} from "lucide-react";
+import { FavoritesNavLink } from "@/components/favorites-nav-link";
+import { HistoryNavLink } from "@/components/history-nav-link";
+
+interface HeaderProps {
+  variant?: "default" | "homepage";
+  rightSlot?: React.ReactNode;
+}
+
+const navLinks = [
+  { href: "/", label: "Rechercher", icon: Search },
+  { href: "/carte", label: "Carte", icon: Map },
+  { href: "/comparateur", label: "Comparateur", icon: BarChart3 },
+  { href: "/tarifs", label: "Tarifs", icon: CreditCard },
+  { href: "/favoris", label: "Favoris", icon: Star },
+  { href: "/historique", label: "Historique", icon: Clock },
+  { href: "/methodologie", label: "Méthodologie", icon: BookOpen },
+  { href: "/mentions-legales", label: "Mentions légales", icon: Scale },
+] as const;
+
+const desktopLinks = [
+  { href: "/carte", label: "Carte" },
+  { href: "/comparateur", label: "Comparateur" },
+  { href: "/tarifs", label: "Tarifs" },
+] as const;
+
+export function Header({ variant = "default", rightSlot }: HeaderProps) {
+  const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+
+  const isHomepage = variant === "homepage";
+
+  return (
+    <>
+      <header
+        className={
+          isHomepage
+            ? "absolute top-0 z-10 w-full"
+            : "sticky top-0 z-30 border-b bg-white/90 backdrop-blur-sm"
+        }
+      >
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
+          {/* Logo */}
+          <Link href="/" className="shrink-0 text-xl font-bold text-slate-900">
+            Copro<span className="text-teal-600">Score</span>
+          </Link>
+
+          {/* Right slot (e.g. search bar on /recherche) */}
+          {rightSlot && <div className="mx-3 min-w-0 flex-1">{rightSlot}</div>}
+
+          {/* Desktop nav */}
+          <nav className="ml-auto hidden items-center gap-4 text-sm font-medium text-slate-600 md:flex">
+            {desktopLinks.map((l) => (
+              <Link
+                key={l.href}
+                href={l.href}
+                className={
+                  pathname === l.href
+                    ? "text-teal-700"
+                    : "transition-colors hover:text-teal-700"
+                }
+              >
+                {l.label}
+              </Link>
+            ))}
+            <FavoritesNavLink />
+            <HistoryNavLink />
+          </nav>
+
+          {/* Mobile hamburger */}
+          <button
+            type="button"
+            onClick={() => setOpen(true)}
+            className="ml-2 flex h-10 w-10 items-center justify-center rounded-lg text-slate-600 transition-colors hover:bg-slate-100 md:hidden"
+            aria-label="Ouvrir le menu"
+          >
+            <Menu className="h-5 w-5" />
+          </button>
+        </div>
+      </header>
+
+      {/* Mobile drawer — plain div, no Radix dependency */}
+      {open && (
+        <>
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 z-50 bg-black/50"
+            onClick={() => setOpen(false)}
+          />
+          {/* Panel */}
+          <div className="fixed inset-y-0 right-0 z-50 flex w-72 flex-col bg-white shadow-lg">
+            {/* Drawer header */}
+            <div className="flex items-center justify-between border-b px-5 py-4">
+              <Link
+                href="/"
+                onClick={() => setOpen(false)}
+                className="text-xl font-bold text-slate-900"
+              >
+                Copro<span className="text-teal-600">Score</span>
+              </Link>
+              <button
+                type="button"
+                onClick={() => setOpen(false)}
+                className="flex h-8 w-8 items-center justify-center rounded-md text-slate-400 hover:text-slate-600"
+                aria-label="Fermer le menu"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            {/* Drawer nav */}
+            <nav className="flex flex-1 flex-col overflow-y-auto py-2">
+              {navLinks.map((l) => {
+                const Icon = l.icon;
+                const active = pathname === l.href;
+                return (
+                  <Link
+                    key={l.href}
+                    href={l.href}
+                    onClick={() => setOpen(false)}
+                    className={`flex min-h-[44px] items-center gap-3 px-5 text-sm font-medium transition-colors ${
+                      active
+                        ? "bg-teal-50 text-teal-700"
+                        : "text-slate-600 hover:bg-slate-50 hover:text-teal-700"
+                    }`}
+                  >
+                    <Icon className="h-4 w-4 shrink-0" />
+                    {l.label}
+                  </Link>
+                );
+              })}
+            </nav>
+          </div>
+        </>
+      )}
+    </>
+  );
+}

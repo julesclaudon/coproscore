@@ -2,14 +2,11 @@
 
 import { useState, useCallback } from "react";
 import dynamic from "next/dynamic";
-import Link from "next/link";
 import { useCarteFilters } from "@/hooks/use-carte-filters";
 import { CarteSidebar } from "@/components/carte-sidebar";
 import { CarteBottomSheet } from "@/components/carte-bottom-sheet";
-import { HistoryNavLink } from "@/components/history-nav-link";
-import { FavoritesNavLink } from "@/components/favorites-nav-link";
+import { Header } from "@/components/header";
 import {
-  Map,
   ChevronLeft,
   ChevronRight as ChevronRightIcon,
 } from "lucide-react";
@@ -52,30 +49,7 @@ export default function CartePage() {
   return (
     <div className="flex h-screen flex-col">
       {/* Header */}
-      <header className="z-30 shrink-0 border-b bg-white/90 backdrop-blur-sm">
-        <div className="flex items-center gap-4 px-4 py-2">
-          <Link href="/" className="shrink-0 text-lg font-bold text-slate-900">
-            Copro<span className="text-teal-600">Score</span>
-          </Link>
-          <nav className="ml-auto flex items-center gap-3 text-sm font-medium text-slate-600">
-            <Link href="/" className="hidden transition-colors hover:text-teal-700 sm:block">
-              Rechercher
-            </Link>
-            <span className="flex items-center gap-1 text-teal-700">
-              <Map className="h-4 w-4" />
-              <span className="hidden sm:inline">Carte</span>
-            </span>
-            <Link href="/comparateur" className="hidden transition-colors hover:text-teal-700 sm:block">
-              Comparateur
-            </Link>
-            <Link href="/tarifs" className="hidden transition-colors hover:text-teal-700 sm:block">
-              Tarifs
-            </Link>
-            <FavoritesNavLink />
-            <HistoryNavLink />
-          </nav>
-        </div>
-      </header>
+      <Header />
 
       {/* Main content: full-screen map + floating sidebar */}
       <div className="relative flex-1 overflow-hidden">

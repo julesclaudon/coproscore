@@ -17,8 +17,7 @@ import {
   Map,
   ChevronRight,
 } from "lucide-react";
-import { HistoryNavLink } from "@/components/history-nav-link";
-import { FavoritesNavLink } from "@/components/favorites-nav-link";
+import { Header } from "@/components/header";
 
 /* ─── Mini score bar for the example section ─── */
 function MiniBar({ label, value, max, color }: { label: string; value: number; max: number; color: string }) {
@@ -77,20 +76,7 @@ export default function Home() {
       />
 
       {/* ─── Navigation ─── */}
-      <nav className="absolute top-0 z-10 w-full">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-5">
-          <Link href="/" className="text-xl font-bold text-slate-900">
-            Copro<span className="text-teal-700">Score</span>
-          </Link>
-          <div className="flex items-center gap-4 text-sm font-medium text-slate-600">
-            <Link href="/carte" className="transition-colors hover:text-teal-700">Carte</Link>
-            <Link href="/comparateur" className="transition-colors hover:text-teal-700">Comparateur</Link>
-            <Link href="/tarifs" className="transition-colors hover:text-teal-700">Tarifs</Link>
-            <FavoritesNavLink />
-            <HistoryNavLink />
-          </div>
-        </div>
-      </nav>
+      <Header variant="homepage" />
 
       {/* ─── Hero ─── */}
       <section className="relative overflow-hidden bg-gradient-to-b from-teal-50/80 via-white to-white pt-24 pb-14 sm:pt-32 sm:pb-20">
@@ -165,7 +151,7 @@ export default function Home() {
               D&eacute;couvrez notre m&eacute;thodologie
             </Link>
           </p>
-          <div className="grid gap-10 sm:grid-cols-3">
+          <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
             {[
               {
                 num: "01",

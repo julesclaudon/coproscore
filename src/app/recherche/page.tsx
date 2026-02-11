@@ -6,6 +6,7 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { AddressAutocomplete } from "@/components/address-autocomplete";
 import { Button } from "@/components/ui/button";
+import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { SkeletonCard, SkeletonMapPlaceholder } from "@/components/skeleton-card";
 import { formatCoproName } from "@/lib/utils";
@@ -145,21 +146,16 @@ function RechercheContent() {
   return (
     <div className="flex min-h-screen flex-col bg-white">
       {/* Sticky header */}
-      <header className="sticky top-0 z-30 border-b bg-white/90 backdrop-blur-sm">
-        <div className="mx-auto flex max-w-5xl items-center gap-2 px-3 py-3 sm:gap-4 sm:px-4">
-          <Link href="/" className="shrink-0 text-lg font-bold text-slate-900 sm:text-xl">
-            Copro<span className="text-teal-600">Score</span>
-          </Link>
-          <div className="flex-1">
-            <AddressAutocomplete
-              defaultValue={q}
-              onSelect={handleNewSearch}
-              onSubmit={handleFreetext}
-              placeholder="Adresse, ville ou code postal..."
-            />
-          </div>
-        </div>
-      </header>
+      <Header
+        rightSlot={
+          <AddressAutocomplete
+            defaultValue={q}
+            onSelect={handleNewSearch}
+            onSubmit={handleFreetext}
+            placeholder="Adresse, ville ou code postal..."
+          />
+        }
+      />
 
       <main className="flex-1">
         <div className="mx-auto max-w-5xl px-3 py-4 sm:px-4 sm:py-6">
@@ -256,10 +252,13 @@ function RechercheContent() {
           {!loading && results.length > 0 && (
             <div className="flex flex-col gap-3">
               {results.map((r) => (
-                <button
+                <div
                   key={r.id}
+                  role="button"
+                  tabIndex={0}
                   onClick={() => router.push(`/copropriete/${r.slug ?? r.id}`)}
-                  className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white p-3.5 text-left shadow-sm transition-all hover:border-teal-200 hover:shadow-md sm:p-5"
+                  onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); router.push(`/copropriete/${r.slug ?? r.id}`); } }}
+                  className="group flex cursor-pointer items-center justify-between rounded-xl border border-slate-200 bg-white p-3.5 text-left shadow-sm transition-all hover:border-teal-200 hover:shadow-md sm:p-5"
                 >
                   <div className="min-w-0 flex-1">
                     <p className="truncate font-semibold text-slate-900">
@@ -317,7 +316,7 @@ function RechercheContent() {
                     </div>
                     <ArrowRight className="h-4 w-4 text-slate-300 transition-colors group-hover:text-teal-600" />
                   </div>
-                </button>
+                </div>
               ))}
             </div>
           )}

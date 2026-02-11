@@ -88,9 +88,7 @@ export function AnalyseIA({ slug }: { slug: string }) {
       {loading && <Skeleton />}
 
       {error && (
-        <div className="rounded-lg border border-slate-200 bg-white px-4 py-6 text-center text-sm text-slate-500">
-          {error}
-        </div>
+        <p className="text-xs text-slate-400">Analyse indisponible</p>
       )}
 
       {data && (
@@ -168,11 +166,11 @@ export function AnalyseIA({ slug }: { slug: string }) {
           </div>
 
           {/* Footer */}
-          <div className="flex items-center justify-between">
+          <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
             <p className="text-[11px] text-slate-400">
               Derni&egrave;re analyse : {formatDate(data.generatedAt)}
             </p>
-            <p className="text-[11px] text-slate-400">
+            <p className="min-w-0 text-[11px] text-slate-400">
               Cette analyse est g&eacute;n&eacute;r&eacute;e automatiquement &agrave; partir de donn&eacute;es publiques. Elle ne constitue pas un avis professionnel.
             </p>
           </div>

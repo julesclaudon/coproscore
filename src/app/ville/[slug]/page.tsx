@@ -25,8 +25,7 @@ import {
   Home,
   Crown,
 } from "lucide-react";
-import { HistoryNavLink } from "@/components/history-nav-link";
-import { FavoritesNavLink } from "@/components/favorites-nav-link";
+import { Header } from "@/components/header";
 
 export const revalidate = 86400;
 
@@ -422,32 +421,7 @@ export default async function VillePage({
       />
 
       {/* Header */}
-      <header className="sticky top-0 z-30 border-b bg-white/90 backdrop-blur-sm">
-        <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3">
-          <Link href="/" className="text-xl font-bold text-slate-900">
-            Copro<span className="text-teal-600">Score</span>
-          </Link>
-          <span className="text-sm text-slate-300">/</span>
-          {effectiveCp ? (
-            <>
-              <Link
-                href={`/ville/${slug}`}
-                className="truncate text-sm text-slate-400 transition-colors hover:text-teal-700"
-              >
-                {communeName}
-              </Link>
-              <span className="text-sm text-slate-300">/</span>
-              <span className="truncate text-sm text-slate-500">{displayName}</span>
-            </>
-          ) : (
-            <span className="truncate text-sm text-slate-500">{communeName}</span>
-          )}
-          <nav className="ml-auto flex items-center gap-4 text-sm font-medium text-slate-600">
-            <FavoritesNavLink />
-            <HistoryNavLink />
-          </nav>
-        </div>
-      </header>
+      <Header />
 
       <main className="flex-1">
         {/* ─── 1. Hero compact ─── */}
@@ -529,7 +503,7 @@ export default async function VillePage({
               </Card>
 
               {/* Right — Bon / Moyen / Attention compact */}
-              <div className="flex flex-row gap-2 lg:flex-col lg:gap-3">
+              <div className="flex flex-col gap-2 sm:flex-row lg:flex-col lg:gap-3">
                 <div className="flex-1 rounded-lg border border-teal-200 bg-teal-50 px-3 py-3 text-center">
                   <p className="text-xl font-bold text-teal-700">{bon.toLocaleString("fr-FR")}</p>
                   <p className="text-[11px] text-teal-700/70">

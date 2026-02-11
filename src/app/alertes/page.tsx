@@ -4,8 +4,7 @@ import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Footer } from "@/components/footer";
-import { HistoryNavLink } from "@/components/history-nav-link";
-import { FavoritesNavLink } from "@/components/favorites-nav-link";
+import { Header } from "@/components/header";
 import {
   Bell,
   Trash2,
@@ -115,30 +114,7 @@ function AlertesContent() {
   return (
     <div className="flex min-h-screen flex-col bg-slate-50/50">
       {/* Header */}
-      <header className="sticky top-0 z-30 border-b bg-white/90 backdrop-blur-sm">
-        <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3">
-          <Link href="/" className="shrink-0 text-xl font-bold text-slate-900">
-            Copro<span className="text-teal-600">Score</span>
-          </Link>
-          <nav className="ml-auto flex items-center gap-4 text-sm font-medium text-slate-600">
-            <Link href="/" className="transition-colors hover:text-teal-700">
-              Rechercher
-            </Link>
-            <Link href="/carte" className="transition-colors hover:text-teal-700">
-              Carte
-            </Link>
-            <Link href="/comparateur" className="transition-colors hover:text-teal-700">
-              Comparateur
-            </Link>
-            <span className="text-teal-700">Mes alertes</span>
-            <Link href="/tarifs" className="transition-colors hover:text-teal-700">
-              Tarifs
-            </Link>
-            <FavoritesNavLink />
-            <HistoryNavLink />
-          </nav>
-        </div>
-      </header>
+      <Header />
 
       <main className="flex-1">
         <div className="mx-auto max-w-6xl px-3 py-6 sm:px-4 sm:py-8">

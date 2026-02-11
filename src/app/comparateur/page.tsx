@@ -18,8 +18,7 @@ import {
   FileSpreadsheet,
   Loader2,
 } from "lucide-react";
-import { HistoryNavLink } from "@/components/history-nav-link";
-import { FavoritesNavLink } from "@/components/favorites-nav-link";
+import { Header } from "@/components/header";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -379,21 +378,7 @@ function ComparateurPage() {
   return (
     <div className="flex min-h-screen flex-col bg-slate-50/50">
       {/* Header */}
-      <header className="sticky top-0 z-30 border-b bg-white/90 backdrop-blur-sm">
-        <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3">
-          <Link href="/" className="shrink-0 text-xl font-bold text-slate-900">
-            Copro<span className="text-teal-600">Score</span>
-          </Link>
-          <nav className="hidden items-center gap-4 text-sm text-slate-500 sm:flex">
-            <Link href="/recherche" className="transition-colors hover:text-teal-700">Rechercher</Link>
-            <Link href="/carte" className="transition-colors hover:text-teal-700">Carte</Link>
-            <span className="font-medium text-teal-700">Comparateur</span>
-            <Link href="/tarifs" className="transition-colors hover:text-teal-700">Tarifs</Link>
-            <FavoritesNavLink />
-            <HistoryNavLink />
-          </nav>
-        </div>
-      </header>
+      <Header />
 
       <main className="flex-1">
         <div className="mx-auto max-w-6xl px-3 py-6 sm:px-4 sm:py-8">

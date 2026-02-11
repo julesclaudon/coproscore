@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { Home, ChevronRight } from "lucide-react";
 
@@ -12,15 +13,7 @@ export default function CgvPage() {
   return (
     <div className="flex min-h-screen flex-col bg-white">
       {/* Header */}
-      <header className="sticky top-0 z-30 border-b bg-white/90 backdrop-blur-sm">
-        <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-4">
-          <Link href="/" className="text-xl font-bold text-slate-900">
-            Copro<span className="text-teal-600">Score</span>
-          </Link>
-          <span className="text-sm text-slate-300">/</span>
-          <span className="text-sm text-slate-500">CGV</span>
-        </div>
-      </header>
+      <Header />
 
       {/* Hero */}
       <section className="border-b bg-gradient-to-b from-slate-50 to-white py-8 sm:py-12">
