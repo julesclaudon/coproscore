@@ -74,6 +74,25 @@ export default function Home() {
           }),
         }}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            name: "CoproScore",
+            url: "https://coproscore.fr",
+            potentialAction: {
+              "@type": "SearchAction",
+              target: {
+                "@type": "EntryPoint",
+                urlTemplate: "https://coproscore.fr/recherche?q={search_term_string}",
+              },
+              "query-input": "required name=search_term_string",
+            },
+          }),
+        }}
+      />
 
       {/* ─── Navigation ─── */}
       <Header variant="homepage" />

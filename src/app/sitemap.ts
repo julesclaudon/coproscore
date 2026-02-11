@@ -42,8 +42,15 @@ export default async function sitemap({
     const villeUrls: MetadataRoute.Sitemap = villes.map((v) => ({
       url: `${BASE_URL}/ville/${makeVilleSlug(v.nom, v.code)}`,
       changeFrequency: "monthly",
-      priority: 0.6,
+      priority: 0.8,
     }));
+
+    const staticPages: MetadataRoute.Sitemap = [
+      { url: `${BASE_URL}/carte`, changeFrequency: "weekly", priority: 0.7 },
+      { url: `${BASE_URL}/tarifs`, changeFrequency: "monthly", priority: 0.6 },
+      { url: `${BASE_URL}/comparateur`, changeFrequency: "monthly", priority: 0.5 },
+      { url: `${BASE_URL}/methodologie`, changeFrequency: "monthly", priority: 0.6 },
+    ];
 
     return [
       {
@@ -51,6 +58,7 @@ export default async function sitemap({
         changeFrequency: "weekly",
         priority: 1.0,
       },
+      ...staticPages,
       ...villeUrls,
     ];
   }

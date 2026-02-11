@@ -16,11 +16,11 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL("https://coproscore.fr"),
   title: {
-    default: "CoproScore — Le score de santé de votre copropriété",
+    default: "CoproScore — Score de santé des copropriétés en France",
     template: "%s | CoproScore",
   },
   description:
-    "Score de santé de 0 à 100 pour les copropriétés en France, basé sur les données ouvertes du RNIC, DVF et ADEME. 619 402 copropriétés analysées.",
+    "Score de santé de 0 à 100 pour 619 402 copropriétés en France. Analyse technique, risques, gouvernance, énergie et marché à partir des données ouvertes RNIC, DVF et DPE ADEME.",
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "32x32" },

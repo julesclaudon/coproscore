@@ -116,9 +116,18 @@ export async function generateMetadata({
 
   const ogImage = `${process.env.NEXT_PUBLIC_BASE_URL || "https://coproscore.fr"}/api/og/copropriete/${slug}`;
 
+  const title = copro.scoreGlobal != null
+    ? `${displayName} \u2014 Score ${copro.scoreGlobal}/100`
+    : `${displayName} \u2014 Score copropri\u00e9t\u00e9`;
+
+  const descParts = [`Score d\u00e9taill\u00e9 de ${displayName} \u00e0 ${ville}`];
+  if (dimensionText) descParts.push(dimensionText);
+  if (details) descParts.push(details);
+  const description = descParts.join(". ") + ".";
+
   return {
-    title: `${displayName} \u2014 Score copropri\u00e9t\u00e9`,
-    description: `Score d\u00e9taill\u00e9 de ${displayName} \u00e0 ${ville} : technique, risques, gouvernance, \u00e9nergie, march\u00e9. ${details}.`,
+    title,
+    description,
     openGraph: {
       title: ogTitle,
       description: `Score d\u00e9taill\u00e9 de ${displayName} \u00e0 ${ville} : technique, risques, gouvernance, \u00e9nergie, march\u00e9.`,
@@ -502,8 +511,75 @@ export default async function CoproprietePage({
       return pct < worstPct ? d : worst;
     }, dimensions.filter((d) => d.score !== null)[0])?.key ?? dimensions[0].key;
 
+  const jsonLdResidence = {
+    "@context": "https://schema.org",
+    "@type": "Residence",
+    name: displayName,
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: copro.adresseReference ?? undefined,
+      postalCode: copro.codePostal ?? undefined,
+      addressLocality: copro.communeAdresse ?? undefined,
+      addressCountry: "FR",
+    },
+    ...(hasCoords && {
+      geo: {
+        "@type": "GeoCoordinates",
+        latitude: copro.latitude,
+        longitude: copro.longitude,
+      },
+    }),
+    additionalProperty: [
+      ...(copro.scoreGlobal != null
+        ? [{ "@type": "PropertyValue", name: "Score CoproScore", value: copro.scoreGlobal }]
+        : []),
+      ...(copro.nbTotalLots != null
+        ? [{ "@type": "PropertyValue", name: "Nombre de lots", value: copro.nbTotalLots }]
+        : []),
+      ...(copro.typeSyndic
+        ? [{ "@type": "PropertyValue", name: "Type de syndic", value: copro.typeSyndic }]
+        : []),
+    ],
+  };
+
+  const jsonLdBreadcrumb = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Accueil",
+        item: "https://coproscore.fr",
+      },
+      ...(communeLabel && villeSlug
+        ? [
+            {
+              "@type": "ListItem",
+              position: 2,
+              name: communeLabel,
+              item: `https://coproscore.fr${villeSlug.split("?")[0]}`,
+            },
+          ]
+        : []),
+      {
+        "@type": "ListItem",
+        position: communeLabel && villeSlug ? 3 : 2,
+        name: displayName,
+      },
+    ],
+  };
+
   return (
     <div className="flex min-h-screen flex-col overflow-x-hidden bg-slate-50/50">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdResidence) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdBreadcrumb) }}
+      />
       <SaveHistory
         slug={slug}
         nom={displayName}

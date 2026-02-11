@@ -203,8 +203,12 @@ export async function generateMetadata({
   const cpParam = effectiveCp ? `?cp=${effectiveCp}` : "";
   const ogImage = `${process.env.NEXT_PUBLIC_BASE_URL || "https://coproscore.fr"}/api/og/ville/${slug}${cpParam}`;
 
+  const titleText = info.avg_score != null
+    ? `Copropri\u00e9t\u00e9s \u00e0 ${displayName} \u2014 Score moyen ${info.avg_score}/100`
+    : `Copropri\u00e9t\u00e9s \u00e0 ${displayName} : score, DPE, prix`;
+
   return {
-    title: `Copropri\u00e9t\u00e9s \u00e0 ${displayName} : score, DPE, prix`,
+    title: titleText,
     description: `${Number(info.total)} copropri\u00e9t\u00e9s analys\u00e9es \u00e0 ${displayName} (${info.nom_dept}). ${scoreText}${prixPart}${dpePart}. Consultez scores et d\u00e9tails.`,
     openGraph: {
       title: ogTitle,
@@ -413,11 +417,33 @@ export default async function VillePage({
     },
   };
 
+  const jsonLdBreadcrumb = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Accueil",
+        item: "https://coproscore.fr",
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: displayName,
+      },
+    ],
+  };
+
   return (
     <div className="flex min-h-screen flex-col bg-[#fafbfc]">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdBreadcrumb) }}
       />
 
       {/* Header */}
