@@ -7,25 +7,52 @@ import type { TimelineEvent } from "./timeline";
 // ─── Constants ───────────────────────────────────────────────────────────────
 
 const TEAL = "#0d9488";
+const TEAL_50 = "#f0fdfa";
+const TEAL_100 = "#ccfbf1";
 const TEXT = "#1e293b";
 const TEXT_SEC = "#64748b";
 const TEXT_MUTED = "#94a3b8";
 const BG_ALT = "#f8fafc";
-const BG_HEADER = "#f1f5f9";
+const BG_CARD = "#f1f5f9";
 const BORDER = "#e2e8f0";
 const GREEN = "#059669";
 const AMBER = "#d97706";
 const RED = "#dc2626";
 const BLUE = "#2563eb";
 const WHITE = "#ffffff";
-const TEAL_LIGHT = "#f0fdfa";
 
 const PW = 595.28;
 const PH = 841.89;
 const M = 50;
 const CW = PW - 2 * M;
-const CT = 65; // content top (after header line)
-const CB = PH - 55; // content bottom (before footer)
+const CT = 56;
+const CB = PH - 50;
+
+const DIM_COLORS: Record<string, string> = {
+  Technique: "#0ea5e9",
+  Risques: "#8b5cf6",
+  Gouvernance: "#6366f1",
+  "\u00c9nergie": "#f59e0b",
+  "March\u00e9": TEAL,
+};
+
+const EVENT_COLORS: Record<string, string> = {
+  construction: "#6366f1",
+  administratif: "#64748b",
+  energie: "#f59e0b",
+  transaction: TEAL,
+  risque: "#dc2626",
+  gouvernance: "#8b5cf6",
+};
+
+const EVENT_LABELS: Record<string, string> = {
+  construction: "Construction",
+  administratif: "Administratif",
+  energie: "\u00c9nergie",
+  transaction: "Transaction",
+  risque: "Risque",
+  gouvernance: "Gouvernance",
+};
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -90,6 +117,14 @@ export interface ReportInput {
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Doc = any;
+
+/** Replace U+202F (narrow no-break space) that fr-FR locale inserts */
+function sanitize(s: string): string {
+  return s.replace(/\u202F/g, " ");
+}
+
 function sc(score: number): string {
   if (score >= 70) return GREEN;
   if (score >= 40) return AMBER;
@@ -103,8 +138,11 @@ function sl(score: number): string {
 }
 
 function fmtPrix(n: number): string {
-  // Replace U+202F (narrow no-break space) with regular space — Helvetica lacks U+202F glyph
-  return Math.round(n).toLocaleString("fr-FR").replace(/\u202F/g, " ") + " \u20ac";
+  return sanitize(Math.round(n).toLocaleString("fr-FR")) + " \u20ac";
+}
+
+function fmtNum(n: number): string {
+  return sanitize(Math.round(n).toLocaleString("fr-FR"));
 }
 
 function fmtEvo(n: number): string {
@@ -112,60 +150,162 @@ function fmtEvo(n: number): string {
 }
 
 function fmtDate(): string {
-  return new Date().toLocaleDateString("fr-FR", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
+  return sanitize(
+    new Date().toLocaleDateString("fr-FR", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    })
+  );
+}
+
+// ─── Drawing primitives ──────────────────────────────────────────────────────
+
+/** Draw a smooth arc stroke via line segments */
+function drawArcStroke(
+  doc: Doc,
+  cx: number,
+  cy: number,
+  r: number,
+  startDeg: number,
+  endDeg: number,
+  lineWidth: number,
+  color: string
+) {
+  const steps = Math.max(60, Math.ceil(Math.abs(endDeg - startDeg) / 2));
+  doc.save();
+  doc.lineWidth(lineWidth).strokeColor(color).lineCap("round");
+  for (let i = 0; i <= steps; i++) {
+    const deg = startDeg + ((endDeg - startDeg) * i) / steps;
+    const rad = (deg * Math.PI) / 180;
+    const x = cx + r * Math.cos(rad);
+    const y = cy + r * Math.sin(rad);
+    if (i === 0) doc.moveTo(x, y);
+    else doc.lineTo(x, y);
+  }
+  doc.stroke();
+  doc.restore();
+}
+
+/** Draw a score gauge (240\u00b0 arc opening at bottom) */
+function drawScoreGauge(
+  doc: Doc,
+  cx: number,
+  cy: number,
+  r: number,
+  score: number
+) {
+  const START = 150;
+  const SWEEP = 240;
+  const END = START + SWEEP;
+  const LW = 14;
+
+  // Background arc
+  drawArcStroke(doc, cx, cy, r, START, END, LW, BORDER);
+
+  // Score arc
+  if (score > 0) {
+    const fillEnd = START + (SWEEP * Math.min(score, 100)) / 100;
+    drawArcStroke(doc, cx, cy, r, START, fillEnd, LW, sc(score));
+  }
+
+  // Score number
+  doc.font("Helvetica-Bold").fontSize(38).fillColor(TEXT);
+  const sStr = score.toString();
+  const tw = doc.widthOfString(sStr);
+  doc.text(sStr, cx - tw / 2, cy - 20, { lineBreak: false });
+
+  // /100
+  doc.font("Helvetica").fontSize(13).fillColor(TEXT_SEC);
+  const sub = "/ 100";
+  const sw = doc.widthOfString(sub);
+  doc.text(sub, cx - sw / 2, cy + 16, { lineBreak: false });
+}
+
+/** Draw a horizontal progress bar with rounded ends */
+function drawProgressBar(
+  doc: Doc,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  pct: number,
+  bgColor: string,
+  fgColor: string
+) {
+  doc.save();
+  doc.roundedRect(x, y, w, h, h / 2).fill(bgColor);
+  if (pct > 0) {
+    const fillW = Math.max(pct * w, h);
+    doc.roundedRect(x, y, fillW, h, h / 2).fill(fgColor);
+  }
+  doc.restore();
+}
+
+/** Draw a stat card with big value + small label */
+function drawStatCard(
+  doc: Doc,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  label: string,
+  value: string,
+  accentColor?: string
+) {
+  doc.save();
+  doc.lineWidth(0.5);
+  doc.roundedRect(x, y, w, h, 4).fillAndStroke(BG_CARD, BORDER);
+
+  // Accent bar at top (clip to preserve rounded corners)
+  if (accentColor) {
+    doc.save();
+    doc.rect(x, y, w, 4).clip();
+    doc.roundedRect(x, y, w, h, 4).fill(accentColor);
+    doc.restore();
+  }
+
+  const contentTop = accentColor ? y + 6 : y;
+  const contentH = h - (accentColor ? 6 : 0);
+  const midY = contentTop + contentH / 2;
+
+  doc.font("Helvetica-Bold").fontSize(h > 48 ? 14 : 11).fillColor(TEXT);
+  doc.text(value, x + 4, midY - 14, {
+    width: w - 8,
+    align: "center",
+    lineBreak: false,
   });
-}
 
-// ─── Page chrome ─────────────────────────────────────────────────────────────
+  doc.font("Helvetica").fontSize(7.5).fillColor(TEXT_MUTED);
+  doc.text(label, x + 4, midY + 4, {
+    width: w - 8,
+    align: "center",
+    lineBreak: false,
+  });
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type Doc = any; // PDFKit.PDFDocument
-
-function pageHeader(doc: Doc, num: number) {
-  doc.save();
-  doc.font("Helvetica-Bold").fontSize(9).fillColor(TEAL);
-  doc.text("CoproScore", M, 20, { lineBreak: false });
-  doc.font("Helvetica").fontSize(8).fillColor(TEXT_MUTED);
-  doc.text(`Page ${num}`, PW - M - 40, 20, { width: 40, align: "right", lineBreak: false });
-  doc
-    .moveTo(M, 38)
-    .lineTo(PW - M, 38)
-    .lineWidth(0.5)
-    .strokeColor(BORDER)
-    .stroke();
   doc.restore();
 }
 
-let _inPageChrome = false;
-function pageFooter(doc: Doc) {
-  if (_inPageChrome) return;
-  _inPageChrome = true;
+/** Draw a colored score badge pill */
+function drawScoreBadge(
+  doc: Doc,
+  x: number,
+  y: number,
+  score: number
+) {
+  const color = sc(score);
   doc.save();
-  doc
-    .moveTo(M, PH - 45)
-    .lineTo(PW - M, PH - 45)
-    .lineWidth(0.5)
-    .strokeColor(BORDER)
-    .stroke();
-  doc
-    .font("Helvetica")
-    .fontSize(7)
-    .fillColor(TEXT_MUTED)
-    .text("coproscore.fr", 0, PH - 35, { width: PW, align: "center", lineBreak: false });
+  doc.roundedRect(x, y, 34, 18, 9).fill(color);
+  doc.font("Helvetica-Bold").fontSize(8.5).fillColor(WHITE);
+  doc.text(score.toString(), x, y + 4, {
+    width: 34,
+    align: "center",
+    lineBreak: false,
+  });
   doc.restore();
-  _inPageChrome = false;
 }
 
-function sectionTitle(doc: Doc, text: string, y: number): number {
-  doc.font("Helvetica-Bold").fontSize(14).fillColor(TEAL);
-  doc.text(text, M, y, { width: CW });
-  return y + 24;
-}
-
-// ─── Table helper ────────────────────────────────────────────────────────────
+// ─── Table with teal header ──────────────────────────────────────────────────
 
 interface Column {
   label: string;
@@ -180,18 +320,18 @@ function drawTable(
   startY: number
 ): number {
   const ROW_H = 18;
-  const HDR_H = 22;
+  const HDR_H = 24;
   const FS = 7.5;
-  const PAD = 5;
+  const PAD = 6;
   let y = startY;
 
   function header(atY: number): number {
     doc.save();
-    doc.rect(M, atY, CW, HDR_H).fill(BG_HEADER);
-    doc.font("Helvetica-Bold").fontSize(FS).fillColor(TEXT_MUTED);
+    doc.rect(M, atY, CW, HDR_H).fill(TEAL);
+    doc.font("Helvetica-Bold").fontSize(FS).fillColor(WHITE);
     let x = M;
     for (const col of columns) {
-      doc.text(col.label, x + PAD, atY + 6, {
+      doc.text(col.label, x + PAD, atY + 7, {
         width: col.width - 2 * PAD,
         align: col.align || "left",
         lineBreak: false,
@@ -210,7 +350,7 @@ function drawTable(
       y = header(CT);
     }
 
-    if (i % 2 === 1) {
+    if (i % 2 === 0) {
       doc.save();
       doc.rect(M, y, CW, ROW_H).fill(BG_ALT);
       doc.restore();
@@ -233,110 +373,235 @@ function drawTable(
   return y;
 }
 
-// ─── Page 1: Cover ──────────────────────────────────────────────────────────
+// ─── Section title ───────────────────────────────────────────────────────────
+
+function sectionTitle(doc: Doc, text: string, y: number): number {
+  doc.font("Helvetica-Bold").fontSize(16).fillColor(TEAL);
+  doc.text(text, M, y, { width: CW });
+  const bottom = y + 22;
+  doc.save();
+  doc
+    .moveTo(M, bottom)
+    .lineTo(M + 50, bottom)
+    .lineWidth(2.5)
+    .strokeColor(TEAL)
+    .lineCap("round")
+    .stroke();
+  doc.restore();
+  return bottom + 14;
+}
+
+// ─── Page chrome (final pass) ────────────────────────────────────────────────
+
+function addPageHeader(doc: Doc, pageNum: number, totalPages: number) {
+  doc.save();
+  // Teal accent bar
+  doc.rect(0, 0, PW, 3).fill(TEAL);
+  // Logo
+  doc.font("Helvetica-Bold").fontSize(9).fillColor(TEAL);
+  doc.text("CoproScore", M, 14, { lineBreak: false });
+  // Page number
+  doc.font("Helvetica").fontSize(8).fillColor(TEXT_MUTED);
+  doc.text(`Page ${pageNum} / ${totalPages}`, PW - M - 60, 14, {
+    width: 60,
+    align: "right",
+    lineBreak: false,
+  });
+  // Separator
+  doc
+    .moveTo(M, 32)
+    .lineTo(PW - M, 32)
+    .lineWidth(0.5)
+    .strokeColor(BORDER)
+    .stroke();
+  doc.restore();
+}
+
+function addPageFooter(doc: Doc) {
+  doc.save();
+  doc
+    .moveTo(M, PH - 40)
+    .lineTo(PW - M, PH - 40)
+    .lineWidth(0.5)
+    .strokeColor(BORDER)
+    .stroke();
+  doc
+    .font("Helvetica")
+    .fontSize(7)
+    .fillColor(TEXT_MUTED)
+    .text("coproscore.fr", 0, PH - 30, {
+      width: PW,
+      align: "center",
+      lineBreak: false,
+    });
+  doc.restore();
+}
+
+// ─── Page 1: Cover ───────────────────────────────────────────────────────────
 
 function renderCover(doc: Doc, data: ReportInput) {
   const cx = PW / 2;
 
-  // Logo
-  doc.font("Helvetica-Bold").fontSize(32).fillColor(TEAL);
-  doc.text("Copro", 0, 100, { continued: true, width: PW, align: "center" });
-  doc.fillColor(TEXT).text("Score", { width: PW, align: "center" });
+  // ── Teal banner ──
+  doc.rect(0, 0, PW, 180).fill(TEAL);
 
-  // Score circle
-  const circleY = 280;
-  const r = 58;
-  const color = sc(data.scoreGlobal);
-  doc.circle(cx, circleY, r).fill(color);
+  doc.font("Helvetica-Bold").fontSize(34).fillColor(WHITE);
+  doc.text("CoproScore", 0, 55, { width: PW, align: "center" });
 
-  // Score number
-  doc.font("Helvetica-Bold").fontSize(40).fillColor(WHITE);
-  const scoreStr = data.scoreGlobal.toString();
-  const tw = doc.widthOfString(scoreStr);
-  doc.text(scoreStr, cx - tw / 2, circleY - 22, { lineBreak: false });
+  doc.font("Helvetica").fontSize(14).fillColor(TEAL_100);
+  doc.text("Rapport d'analyse complet", 0, 100, {
+    width: PW,
+    align: "center",
+  });
 
-  // /100
-  doc.font("Helvetica").fontSize(13).fillColor(WHITE);
-  const sub = "/ 100";
-  const sw = doc.widthOfString(sub);
-  doc.text(sub, cx - sw / 2, circleY + 16, { lineBreak: false });
+  // ── Score gauge ──
+  const gaugeY = 295;
+  drawScoreGauge(doc, cx, gaugeY, 62, data.scoreGlobal);
 
-  // Label
+  // Score label
   doc
     .font("Helvetica-Bold")
-    .fontSize(18)
-    .fillColor(color)
-    .text(sl(data.scoreGlobal), 0, circleY + r + 24, {
+    .fontSize(16)
+    .fillColor(sc(data.scoreGlobal))
+    .text(sl(data.scoreGlobal), 0, gaugeY + 58, {
       width: PW,
       align: "center",
     });
 
-  // Copro name
-  doc
-    .font("Helvetica-Bold")
-    .fontSize(18)
-    .fillColor(TEXT)
-    .text(data.displayName, M, circleY + r + 65, {
-      width: CW,
-      align: "center",
-    });
-
-  // City / postal code (only — address is already in displayName)
-  const cityLine = [data.codePostal, data.commune].filter(Boolean).join(" ");
-  if (cityLine) {
-    doc
-      .font("Helvetica")
-      .fontSize(11)
-      .fillColor(TEXT_SEC)
-      .text(cityLine, M, doc.y + 8, { width: CW, align: "center" });
-  }
-
   // Confidence
   if (data.indiceConfiance != null) {
     doc
-      .fontSize(10)
+      .font("Helvetica")
+      .fontSize(9)
       .fillColor(TEXT_MUTED)
       .text(
-        `Indice de confiance : ${Math.round(data.indiceConfiance)}%`,
-        M,
-        doc.y + 16,
-        { width: CW, align: "center" }
+        `Indice de confiance : ${Math.round(data.indiceConfiance)} %`,
+        0,
+        gaugeY + 80,
+        { width: PW, align: "center" }
       );
   }
 
-  // Date
+  // ── Copro info card ──
+  const cardY = gaugeY + 108;
+  doc.font("Helvetica-Bold").fontSize(13);
+  const nameH = doc.heightOfString(data.displayName, { width: CW - 32 });
+  const cityLine = [data.codePostal, data.commune].filter(Boolean).join(" ");
+  const cardH = nameH + (cityLine ? 30 : 18);
+
+  doc.save();
+  doc.lineWidth(0.5);
+  doc.roundedRect(M, cardY, CW, cardH, 6).fillAndStroke(WHITE, BORDER);
+
+  doc.font("Helvetica-Bold").fontSize(13).fillColor(TEXT);
+  doc.text(data.displayName, M + 16, cardY + 10, {
+    width: CW - 32,
+    align: "center",
+  });
+  if (cityLine) {
+    doc.font("Helvetica").fontSize(10).fillColor(TEXT_SEC);
+    doc.text(cityLine, M + 16, cardY + 10 + nameH + 4, {
+      width: CW - 32,
+      align: "center",
+    });
+  }
+  doc.restore();
+
+  // ── Stat cards ──
+  const cardsY = cardY + cardH + 22;
+  const gap = 10;
+  const cardW = (CW - 3 * gap) / 4;
+
+  const stats: { label: string; value: string }[] = [
+    {
+      label: "Lots",
+      value: data.nbTotalLots != null ? fmtNum(data.nbTotalLots) : "\u2014",
+    },
+    {
+      label: "Syndic",
+      value: data.typeSyndic
+        ? data.typeSyndic.charAt(0).toUpperCase() +
+          data.typeSyndic.slice(1).toLowerCase()
+        : "\u2014",
+    },
+    {
+      label: "Construction",
+      value: formatPeriod(data.periodeConstruction) || "\u2014",
+    },
+    {
+      label: "DPE",
+      value: data.dpeClasseMediane || "\u2014",
+    },
+  ];
+
+  for (let i = 0; i < stats.length; i++) {
+    const sx = M + i * (cardW + gap);
+    drawStatCard(doc, sx, cardsY, cardW, 42, stats[i].label, stats[i].value);
+  }
+
+  // ── Contents ──
+  const contentsY = cardsY + 70;
+  doc.save();
   doc
-    .fontSize(10)
-    .fillColor(TEXT_MUTED)
-    .text(`Rapport g\u00e9n\u00e9r\u00e9 le ${fmtDate()}`, M, 660, {
-      width: CW,
+    .moveTo(M + 100, contentsY)
+    .lineTo(PW - M - 100, contentsY)
+    .strokeColor(BORDER)
+    .lineWidth(0.5)
+    .stroke();
+  doc.restore();
+
+  doc
+    .font("Helvetica-Bold")
+    .fontSize(9)
+    .fillColor(TEXT)
+    .text("Contenu du rapport", 0, contentsY + 12, {
+      width: PW,
       align: "center",
     });
 
-  // Source
+  const contents: string[] = ["Score global et analyse d\u00e9taill\u00e9e"];
+  if (data.analyse) contents.push("Analyse IA personnalis\u00e9e");
+  if (data.estimation && data.estimation.postes.length > 0)
+    contents.push("Estimation des travaux potentiels");
+  if (data.timeline.length > 0)
+    contents.push("Chronologie de la copropri\u00e9t\u00e9");
+  if (data.marchePrixM2 != null || data.transactions.length > 0)
+    contents.push("Donn\u00e9es du march\u00e9 immobilier");
+  if (data.nearby.length > 0)
+    contents.push("Copropri\u00e9t\u00e9s \u00e0 proximit\u00e9");
+
+  doc.font("Helvetica").fontSize(8.5).fillColor(TEXT_SEC);
+  let cy = contentsY + 30;
+  for (const item of contents) {
+    doc.text(`\u2022  ${item}`, 0, cy, { width: PW, align: "center" });
+    cy += 14;
+  }
+
+  // ── Footer ──
+  doc
+    .font("Helvetica")
+    .fontSize(9)
+    .fillColor(TEXT_MUTED)
+    .text(`Rapport g\u00e9n\u00e9r\u00e9 le ${fmtDate()}`, 0, 710, {
+      width: PW,
+      align: "center",
+    });
+
   doc
     .fontSize(8)
     .fillColor(TEXT_MUTED)
     .text(
       "coproscore.fr \u2014 Donn\u00e9es issues du RNIC, DVF, DPE ADEME",
-      M,
-      740,
-      { width: CW, align: "center" }
+      0,
+      735,
+      { width: PW, align: "center" }
     );
 }
 
-// ─── Page 2: Score détaillé ─────────────────────────────────────────────────
+// ─── Page 2: Score d\u00e9taill\u00e9 ──────────────────────────────────────────────────
 
 function renderScoreDetail(doc: Doc, data: ReportInput) {
   let y = sectionTitle(doc, "Score d\u00e9taill\u00e9", CT);
-
-  const dimColors: Record<string, string> = {
-    Technique: "#0ea5e9",
-    Risques: "#8b5cf6",
-    Gouvernance: "#6366f1",
-    "\u00c9nergie": "#f59e0b",
-    "March\u00e9": TEAL,
-  };
 
   for (const dim of data.dimensions) {
     if (y + 80 > CB) {
@@ -345,73 +610,32 @@ function renderScoreDetail(doc: Doc, data: ReportInput) {
     }
 
     const pct = dim.score != null ? dim.score / dim.max : 0;
-    const color = dim.score != null ? sc(Math.round(pct * 100)) : TEXT_MUTED;
-    const dimColor = dimColors[dim.label] || TEAL;
+    const pct100 = Math.round(pct * 100);
+    const dimColor = DIM_COLORS[dim.label] || TEAL;
 
-    // Label row
+    // Label + score on same line
     doc.font("Helvetica-Bold").fontSize(11).fillColor(TEXT);
-    doc.text(dim.label, M, y, { continued: true, width: CW });
-    doc.fillColor(color);
-    doc.text(
-      `   ${dim.score ?? "\u2014"} / ${dim.max}`,
-      { width: CW }
-    );
+    doc.text(dim.label, M, y, { lineBreak: false });
+
+    const scoreText =
+      dim.score != null ? `${dim.score} / ${dim.max}` : "\u2014";
+    doc
+      .font("Helvetica-Bold")
+      .fontSize(11)
+      .fillColor(dim.score != null ? sc(pct100) : TEXT_MUTED);
+    doc.text(scoreText, M, y, { width: CW, align: "right" });
     y += 18;
 
     // Progress bar
-    const barW = CW;
-    const barH = 6;
-    doc.save();
-    doc.roundedRect(M, y, barW, barH, 3).fill(BG_HEADER);
-    if (dim.score != null) {
-      const fillW = Math.max(pct * barW, 6);
-      doc.roundedRect(M, y, fillW, barH, 3).fill(dimColor);
-    }
-    doc.restore();
-    y += barH + 8;
+    drawProgressBar(doc, M, y, CW, 7, pct, BG_CARD, dimColor);
+    y += 14;
 
-    // Detailed explanation
+    // Explanation
     doc.font("Helvetica").fontSize(8.5).fillColor(TEXT_SEC);
-    const textHeight = doc.heightOfString(dim.detailedExplanation, {
-      width: CW,
-    });
+    const textH = doc.heightOfString(dim.detailedExplanation, { width: CW });
     doc.text(dim.detailedExplanation, M, y, { width: CW });
-    y += textHeight + 16;
+    y += textH + 18;
   }
-
-  // Key data box
-  if (y + 60 > CB) {
-    doc.addPage();
-    y = CT;
-  }
-
-  y += 4;
-  doc.save();
-  doc.roundedRect(M, y, CW, 50, 4).fill(BG_ALT);
-  doc
-    .roundedRect(M, y, CW, 50, 4)
-    .lineWidth(0.5)
-    .strokeColor(BORDER)
-    .stroke();
-
-  doc.font("Helvetica-Bold").fontSize(8).fillColor(TEXT_MUTED);
-  doc.text("Donn\u00e9es cl\u00e9s", M + 12, y + 8, { lineBreak: false });
-
-  doc.font("Helvetica").fontSize(8).fillColor(TEXT);
-  const items = [
-    data.nbTotalLots != null ? `${data.nbTotalLots} lots` : null,
-    data.typeSyndic ? `Syndic ${data.typeSyndic}` : null,
-    formatPeriod(data.periodeConstruction)
-      ? `Construction ${formatPeriod(data.periodeConstruction)}`
-      : null,
-    data.dpeClasseMediane ? `DPE ${data.dpeClasseMediane}` : null,
-    data.syndicatCooperatif === "oui" ? "Coop\u00e9ratif" : null,
-  ]
-    .filter(Boolean)
-    .join("  \u2022  ");
-  doc.text(items, M + 12, y + 24, { width: CW - 24 });
-
-  doc.restore();
 }
 
 // ─── Page 3: Analyse IA ─────────────────────────────────────────────────────
@@ -432,14 +656,22 @@ function renderAnalyse(doc: Doc, data: ReportInput) {
 
   // Resume box
   doc.save();
-  doc.roundedRect(M, y, CW, 0.1).fill(TEAL_LIGHT); // measure first
-  const resumeH = doc.heightOfString(data.analyse.resume, { width: CW - 24 });
-  const boxH = resumeH + 20;
-  doc.roundedRect(M, y, CW, boxH, 4).fill(TEAL_LIGHT);
+  const resumeText = sanitize(data.analyse.resume);
+  doc.font("Helvetica").fontSize(9);
+  const resumeH = doc.heightOfString(resumeText, { width: CW - 28 });
+  const boxH = resumeH + 22;
+
+  doc.roundedRect(M, y, CW, boxH, 5).fill(TEAL_50);
+  doc
+    .roundedRect(M, y, CW, boxH, 5)
+    .lineWidth(0.5)
+    .strokeColor(TEAL)
+    .stroke();
+
   doc.font("Helvetica").fontSize(9).fillColor(TEXT);
-  doc.text(data.analyse.resume, M + 12, y + 10, { width: CW - 24 });
+  doc.text(resumeText, M + 14, y + 11, { width: CW - 28 });
   doc.restore();
-  y += boxH + 20;
+  y += boxH + 22;
 
   // Points forts
   y = renderAnalyseSection(
@@ -475,9 +707,12 @@ function renderAnalyse(doc: Doc, data: ReportInput) {
       y = CT;
     }
     doc.font("Helvetica").fontSize(7).fillColor(TEXT_MUTED);
-    doc.text(`Analyse g\u00e9n\u00e9r\u00e9e le ${data.analyseDate}`, M, y + 8, {
-      width: CW,
-    });
+    doc.text(
+      `Analyse g\u00e9n\u00e9r\u00e9e le ${sanitize(data.analyseDate)}`,
+      M,
+      y + 8,
+      { width: CW }
+    );
   }
 }
 
@@ -498,17 +733,18 @@ function renderAnalyseSection(
   y += 16;
 
   for (const item of items) {
-    const itemH = doc.heightOfString(item, { width: CW - 22 });
+    const text = sanitize(item);
+    const itemH = doc.heightOfString(text, { width: CW - 22 });
     if (y + itemH + 8 > CB) {
       doc.addPage();
       y = CT;
     }
 
-    // Bullet
+    // Colored bullet
     doc.circle(M + 4, y + 5, 3).fill(color);
     // Text
     doc.font("Helvetica").fontSize(8.5).fillColor(TEXT_SEC);
-    doc.text(item, M + 14, y, { width: CW - 22 });
+    doc.text(text, M + 14, y, { width: CW - 22 });
     y += itemH + 6;
   }
 
@@ -533,7 +769,7 @@ function renderEstimation(doc: Doc, data: ReportInput) {
 
   const est = data.estimation;
 
-  // Table of postes
+  // Table
   const cols: Column[] = [
     { label: "Poste de travaux", width: 185 },
     { label: "Description", width: 160 },
@@ -543,68 +779,67 @@ function renderEstimation(doc: Doc, data: ReportInput) {
 
   const rows = est.postes.map((p) => [
     p.nom,
-    p.description,
+    sanitize(p.description),
     fmtPrix(p.min),
     fmtPrix(p.max),
   ]);
 
   y = drawTable(doc, cols, rows, y);
-  y += 12;
+  y += 14;
 
   // Total box
-  if (y + 50 > CB) {
+  if (y + 55 > CB) {
     doc.addPage();
     y = CT;
   }
 
   doc.save();
-  doc.roundedRect(M, y, CW, 44, 4).fill(BG_ALT);
-  doc
-    .roundedRect(M, y, CW, 44, 4)
-    .lineWidth(0.5)
-    .strokeColor(BORDER)
-    .stroke();
+  doc.lineWidth(1);
+  doc.roundedRect(M, y, CW, 48, 5).fillAndStroke(TEAL_50, TEAL);
 
   doc.font("Helvetica-Bold").fontSize(10).fillColor(TEXT);
-  doc.text("Total estim\u00e9", M + 12, y + 8, { lineBreak: false });
+  doc.text("Total estim\u00e9", M + 14, y + 10, { lineBreak: false });
 
-  doc.font("Helvetica-Bold").fontSize(12).fillColor(TEXT);
-  const totalText = `${fmtPrix(est.totalMin)} \u2014 ${fmtPrix(est.totalMax)}`;
-  doc.text(totalText, M + 12, y + 8, {
-    width: CW - 24,
+  doc.font("Helvetica-Bold").fontSize(13).fillColor(TEAL);
+  doc.text(`${fmtPrix(est.totalMin)} \u2014 ${fmtPrix(est.totalMax)}`, M + 14, y + 10, {
+    width: CW - 28,
     align: "right",
   });
 
+  // Per lot
   if (data.nbLotsHabitation && data.nbLotsHabitation > 1) {
-    const perLotMin = Math.round(est.totalMin / data.nbLotsHabitation);
-    const perLotMax = Math.round(est.totalMax / data.nbLotsHabitation);
+    const perMin = Math.round(est.totalMin / data.nbLotsHabitation);
+    const perMax = Math.round(est.totalMax / data.nbLotsHabitation);
     doc.font("Helvetica").fontSize(8).fillColor(TEXT_SEC);
     doc.text(
-      `soit ${fmtPrix(perLotMin)} \u2014 ${fmtPrix(perLotMax)} par lot`,
-      M + 12,
-      y + 26,
-      { width: CW - 24, align: "right" }
+      `soit ${fmtPrix(perMin)} \u2014 ${fmtPrix(perMax)} par lot`,
+      M + 14,
+      y + 30,
+      { width: CW - 28, align: "right" }
     );
   }
 
-  // Fiabilité
+  // Fiabilit\u00e9
   const fiabLabel =
     est.fiabilite === "haute"
-      ? "Estimation fiable (DPE + p\u00e9riode)"
+      ? "Fiabilit\u00e9 haute (DPE + p\u00e9riode)"
       : est.fiabilite === "moyenne"
-        ? "Estimation approximative (p\u00e9riode seule)"
+        ? "Fiabilit\u00e9 moyenne (p\u00e9riode seule)"
         : "Donn\u00e9es insuffisantes";
   const fiabColor =
-    est.fiabilite === "haute" ? GREEN : est.fiabilite === "moyenne" ? AMBER : RED;
-
+    est.fiabilite === "haute"
+      ? GREEN
+      : est.fiabilite === "moyenne"
+        ? AMBER
+        : RED;
   doc.font("Helvetica").fontSize(8).fillColor(fiabColor);
-  doc.text(fiabLabel, M + 12, y + 26, { lineBreak: false });
+  doc.text(fiabLabel, M + 14, y + 30, { lineBreak: false });
 
   doc.restore();
-  y += 56;
+  y += 62;
 
   // Disclaimer
-  if (y + 20 > CB) {
+  if (y + 16 > CB) {
     doc.addPage();
     y = CT;
   }
@@ -617,101 +852,151 @@ function renderEstimation(doc: Doc, data: ReportInput) {
   );
 }
 
-// ─── Page: Chronologie ──────────────────────────────────────────────────────
-
-const EVENT_TYPE_LABELS: Record<string, string> = {
-  construction: "Construction",
-  administratif: "Administratif",
-  energie: "\u00c9nergie",
-  transaction: "Transaction",
-  risque: "Risque",
-  gouvernance: "Gouvernance",
-};
+// ─── Page: Chronologie ───────────────────────────────────────────────────────
 
 function renderTimeline(doc: Doc, data: ReportInput) {
   let y = sectionTitle(doc, "Chronologie", CT);
 
   const events = data.timeline;
+  if (events.length === 0) return;
 
-  // Table header
-  const colDate = M;
-  const colType = M + 90;
-  const colEvent = M + 190;
-  const colEventW = CW - 190;
+  const dateW = 82;
+  const dotX = M + dateW + 14;
+  const textX = dotX + 16;
+  const textW = M + CW - textX;
+  const dotR = 5;
 
-  doc.rect(colDate, y, CW, 20).fill(BG_HEADER);
-  doc.font("Helvetica-Bold").fontSize(8).fillColor(TEXT);
-  doc.text("Date", colDate + 6, y + 6, { width: 80 });
-  doc.text("Type", colType + 6, y + 6, { width: 90 });
-  doc.text("\u00c9v\u00e9nement", colEvent + 6, y + 6, { width: colEventW - 12 });
-  y += 20;
-
-  doc.font("Helvetica").fontSize(8);
+  let prevDotY: number | null = null;
 
   for (let i = 0; i < events.length; i++) {
     const ev = events[i];
+    const title = sanitize(ev.titre);
+    const desc = sanitize(ev.description);
 
-    // Calculate height needed
-    const descHeight = doc.heightOfString(`${ev.titre} \u2014 ${ev.description}`, {
-      width: colEventW - 12,
-    });
-    const rowH = Math.max(18, descHeight + 8);
+    // Calculate height
+    doc.font("Helvetica-Bold").fontSize(9);
+    const titleH = doc.heightOfString(title, { width: textW });
+    doc.font("Helvetica").fontSize(8);
+    const descH = doc.heightOfString(desc, { width: textW });
+    const rowH = Math.max(28, titleH + descH + 8);
 
-    // Page break if needed
+    // Page break
     if (y + rowH > CB) {
       doc.addPage();
       y = CT;
+      prevDotY = null;
     }
 
-    // Zebra striping
-    if (i % 2 === 1) {
-      doc.rect(colDate, y, CW, rowH).fill(BG_ALT);
+    const eventDotY = y + 7;
+
+    // Vertical connector line from previous dot
+    if (prevDotY != null) {
+      doc.save();
+      doc
+        .moveTo(dotX, prevDotY)
+        .lineTo(dotX, eventDotY)
+        .lineWidth(2)
+        .strokeColor(BORDER)
+        .stroke();
+      doc.restore();
     }
 
-    // Date
+    // Colored dot
+    const evColor = EVENT_COLORS[ev.type] || TEXT_SEC;
+    doc.circle(dotX, eventDotY, dotR).fill(evColor);
+
+    // Date (left of dot)
     const d = new Date(ev.date);
-    const dateStr = d.getFullYear() < 1990
-      ? `~ ${d.getFullYear()}`
-      : d.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric" });
+    const dateStr =
+      d.getFullYear() < 1990
+        ? `~ ${d.getFullYear()}`
+        : sanitize(
+            d.toLocaleDateString("fr-FR", {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+            })
+          );
 
-    doc.fillColor(TEXT_SEC).text(dateStr, colDate + 6, y + 4, { width: 80 });
+    doc.font("Helvetica").fontSize(8).fillColor(TEXT_MUTED);
+    doc.text(dateStr, M, y + 2, {
+      width: dateW,
+      align: "right",
+      lineBreak: false,
+    });
 
-    // Type
-    doc.fillColor(TEXT_SEC).text(EVENT_TYPE_LABELS[ev.type] ?? ev.type, colType + 6, y + 4, { width: 90 });
+    // Type badge
+    const typeLabel = EVENT_LABELS[ev.type] ?? ev.type;
+    doc.font("Helvetica").fontSize(6.5).fillColor(evColor);
+    doc.text(typeLabel, M, y + 14, {
+      width: dateW,
+      align: "right",
+      lineBreak: false,
+    });
 
-    // Event
-    doc.fillColor(TEXT).text(`${ev.titre} \u2014 ${ev.description}`, colEvent + 6, y + 4, { width: colEventW - 12 });
+    // Title
+    doc.font("Helvetica-Bold").fontSize(9).fillColor(TEXT);
+    doc.text(title, textX, y, { width: textW });
 
-    y += rowH;
+    // Description
+    doc.font("Helvetica").fontSize(8).fillColor(TEXT_SEC);
+    doc.text(desc, textX, y + titleH + 2, { width: textW });
+
+    prevDotY = eventDotY;
+    y += rowH + 10;
   }
-
-  // Bottom border
-  doc.moveTo(M, y).lineTo(M + CW, y).strokeColor(BORDER).lineWidth(0.5).stroke();
 }
 
-// ─── Page 4: Marché immobilier ──────────────────────────────────────────────
+// ─── Page: March\u00e9 immobilier ────────────────────────────────────────────────
 
 function renderMarket(doc: Doc, data: ReportInput) {
   let y = sectionTitle(doc, "March\u00e9 immobilier", CT);
 
-  // Summary stats
+  // Stat cards
   if (data.marchePrixM2 != null) {
-    doc.font("Helvetica").fontSize(9).fillColor(TEXT);
+    const gap = 12;
+    const cardW = (CW - 2 * gap) / 3;
+    const cardH = 55;
 
-    const stats = [
-      `Prix moyen : ${fmtPrix(data.marchePrixM2)}/m\u00b2`,
-      data.marcheEvolution != null
-        ? `\u00c9volution annuelle : ${fmtEvo(data.marcheEvolution)}`
-        : null,
-      data.marcheNbTransactions != null
-        ? `Transactions : ${data.marcheNbTransactions}`
-        : null,
-    ]
-      .filter(Boolean)
-      .join("   |   ");
+    drawStatCard(
+      doc,
+      M,
+      y,
+      cardW,
+      cardH,
+      "Prix moyen / m\u00b2",
+      `${fmtPrix(data.marchePrixM2)}`,
+      TEAL
+    );
 
-    doc.text(stats, M, y, { width: CW });
-    y += 18;
+    if (data.marcheEvolution != null) {
+      const evoColor = data.marcheEvolution >= 0 ? GREEN : RED;
+      drawStatCard(
+        doc,
+        M + cardW + gap,
+        y,
+        cardW,
+        cardH,
+        "\u00c9volution annuelle",
+        fmtEvo(data.marcheEvolution),
+        evoColor
+      );
+    }
+
+    if (data.marcheNbTransactions != null) {
+      drawStatCard(
+        doc,
+        M + 2 * (cardW + gap),
+        y,
+        cardW,
+        cardH,
+        "Transactions (3 ans)",
+        fmtNum(data.marcheNbTransactions),
+        TEXT_SEC
+      );
+    }
+
+    y += cardH + 16;
 
     // Commune comparison
     if (data.communeAvgPrix != null) {
@@ -720,33 +1005,33 @@ function renderMarket(doc: Doc, data: ReportInput) {
       );
       const compText =
         diff >= 0
-          ? `${diff}% au-dessus de la moyenne de ${data.communeLabel} (${fmtPrix(data.communeAvgPrix)}/m\u00b2)`
-          : `${Math.abs(diff)}% en dessous de la moyenne de ${data.communeLabel} (${fmtPrix(data.communeAvgPrix)}/m\u00b2)`;
-      doc.font("Helvetica").fontSize(8).fillColor(TEXT_SEC);
+          ? `+${diff} % par rapport \u00e0 la moyenne de ${data.communeLabel} (${fmtPrix(data.communeAvgPrix)}/m\u00b2)`
+          : `${diff} % par rapport \u00e0 la moyenne de ${data.communeLabel} (${fmtPrix(data.communeAvgPrix)}/m\u00b2)`;
+      doc.font("Helvetica").fontSize(8.5).fillColor(TEXT_SEC);
       doc.text(compText, M, y, { width: CW });
-      y += 16;
+      y += 18;
     }
   }
 
-  y += 4;
+  y += 6;
 
   // Transaction table
   if (data.transactions.length > 0) {
-    doc.font("Helvetica-Bold").fontSize(10).fillColor(TEXT);
+    doc.font("Helvetica-Bold").fontSize(11).fillColor(TEXT);
     doc.text(
       `Derni\u00e8res transactions (${data.transactions.length})`,
       M,
       y,
       { width: CW }
     );
-    y += 18;
+    y += 20;
 
     const cols: Column[] = [
       { label: "Date", width: 65 },
-      { label: "Adresse", width: 180 },
+      { label: "Adresse", width: 175 },
       { label: "Surface", width: 60, align: "right" },
-      { label: "Prix", width: 90, align: "right" },
-      { label: "Prix/m\u00b2", width: CW - 65 - 180 - 60 - 90, align: "right" },
+      { label: "Prix", width: 95, align: "right" },
+      { label: "Prix/m\u00b2", width: CW - 65 - 175 - 60 - 95, align: "right" },
     ];
 
     const rows = data.transactions.map((t) => [
@@ -767,14 +1052,14 @@ function renderMarket(doc: Doc, data: ReportInput) {
   }
   doc.font("Helvetica").fontSize(7).fillColor(TEXT_MUTED);
   doc.text(
-    "Source : DVF (demandes de valeurs fonci\u00e8res), rayon 500m, 3 derni\u00e8res ann\u00e9es",
+    "Source : DVF (demandes de valeurs fonci\u00e8res), rayon 500 m, 3 derni\u00e8res ann\u00e9es",
     M,
-    y + 8,
+    y + 10,
     { width: CW }
   );
 }
 
-// ─── Page 5: Copropriétés à proximité ───────────────────────────────────────
+// ─── Page: Copropri\u00e9t\u00e9s \u00e0 proximit\u00e9 ──────────────────────────────────────────
 
 function renderNearby(doc: Doc, data: ReportInput) {
   let y = sectionTitle(
@@ -783,32 +1068,64 @@ function renderNearby(doc: Doc, data: ReportInput) {
     CT
   );
 
-  doc.font("Helvetica").fontSize(8).fillColor(TEXT_SEC);
-  doc.text("Dans un rayon de 500m, tri\u00e9es par distance", M, y, {
+  doc.font("Helvetica").fontSize(8.5).fillColor(TEXT_SEC);
+  doc.text("Dans un rayon de 500 m, tri\u00e9es par distance", M, y, {
     width: CW,
   });
-  y += 16;
+  y += 18;
 
-  const cols: Column[] = [
-    { label: "Nom", width: 155 },
-    { label: "Commune", width: 115 },
-    { label: "Score", width: 50, align: "center" },
-    { label: "Lots", width: 55, align: "right" },
-    { label: "Distance", width: CW - 155 - 115 - 50 - 55, align: "right" },
-  ];
+  for (const n of data.nearby) {
+    if (y + 38 > CB) {
+      doc.addPage();
+      y = CT;
+    }
 
-  const rows = data.nearby.map((n) => [
-    n.name,
-    n.commune || "\u2014",
-    n.score != null ? `${n.score}/100` : "\u2014",
-    n.nbLots != null ? String(n.nbLots) : "\u2014",
-    `${Math.round(n.distance)} m`,
-  ]);
+    // Card row
+    doc.save();
+    doc.lineWidth(0.5);
+    doc.roundedRect(M, y, CW, 32, 4).fillAndStroke(BG_ALT, BORDER);
 
-  drawTable(doc, cols, rows, y);
+    // Score badge
+    if (n.score != null) {
+      drawScoreBadge(doc, M + 10, y + 7, n.score);
+    } else {
+      doc.font("Helvetica").fontSize(8).fillColor(TEXT_MUTED);
+      doc.text("\u2014", M + 10, y + 10, { width: 34, align: "center" });
+    }
+
+    // Name
+    doc.font("Helvetica-Bold").fontSize(8.5).fillColor(TEXT);
+    doc.text(n.name, M + 52, y + 5, { width: 220, lineBreak: false });
+
+    // Commune
+    doc.font("Helvetica").fontSize(7.5).fillColor(TEXT_SEC);
+    doc.text(n.commune || "", M + 52, y + 18, {
+      width: 220,
+      lineBreak: false,
+    });
+
+    // Lots + Distance (right side)
+    const rightX = PW - M - 110;
+    doc.font("Helvetica").fontSize(8).fillColor(TEXT_SEC);
+    if (n.nbLots != null) {
+      doc.text(`${n.nbLots} lots`, rightX, y + 8, {
+        width: 50,
+        align: "right",
+        lineBreak: false,
+      });
+    }
+    doc.text(`${Math.round(n.distance)} m`, rightX + 56, y + 8, {
+      width: 50,
+      align: "right",
+      lineBreak: false,
+    });
+
+    doc.restore();
+    y += 38;
+  }
 }
 
-// ─── Last page: Mentions ────────────────────────────────────────────────────
+// ─── Last page: Mentions l\u00e9gales ────────────────────────────────────────────
 
 function renderDisclaimer(doc: Doc, data: ReportInput) {
   let y = sectionTitle(doc, "Mentions l\u00e9gales", CT);
@@ -839,7 +1156,7 @@ function renderDisclaimer(doc: Doc, data: ReportInput) {
   }
 }
 
-// ─── Main generator ─────────────────────────────────────────────────────────
+// ─── Main generator ──────────────────────────────────────────────────────────
 
 export async function generatePdfReport(
   input: ReportInput
@@ -847,9 +1164,7 @@ export async function generatePdfReport(
   return new Promise((resolve, reject) => {
     const doc = new PDFDocument({
       size: "A4",
-      // Bottom margin set to 0 to prevent PDFKit auto page-breaks when
-      // drawing the footer below the content area. Manual CB constant
-      // controls where content stops.
+      bufferPages: true,
       margins: { top: M, bottom: 0, left: M, right: M },
       info: {
         Title: `Rapport CoproScore \u2014 ${input.displayName}`,
@@ -863,23 +1178,10 @@ export async function generatePdfReport(
     doc.on("end", () => resolve(Buffer.concat(chunks)));
     doc.on("error", reject);
 
-    let pageNum = 0;
-
-    // Auto header/footer on new pages (not cover)
-    doc.on("pageAdded", () => {
-      pageNum++;
-      if (pageNum > 1) {
-        pageHeader(doc, pageNum);
-      }
-      pageFooter(doc);
-    });
-
     // Page 1: Cover
-    pageNum = 1;
-    pageFooter(doc);
     renderCover(doc, input);
 
-    // Page 2: Score détaillé
+    // Page 2: Score d\u00e9taill\u00e9
     doc.addPage();
     renderScoreDetail(doc, input);
 
@@ -901,13 +1203,13 @@ export async function generatePdfReport(
       renderTimeline(doc, input);
     }
 
-    // Page 4+: Marché immobilier
+    // Page: March\u00e9 immobilier
     if (input.marchePrixM2 != null || input.transactions.length > 0) {
       doc.addPage();
       renderMarket(doc, input);
     }
 
-    // Page 5+: Copros à proximité
+    // Page: Copros \u00e0 proximit\u00e9
     if (input.nearby.length > 0) {
       doc.addPage();
       renderNearby(doc, input);
@@ -916,6 +1218,17 @@ export async function generatePdfReport(
     // Last: Disclaimer
     doc.addPage();
     renderDisclaimer(doc, input);
+
+    // ── Final pass: add page chrome with Page X/N ──
+    const range = doc.bufferedPageRange();
+    const total = range.count;
+    for (let i = 0; i < total; i++) {
+      doc.switchToPage(i);
+      if (i > 0) {
+        addPageHeader(doc, i, total - 1);
+      }
+      addPageFooter(doc);
+    }
 
     doc.end();
   });

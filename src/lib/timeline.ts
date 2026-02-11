@@ -122,7 +122,7 @@ export function buildTimeline(
       sortDate: d.getTime(),
       type: "transaction",
       titre: "Vente immobili\u00e8re",
-      description: `${surface} m\u00b2 \u00e0 ${prixM2.toLocaleString("fr-FR")} \u20ac/m\u00b2 (${prix.toLocaleString("fr-FR")} \u20ac)`,
+      description: `${surface} m\u00b2 \u00e0 ${fmtNum(prixM2)} \u20ac/m\u00b2 (${fmtNum(prix)} \u20ac)`,
     });
   }
 
@@ -174,6 +174,11 @@ export function buildTimeline(
 }
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
+
+/** Format number with fr-FR locale, replacing U+202F (Helvetica lacks this glyph) */
+function fmtNum(n: number): string {
+  return Math.round(n).toLocaleString("fr-FR").replace(/\u202F/g, " ");
+}
 
 function formatDateFr(d: Date): string {
   return d.toLocaleDateString("fr-FR", {
