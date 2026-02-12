@@ -15,6 +15,8 @@ import { fetchDvfTransactions } from "@/lib/dvf-queries";
 import { estimerBudgetTravaux } from "@/lib/budget-travaux";
 import { buildTimeline, type DpeForTimeline } from "@/lib/timeline";
 import { checkAccess } from "@/lib/api-auth";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 const LAT_PER_METER = 1 / 111320;
 const LON_PER_METER = 1 / 77370;
@@ -132,13 +134,25 @@ export async function GET(
   { params }: { params: Promise<{ slug: string }> }
 ) {
  try {
-  // Pro-only endpoint
-  const access = await checkAccess("pro");
+  const { slug } = await params;
+
+  // Pro/Admin: always allowed. Free users: allowed if they purchased this PDF.
+  const access = await checkAccess("free");
   if (!access) {
-    return NextResponse.json({ error: "Accès réservé aux abonnés Pro" }, { status: 403 });
+    return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
   }
 
-  const { slug } = await params;
+  if (access !== "pro") {
+    const session = await getServerSession(authOptions);
+    const purchased = session?.user?.id
+      ? await prisma.pdfPurchase.findUnique({
+          where: { userId_slug: { userId: session.user.id, slug } },
+        })
+      : null;
+    if (!purchased) {
+      return NextResponse.json({ error: "Accès réservé — achetez le rapport ou passez Pro" }, { status: 403 });
+    }
+  }
 
   const copro = await prisma.copropriete.findUnique({ where: { slug } });
   if (!copro || copro.scoreGlobal == null) {

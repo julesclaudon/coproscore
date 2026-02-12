@@ -26,8 +26,16 @@ model User {
   image         String?
   password      String?
   role          Role      @default(FREE)
+
+  // Stripe
+  stripeCustomerId       String?   @unique @map("stripe_customer_id")
+  stripeSubscriptionId   String?   @map("stripe_subscription_id")
+  stripePriceId          String?   @map("stripe_price_id")
+  stripeCurrentPeriodEnd DateTime? @map("stripe_current_period_end")
+
   accounts      Account[]
   sessions      Session[]
+  pdfPurchases  PdfPurchase[]
   @@map("users")
 }
 
@@ -275,4 +283,18 @@ model AlertConfirmation {
   alert       ScoreAlert @relation(fields: [alertId], references: [id], onDelete: Cascade)
   @@index([alertId])
   @@map("alert_confirmations")
+}
+
+model PdfPurchase {
+  id              Int      @id @default(autoincrement())
+  userId          String   @map("user_id")
+  slug            String   @map("slug")
+  stripeSessionId String   @unique @map("stripe_session_id")
+  amount          Int      @map("amount") // cents
+  createdAt       DateTime @default(now()) @map("created_at")
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, slug])
+  @@index([userId])
+  @@map("pdf_purchases")
 }

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Loader2, Lock } from "lucide-react";
+import { Loader2, Lock, CheckCircle2 } from "lucide-react";
 import type { AccessLevel } from "@/lib/access";
 
 interface DownloadButtonProps {
@@ -11,11 +11,14 @@ interface DownloadButtonProps {
   className?: string;
   children: React.ReactNode;
   accessLevel: AccessLevel;
+  hasPurchased?: boolean;
 }
 
-export function DownloadButton({ slug, className, children, accessLevel }: DownloadButtonProps) {
+export function DownloadButton({ slug, className, children, accessLevel, hasPurchased }: DownloadButtonProps) {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+
+  const canDownload = accessLevel === "pro" || hasPurchased;
 
   async function handleDownload() {
     if (accessLevel === "visitor") {
@@ -23,12 +26,34 @@ export function DownloadButton({ slug, className, children, accessLevel }: Downl
       return;
     }
 
-    if (accessLevel === "free") {
-      router.push("/tarifs");
+    if (accessLevel === "free" && !hasPurchased) {
+      // Redirect to Stripe Checkout for PDF purchase
+      setLoading(true);
+      try {
+        const res = await fetch("/api/stripe/checkout-pdf", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ slug }),
+        });
+        const data = await res.json();
+        if (res.ok && data.url) {
+          window.location.href = data.url;
+          return;
+        }
+        if (res.status === 409) {
+          // Already purchased, reload
+          window.location.reload();
+          return;
+        }
+        throw new Error(data.error || "Erreur");
+      } catch {
+        alert("Erreur lors de la redirection vers le paiement.");
+        setLoading(false);
+      }
       return;
     }
 
-    // Pro: actual download
+    // Pro or purchased: actual download
     setLoading(true);
     try {
       const res = await fetch(`/api/copropriete/${slug}/rapport`);
@@ -50,16 +75,19 @@ export function DownloadButton({ slug, className, children, accessLevel }: Downl
     }
   }
 
-  const isPro = accessLevel === "pro";
-
   return (
     <Button onClick={handleDownload} disabled={loading} className={className}>
       {loading ? (
         <>
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          G&eacute;n&eacute;ration en cours...
+          {canDownload ? "G\u00e9n\u00e9ration en cours..." : "Redirection..."}
         </>
-      ) : !isPro ? (
+      ) : hasPurchased && accessLevel === "free" ? (
+        <>
+          <CheckCircle2 className="mr-2 h-4 w-4 text-green-400" />
+          T\u00e9l\u00e9charger votre rapport
+        </>
+      ) : !canDownload ? (
         <>
           <Lock className="mr-2 h-4 w-4" />
           {children}

@@ -57,6 +57,9 @@ import {
   type DvfQuarterlyRow,
 } from "@/lib/dvf-queries";
 import { PaywallOverlay } from "@/components/paywall-overlay";
+import { AutoDownload } from "./auto-download";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 // Dynamic — session-based access control
 export const dynamic = "force-dynamic";
@@ -381,10 +384,13 @@ function getNearbyLimit(accessLevel: AccessLevel): number {
 
 export default async function CoproprietePage({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const { slug } = await params;
+  const sp = await searchParams;
 
   // Numeric ID redirect (legacy links)
   if (/^\d+$/.test(slug)) {
@@ -411,6 +417,19 @@ export default async function CoproprietePage({
   if (!copro) notFound();
 
   const accessLevel = await getAccessLevel();
+
+  // Check if free user has purchased this PDF
+  let hasPurchased = false;
+  if (accessLevel === "free") {
+    const session = await getServerSession(authOptions);
+    if (session?.user?.id) {
+      const purchase = await prisma.pdfPurchase.findUnique({
+        where: { userId_slug: { userId: session.user.id, slug } },
+      });
+      hasPurchased = !!purchase;
+    }
+  }
+
   const hasCoords = copro.longitude != null && copro.latitude != null;
 
   const [nearby, dvfTransactions, dvfQuarterly, communeAvgPrix, scoreQuartier, timelineDvf, timelineDpe] = await Promise.all([
@@ -618,6 +637,7 @@ export default async function CoproprietePage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdBreadcrumb) }}
       />
+      {sp.pdf === "success" && hasPurchased && <AutoDownload slug={slug} />}
       <SaveHistory
         slug={slug}
         nom={displayName}
@@ -1313,7 +1333,7 @@ export default async function CoproprietePage({
                   <p className="mb-4 text-sm text-slate-500">
                     Analyse d&eacute;taill&eacute;e, historique et comparatif du quartier.
                   </p>
-                  <DownloadButton slug={slug} accessLevel={accessLevel} className="w-full bg-teal-500 py-5 text-base font-semibold text-white hover:bg-teal-800">
+                  <DownloadButton slug={slug} accessLevel={accessLevel} hasPurchased={hasPurchased} className="w-full bg-teal-500 py-5 text-base font-semibold text-white hover:bg-teal-800">
                     T&eacute;l&eacute;charger le rapport &mdash; 4,90&euro;
                   </DownloadButton>
                   <p className="mt-2 text-[11px] text-slate-400">PDF disponible imm&eacute;diatement</p>
@@ -1328,7 +1348,7 @@ export default async function CoproprietePage({
 
       {/* Sticky CTA bar — mobile only */}
       <div className="fixed inset-x-0 bottom-0 z-30 border-t border-teal-200 bg-teal-600 px-4 py-3 pb-[max(12px,var(--sab))] lg:hidden">
-        <DownloadButton slug={slug} accessLevel={accessLevel} className="w-full bg-white py-5 text-base font-semibold text-teal-700 shadow-sm hover:bg-teal-50">
+        <DownloadButton slug={slug} accessLevel={accessLevel} hasPurchased={hasPurchased} className="w-full bg-white py-5 text-base font-semibold text-teal-700 shadow-sm hover:bg-teal-50">
           T&eacute;l&eacute;charger le rapport &mdash; 4,90&euro;
         </DownloadButton>
       </div>

@@ -43,6 +43,13 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.role = (user as unknown as { role: string }).role;
         token.id = user.id;
+      } else if (token.id) {
+        // Re-read role from DB on each request to reflect webhook changes
+        const dbUser = await prisma.user.findUnique({
+          where: { id: token.id as string },
+          select: { role: true },
+        });
+        if (dbUser) token.role = dbUser.role;
       }
       return token;
     },
