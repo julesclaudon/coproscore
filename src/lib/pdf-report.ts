@@ -51,7 +51,7 @@ const DPE_COLORS: Record<string, string> = {
   C: "#cbfc34",
   D: "#fbfe06",
   E: "#fbcc05",
-  F: "#fc9935",
+  F: "#F28C00",
   G: "#fc0205",
 };
 
@@ -161,6 +161,12 @@ function fmtEvo(n: number): string {
   return (n >= 0 ? "+" : "") + n.toFixed(1) + " %";
 }
 
+function fmtCompactPrix(n: number): string {
+  if (n >= 10000) return `${(n / 1000).toFixed(0)}k`;
+  if (n >= 1000) return `${(n / 1000).toFixed(1).replace(/\.0$/, "")}k`;
+  return Math.round(n).toString();
+}
+
 function fmtDate(): string {
   return sanitize(
     new Date().toLocaleDateString("fr-FR", {
@@ -182,7 +188,7 @@ function ensureSpace(doc: Doc, y: number, minH: number): number {
 
 /** Add inter-section gap; start new page if not enough room for title + some content */
 function sectionGap(doc: Doc, y: number, minContentH: number = 80): number {
-  y += 16;
+  y += 24;
   if (y + minContentH > CB) {
     doc.addPage();
     return CT;
@@ -292,13 +298,13 @@ function drawStatCard(
   // Accent bar at top (clip to preserve rounded corners)
   if (accentColor) {
     doc.save();
-    doc.rect(x, y, w, 4).clip();
+    doc.rect(x, y, w, 6).clip();
     doc.roundedRect(x, y, w, h, 4).fill(accentColor);
     doc.restore();
   }
 
-  const contentTop = accentColor ? y + 6 : y;
-  const contentH = h - (accentColor ? 6 : 0);
+  const contentTop = accentColor ? y + 8 : y;
+  const contentH = h - (accentColor ? 8 : 0);
   const midY = contentTop + contentH / 2;
 
   doc.font("Helvetica-Bold").fontSize(h > 48 ? 14 : 11).fillColor(TEXT);
@@ -417,39 +423,65 @@ function drawQuarterlyChart(
 ): number {
   if (data.length === 0) return y;
 
-  const chartH = h - 22;
+  const axisW = 38;
+  const labelH = 18;
+  const topPad = 14;
+  const chartX = x + axisW;
+  const chartW = w - axisW;
+  const chartH = h - labelH - topPad;
+
   const maxVal = Math.max(...data.map((d) => d.avgPrixM2));
   const minVal = Math.min(...data.map((d) => d.avgPrixM2)) * 0.85;
   const range = maxVal - minVal || 1;
 
   const gap = 3;
-  const barW = Math.min(28, (w - 10) / data.length - gap);
+  const barW = Math.min(28, (chartW - 10) / data.length - gap);
   const totalBarsW = data.length * (barW + gap) - gap;
-  const startX = x + (w - totalBarsW) / 2;
+  const startX = chartX + (chartW - totalBarsW) / 2;
 
   // Background
   doc.save();
   doc.roundedRect(x, y, w, h, 4).fill(BG_ALT);
 
-  // Baseline
-  doc
-    .moveTo(startX - 4, y + chartH)
-    .lineTo(startX + totalBarsW + 4, y + chartH)
-    .lineWidth(0.5)
-    .strokeColor(BORDER)
-    .stroke();
+  // Y-axis gridlines and labels (3 levels)
+  const midVal = (minVal + maxVal) / 2;
+  const ticks = [minVal, midVal, maxVal];
+  for (const tickVal of ticks) {
+    const tickY =
+      y + topPad + chartH - ((tickVal - minVal) / range) * chartH;
+    doc
+      .moveTo(chartX, tickY)
+      .lineTo(chartX + chartW, tickY)
+      .lineWidth(0.3)
+      .strokeColor(BORDER)
+      .stroke();
+    doc.font("Helvetica").fontSize(6).fillColor(TEXT_MUTED);
+    doc.text(fmtCompactPrix(tickVal), x + 1, tickY - 5, {
+      width: axisW - 5,
+      align: "right",
+      lineBreak: false,
+    });
+  }
 
-  // Bars
+  // Bars + value labels + X-axis labels
   for (let i = 0; i < data.length; i++) {
     const d = data[i];
-    const barH = Math.max(4, ((d.avgPrixM2 - minVal) / range) * (chartH - 8));
+    const barH = Math.max(4, ((d.avgPrixM2 - minVal) / range) * chartH);
     const bx = startX + i * (barW + gap);
-    const by = y + chartH - barH;
+    const by = y + topPad + chartH - barH;
     doc.roundedRect(bx, by, barW, barH, 2).fill(TEAL);
+
+    // Value above bar
+    doc.font("Helvetica-Bold").fontSize(5.5).fillColor(TEXT_SEC);
+    doc.text(fmtCompactPrix(d.avgPrixM2), bx - 5, by - 10, {
+      width: barW + 10,
+      align: "center",
+      lineBreak: false,
+    });
 
     // Quarter label
     doc.font("Helvetica").fontSize(6).fillColor(TEXT_MUTED);
-    doc.text(`T${d.quarter}`, bx, y + chartH + 3, {
+    doc.text(`T${d.quarter}`, bx, y + topPad + chartH + 3, {
       width: barW,
       align: "center",
       lineBreak: false,
@@ -458,7 +490,7 @@ function drawQuarterlyChart(
     // Year label on Q1 or first bar
     if (d.quarter === 1 || i === 0) {
       doc.font("Helvetica-Bold").fontSize(6).fillColor(TEXT_SEC);
-      doc.text(d.year.toString(), bx, y + chartH + 11, {
+      doc.text(d.year.toString(), bx, y + topPad + chartH + 11, {
         width: barW + gap + barW,
         align: "left",
         lineBreak: false,
@@ -765,7 +797,7 @@ function renderScoreDetail(doc: Doc, data: ReportInput, startY: number): number 
     doc.font("Helvetica").fontSize(8).fillColor(TEXT_SEC);
     const textH = doc.heightOfString(explText, { width: CW });
     doc.text(explText, M, y, { width: CW });
-    y += textH + 10;
+    y += textH + 14;
   }
 
   return y;
@@ -1182,13 +1214,13 @@ function renderMarket(
   // Quarterly price chart
   if (data.quarterlyPrices.length > 2) {
     y += 4;
-    y = ensureSpace(doc, y, 90);
+    y = ensureSpace(doc, y, 120);
     doc.font("Helvetica-Bold").fontSize(9.5).fillColor(TEXT);
     doc.text("\u00c9volution trimestrielle du prix / m\u00b2", M, y, {
       width: CW,
     });
     y += 14;
-    y = drawQuarterlyChart(doc, data.quarterlyPrices, M, y, CW, 80);
+    y = drawQuarterlyChart(doc, data.quarterlyPrices, M, y, CW, 100);
     y += 10;
   }
 
@@ -1290,27 +1322,22 @@ function renderNearby(
         doc.text("\u2014", cx + 6, y + 9, { width: 34, align: "center" });
       }
 
-      // Name (truncated to fit)
+      // Name
       const nameX = cx + 46;
-      const nameW = colW - 46 - 48;
+      const nameW = colW - 52;
       doc.font("Helvetica-Bold").fontSize(7.5).fillColor(TEXT);
       doc.text(n.name, nameX, y + 4, {
         width: nameW,
         lineBreak: false,
       });
 
-      // Commune
+      // Info: lots · distance
+      const infoParts: string[] = [];
+      if (n.nbLots != null) infoParts.push(`${n.nbLots} lots`);
+      infoParts.push(`${Math.round(n.distance)} m`);
       doc.font("Helvetica").fontSize(6.5).fillColor(TEXT_SEC);
-      doc.text(n.commune || "", nameX, y + 16, {
+      doc.text(infoParts.join(" \u00b7 "), nameX, y + 16, {
         width: nameW,
-        lineBreak: false,
-      });
-
-      // Distance (right)
-      doc.font("Helvetica").fontSize(7).fillColor(TEXT_SEC);
-      doc.text(`${Math.round(n.distance)} m`, cx + colW - 44, y + 10, {
-        width: 38,
-        align: "right",
         lineBreak: false,
       });
 
@@ -1350,15 +1377,15 @@ function renderDisclaimer(
     if (line === "") {
       y += 8;
     } else {
-      y = ensureSpace(doc, y, 14);
+      if (y + 13 > CB) { doc.addPage(); y = CT; }
       doc.text(line, M, y, { width: CW });
       y += 13;
     }
   }
 
-  // Clickable report link
-  y += 8;
-  y = ensureSpace(doc, y, 14);
+  // Clickable report link (tight after copyright)
+  y += 4;
+  if (y + 14 > CB) { doc.addPage(); y = CT; }
   const reportUrl = `https://coproscore.fr/copropriete/${data.slug}`;
   doc.font("Helvetica").fontSize(8.5).fillColor(TEAL);
   doc.text(`Rapport : ${reportUrl}`, M, y, {
@@ -1403,38 +1430,39 @@ export async function generatePdfReport(
     // Score détaillé
     y = renderScoreDetail(doc, input, y);
 
-    // Analyse IA
+    // Analyse IA (stays on same page as score if room)
     if (input.analyse) {
-      y = sectionGap(doc, y, 100);
+      y = sectionGap(doc, y, 120);
       y = renderAnalyse(doc, input, y);
     }
 
-    // Estimation travaux
+    // Estimation travaux (push to new page — needs table + total box)
     if (input.estimation && input.estimation.postes.length > 0) {
-      y = sectionGap(doc, y, 100);
+      y = sectionGap(doc, y, 220);
       y = renderEstimation(doc, input, y);
     }
 
-    // Chronologie
+    // Chronologie (keep with estimation if room)
     if (input.timeline.length > 0) {
       y = sectionGap(doc, y, 80);
       y = renderTimeline(doc, input, y);
     }
 
-    // Marché immobilier
+    // Marché immobilier (push to new page — needs cards + chart + table)
     if (input.marchePrixM2 != null || input.transactions.length > 0) {
-      y = sectionGap(doc, y, 100);
+      y = sectionGap(doc, y, 200);
       y = renderMarket(doc, input, y);
     }
 
-    // Copros à proximité
+    // Copros à proximité (keep with market if room)
     if (input.nearby.length > 0) {
       y = sectionGap(doc, y, 60);
       y = renderNearby(doc, input, y);
     }
 
-    // Disclaimer
-    y = sectionGap(doc, y, 80);
+    // Disclaimer (flows with previous content — no forced page break)
+    y += 24;
+    if (y + 30 > CB) { doc.addPage(); y = CT; }
     renderDisclaimer(doc, input, y);
 
     // ── Final pass: add page chrome with Page X/N ──
