@@ -181,7 +181,7 @@ function TarifsContent() {
       {/* Success banner */}
       {showBanner && (
         <div className="border-b border-green-200 bg-green-50 px-4 py-3 text-center text-sm font-medium text-green-800">
-          Votre abonnement Pro est actif ! Vous avez d\u00e9sormais acc\u00e8s \u00e0 toutes les fonctionnalit\u00e9s.
+          Votre abonnement Pro est actif ! Vous avez désormais accès à toutes les fonctionnalités.
         </div>
       )}
 
