@@ -7,6 +7,7 @@ import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
+import { toast } from "sonner";
 import {
   Home,
   ChevronRight,
@@ -127,7 +128,11 @@ function TarifsContent() {
 
   const [showBanner, setShowBanner] = useState(false);
   useEffect(() => {
-    if (proSuccess) setShowBanner(true);
+    if (proSuccess) {
+      setShowBanner(true);
+      const t = setTimeout(() => setShowBanner(false), 5000);
+      return () => clearTimeout(t);
+    }
   }, [proSuccess]);
 
   async function handleProCheckout() {
@@ -149,7 +154,7 @@ function TarifsContent() {
       }
       throw new Error(data.error || "Erreur");
     } catch {
-      alert("Erreur lors de la redirection vers le paiement.");
+      toast.error("Erreur lors de la redirection vers le paiement.");
       setProLoading(false);
     }
   }
@@ -165,7 +170,7 @@ function TarifsContent() {
       }
       throw new Error(data.error || "Erreur");
     } catch {
-      alert("Erreur lors de l\u2019acc\u00e8s au portail de facturation.");
+      toast.error("Erreur lors de l\u2019accès au portail de facturation.");
       setPortalLoading(false);
     }
   }
@@ -214,6 +219,7 @@ function TarifsContent() {
           <div className="mt-8 inline-flex items-center gap-3 rounded-full border border-slate-200 bg-white px-1.5 py-1.5 shadow-sm">
             <button
               onClick={() => setAnnual(false)}
+              aria-pressed={!annual}
               className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
                 !annual
                   ? "bg-teal-600 text-white"
@@ -224,6 +230,7 @@ function TarifsContent() {
             </button>
             <button
               onClick={() => setAnnual(true)}
+              aria-pressed={annual}
               className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
                 annual
                   ? "bg-teal-600 text-white"
@@ -405,6 +412,7 @@ function TarifsContent() {
                 <div key={i}>
                   <button
                     onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                    aria-expanded={openFaq === i}
                     className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left text-sm font-medium text-slate-900 transition-colors hover:bg-slate-50 sm:px-6 sm:text-base"
                   >
                     <span>{item.q}</span>

@@ -194,7 +194,7 @@ function MiniGauge({ score, max, size = 40 }: { score: number | null; max: numbe
   const color = score !== null ? (pct >= 0.7 ? "#0D9488" : pct >= 0.4 ? "#F59E0B" : "#EF4444") : "#cbd5e1";
 
   return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="shrink-0">
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="shrink-0" role="img" aria-label={score !== null ? `${score} sur ${max}` : "Non disponible"}>
       <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#f1f5f9" strokeWidth={3} />
       <circle
         cx={size / 2}
@@ -679,7 +679,7 @@ export default async function CoproprietePage({
             <div className="min-w-0 flex-1">
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
                 <h1 className="break-words text-2xl font-bold text-slate-900 sm:text-3xl">{displayName}</h1>
-                <div className="flex gap-2">
+                <div className="flex gap-3">
                   <AlertModal slug={slug} coproName={displayName} accessLevel={accessLevel} />
                   <FavoriteButton
                     slug={slug}
@@ -1082,7 +1082,7 @@ export default async function CoproprietePage({
                                       <td className="py-2.5 text-slate-600">
                                         {new Date(t.date_mutation).toLocaleDateString("fr-FR")}
                                       </td>
-                                      <td className="max-w-[200px] truncate py-2.5 text-slate-900">
+                                      <td className="max-w-[200px] truncate py-2.5 text-slate-900" title={t.adresse ?? undefined}>
                                         {t.adresse ?? "\u2014"}
                                       </td>
                                       <td className="py-2.5 text-right text-slate-600">
@@ -1144,7 +1144,7 @@ export default async function CoproprietePage({
                                       {formatPrix(Number(t.prix_m2))}/m&sup2;
                                     </span>
                                   </div>
-                                  <p className="mt-1 truncate text-sm text-slate-900">{t.adresse ?? "\u2014"}</p>
+                                  <p className="mt-1 truncate text-sm text-slate-900" title={t.adresse ?? undefined}>{t.adresse ?? "\u2014"}</p>
                                   <div className="mt-1 flex gap-3 text-xs text-slate-500">
                                     <span>{Math.round(Number(t.surface))}&nbsp;m&sup2;</span>
                                     <span>{formatPrix(Math.round(Number(t.prix)))}</span>
@@ -1353,7 +1353,7 @@ export default async function CoproprietePage({
         </DownloadButton>
       </div>
       {/* Bottom spacer for sticky CTA */}
-      <div className="h-[72px] lg:hidden" />
+      <div className="h-24 lg:hidden" />
     </div>
   );
 }

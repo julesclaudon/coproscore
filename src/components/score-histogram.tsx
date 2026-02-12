@@ -6,7 +6,7 @@ export function ScoreHistogram({ buckets }: ScoreHistogramProps) {
   const maxCount = Math.max(...buckets.map((b) => b.count), 1);
 
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className="flex flex-col gap-1.5" role="img" aria-label={`Distribution des scores : ${buckets.map((b) => `${b.label} ${b.count.toLocaleString("fr-FR")}`).join(", ")}`}>
       {/* Bars */}
       <div className="flex items-end gap-2 sm:gap-3" style={{ height: 140 }}>
         {buckets.map((b) => {

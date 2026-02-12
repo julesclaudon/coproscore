@@ -459,11 +459,31 @@ function ComparateurPage() {
             )}
           </div>
 
-          {/* Loading */}
+          {/* Loading skeleton */}
           {loading && (
-            <div className="mt-8 flex items-center justify-center gap-2 py-12 text-slate-400">
-              <Loader2 className="h-5 w-5 animate-spin" />
-              Chargement...
+            <div className="mt-6 overflow-hidden rounded-xl border border-slate-200 bg-white">
+              {/* Skeleton header */}
+              <div className="flex border-b border-slate-100 px-4 py-3">
+                <div className="w-32 shrink-0" />
+                {Array.from({ length: slugsFromUrl.length || 2 }).map((_, i) => (
+                  <div key={i} className="flex-1 px-3">
+                    <div className="mx-auto h-4 w-24 animate-pulse rounded bg-slate-100" />
+                  </div>
+                ))}
+              </div>
+              {/* Skeleton rows */}
+              {Array.from({ length: 8 }).map((_, ri) => (
+                <div key={ri} className={`flex px-4 py-3 ${ri > 0 ? "border-t border-slate-50" : ""}`}>
+                  <div className="w-32 shrink-0">
+                    <div className="h-3.5 w-20 animate-pulse rounded bg-slate-100" />
+                  </div>
+                  {Array.from({ length: slugsFromUrl.length || 2 }).map((_, ci) => (
+                    <div key={ci} className="flex-1 px-3">
+                      <div className="mx-auto h-3.5 w-16 animate-pulse rounded bg-slate-100" />
+                    </div>
+                  ))}
+                </div>
+              ))}
             </div>
           )}
 
@@ -676,7 +696,7 @@ function DataRow({ row, copros }: { row: RowDef; copros: CoproData[] }) {
         return (
           <td
             key={c.id}
-            className={`px-3 py-2.5 text-center font-medium text-slate-900 ${hlClass(highlights[i])}`}
+            className={`px-3 py-2.5 text-center font-medium tabular-nums text-slate-900 ${hlClass(highlights[i])}`}
           >
             {isScoreGlobal && c.scoreGlobal != null ? (
               <span className={`inline-flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold ${scoreBg(c.scoreGlobal)} ${scoreColor(c.scoreGlobal)}`}>

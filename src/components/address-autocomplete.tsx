@@ -171,6 +171,10 @@ export function AddressAutocomplete({
               <Loader2 className="h-4 w-4 animate-spin" />
               Recherche en cours...
             </li>
+          ) : !loading && suggestions.length === 0 ? (
+            <li className="px-4 py-3 text-sm text-slate-400">
+              Aucun r&eacute;sultat trouv&eacute;
+            </li>
           ) : (
             suggestions.map((s, i) => {
               const Icon = s.properties.type === "municipality" ? Building2 : MapPin;

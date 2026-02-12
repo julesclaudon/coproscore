@@ -276,9 +276,10 @@ export default function CarteMap({ points, onBoundsChange, flyTo, isPro }: Carte
               "circle-color": SCORE_COLOR,
               "circle-radius": [
                 "interpolate", ["linear"], ["zoom"],
-                10, 5,
-                14, 8,
-                17, 12,
+                6, 6,
+                10, 8,
+                14, 10,
+                17, 14,
               ] as any, // eslint-disable-line @typescript-eslint/no-explicit-any
               "circle-opacity": 0.85,
               "circle-stroke-width": 1.5,

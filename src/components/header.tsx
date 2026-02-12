@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
@@ -48,6 +48,48 @@ export function Header({ variant = "default", rightSlot }: HeaderProps) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const { data: session, status } = useSession();
+  const drawerRef = useRef<HTMLDivElement>(null);
+
+  // Focus trap + Escape to close
+  useEffect(() => {
+    if (!open) return;
+
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        setOpen(false);
+        return;
+      }
+      if (e.key !== "Tab") return;
+      const panel = drawerRef.current;
+      if (!panel) return;
+      const focusable = panel.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), input, textarea, select, [tabindex]:not([tabindex="-1"])'
+      );
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey) {
+        if (document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        }
+      } else {
+        if (document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    }
+
+    document.addEventListener("keydown", handleKeyDown);
+    // Focus first element in drawer
+    const panel = drawerRef.current;
+    if (panel) {
+      const first = panel.querySelector<HTMLElement>("a[href], button:not([disabled])");
+      first?.focus();
+    }
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [open]);
 
   const isHomepage = variant === "homepage";
   const isLoading = status === "loading";
@@ -58,7 +100,7 @@ export function Header({ variant = "default", rightSlot }: HeaderProps) {
       <header
         className={
           isHomepage
-            ? "absolute top-0 z-10 w-full"
+            ? "absolute top-0 z-10 w-full bg-white/80 backdrop-blur-md"
             : "sticky top-0 z-30 border-b bg-white/90 backdrop-blur-sm"
         }
       >
@@ -77,6 +119,7 @@ export function Header({ variant = "default", rightSlot }: HeaderProps) {
               <Link
                 key={l.href}
                 href={l.href}
+                aria-current={pathname === l.href ? "page" : undefined}
                 className={
                   pathname === l.href
                     ? "text-teal-600 font-semibold underline underline-offset-4 decoration-2 decoration-teal-500"
@@ -127,6 +170,7 @@ export function Header({ variant = "default", rightSlot }: HeaderProps) {
             onClick={() => setOpen(true)}
             className="ml-2 flex h-10 w-10 items-center justify-center rounded-lg text-slate-600 transition-colors hover:bg-slate-100 md:hidden"
             aria-label="Ouvrir le menu"
+            aria-expanded={open}
           >
             <Menu className="h-5 w-5" />
           </button>
@@ -142,7 +186,7 @@ export function Header({ variant = "default", rightSlot }: HeaderProps) {
             onClick={() => setOpen(false)}
           />
           {/* Panel */}
-          <div className="fixed inset-y-0 right-0 z-50 flex w-72 flex-col bg-white shadow-lg">
+          <div ref={drawerRef} className="fixed inset-y-0 right-0 z-50 flex w-72 flex-col bg-white shadow-lg" role="dialog" aria-modal="true" aria-label="Menu de navigation">
             {/* Drawer header */}
             <div className="flex items-center justify-between border-b px-5 py-4">
               <Link
@@ -171,6 +215,7 @@ export function Header({ variant = "default", rightSlot }: HeaderProps) {
                     key={l.href}
                     href={l.href}
                     onClick={() => setOpen(false)}
+                    aria-current={active ? "page" : undefined}
                     className={`flex min-h-[44px] items-center gap-3 px-5 text-sm font-medium transition-colors ${
                       active
                         ? "bg-teal-50 text-teal-700"

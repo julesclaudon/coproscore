@@ -33,47 +33,47 @@ export function Footer() {
             <h4 className="mb-3 text-sm font-semibold text-white">Navigation</h4>
             <ul className="space-y-2 text-sm text-slate-400">
               <li>
-                <Link href="/" className="transition-colors hover:text-teal-400">
+                <Link href="/" className="transition-colors hover:text-teal-400 hover:underline">
                   Rechercher une copropri&eacute;t&eacute;
                 </Link>
               </li>
               <li>
-                <Link href="/copropriete/score-copropriete-45-bd-saint-marcel-75013-paris" className="transition-colors hover:text-teal-400">
+                <Link href="/copropriete/score-copropriete-45-bd-saint-marcel-75013-paris" className="transition-colors hover:text-teal-400 hover:underline">
                   Exemple de fiche
                 </Link>
               </li>
               <li>
-                <Link href="/carte" className="transition-colors hover:text-teal-400">
+                <Link href="/carte" className="transition-colors hover:text-teal-400 hover:underline">
                   Carte heatmap
                 </Link>
               </li>
               <li>
-                <Link href="/comparateur" className="transition-colors hover:text-teal-400">
+                <Link href="/comparateur" className="transition-colors hover:text-teal-400 hover:underline">
                   Comparateur
                 </Link>
               </li>
               <li>
-                <Link href="/historique" className="transition-colors hover:text-teal-400">
+                <Link href="/historique" className="transition-colors hover:text-teal-400 hover:underline">
                   Historique
                 </Link>
               </li>
               <li>
-                <Link href="/favoris" className="transition-colors hover:text-teal-400">
+                <Link href="/favoris" className="transition-colors hover:text-teal-400 hover:underline">
                   Favoris
                 </Link>
               </li>
               <li>
-                <Link href="/alertes" className="transition-colors hover:text-teal-400">
+                <Link href="/alertes" className="transition-colors hover:text-teal-400 hover:underline">
                   Mes alertes
                 </Link>
               </li>
               <li>
-                <Link href="/methodologie" className="transition-colors hover:text-teal-400">
+                <Link href="/methodologie" className="transition-colors hover:text-teal-400 hover:underline">
                   M&eacute;thodologie
                 </Link>
               </li>
               <li>
-                <Link href="/tarifs" className="transition-colors hover:text-teal-400">
+                <Link href="/tarifs" className="transition-colors hover:text-teal-400 hover:underline">
                   Tarifs
                 </Link>
               </li>
@@ -85,17 +85,17 @@ export function Footer() {
             <h4 className="mb-3 text-sm font-semibold text-white">L&eacute;gal</h4>
             <ul className="space-y-2 text-sm text-slate-400">
               <li>
-                <Link href="/mentions-legales" className="transition-colors hover:text-teal-400">
+                <Link href="/mentions-legales" className="transition-colors hover:text-teal-400 hover:underline">
                   Mentions l&eacute;gales
                 </Link>
               </li>
               <li>
-                <Link href="/cgv" className="transition-colors hover:text-teal-400">
+                <Link href="/cgv" className="transition-colors hover:text-teal-400 hover:underline">
                   CGV
                 </Link>
               </li>
               <li>
-                <Link href="/confidentialite" className="transition-colors hover:text-teal-400">
+                <Link href="/confidentialite" className="transition-colors hover:text-teal-400 hover:underline">
                   Confidentialit&eacute;
                 </Link>
               </li>

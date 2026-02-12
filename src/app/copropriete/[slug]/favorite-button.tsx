@@ -85,7 +85,7 @@ export function FavoriteButton({
         variant="outline"
         size="sm"
         onClick={handleClick}
-        className={`gap-1.5 transition-transform ${
+        className={`min-w-[44px] min-h-[44px] gap-1.5 transition-transform ${
           saved
             ? "border-amber-300 bg-amber-50 text-amber-600 hover:bg-amber-100"
             : "border-teal-200 text-teal-700 hover:bg-teal-50"

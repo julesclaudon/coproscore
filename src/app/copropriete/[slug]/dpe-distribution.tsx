@@ -25,7 +25,7 @@ export function DpeDistribution({
   const maxCount = Math.max(...Object.values(distribution), 1);
 
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className="flex flex-col gap-1.5" role="img" aria-label={`Distribution DPE : ${DPE_CLASSES.filter((c) => distribution[c]).map((c) => `classe ${c} : ${distribution[c]} logements`).join(", ")}. Médiane : ${median}`}>
       {DPE_CLASSES.map((cls) => {
         const count = distribution[cls] || 0;
         const pct = maxCount > 0 ? (count / maxCount) * 100 : 0;

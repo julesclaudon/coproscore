@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Loader2, Lock, CheckCircle2 } from "lucide-react";
+import { toast } from "sonner";
 import type { AccessLevel } from "@/lib/access";
 
 interface DownloadButtonProps {
@@ -47,7 +48,7 @@ export function DownloadButton({ slug, className, children, accessLevel, hasPurc
         }
         throw new Error(data.error || "Erreur");
       } catch {
-        alert("Erreur lors de la redirection vers le paiement.");
+        toast.error("Erreur lors de la redirection vers le paiement.");
         setLoading(false);
       }
       return;
@@ -69,7 +70,7 @@ export function DownloadButton({ slug, className, children, accessLevel, hasPurc
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
     } catch {
-      alert("Erreur lors de la g\u00e9n\u00e9ration du rapport. R\u00e9essayez dans quelques instants.");
+      toast.error("Erreur lors de la génération du rapport. Réessayez dans quelques instants.");
     } finally {
       setLoading(false);
     }

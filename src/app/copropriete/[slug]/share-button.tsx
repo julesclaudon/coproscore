@@ -74,8 +74,9 @@ export function ShareButton({ title, text }: ShareButtonProps) {
       <Button
         variant="outline"
         size="sm"
-        className="h-8 gap-1.5 px-2 border-teal-200 text-teal-700 hover:bg-teal-50 hover:text-teal-800"
+        className="min-w-[44px] min-h-[44px] gap-1.5 px-2 border-teal-200 text-teal-700 hover:bg-teal-50 hover:text-teal-800"
         onClick={handleShare}
+        aria-expanded={open}
         title="Partager"
       >
         <Share2 className="h-4 w-4" />

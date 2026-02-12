@@ -16,7 +16,7 @@ export function ScoreGauge({ score }: { score: number | null }) {
 
   return (
     <div className="relative inline-flex items-center justify-center drop-shadow-[0_4px_12px_rgba(13,148,136,0.15)]">
-      <svg width="170" height="170" viewBox="0 0 170 170">
+      <svg width="170" height="170" viewBox="0 0 170 170" role="img" aria-label={score !== null ? `Score global : ${score} sur 100` : "Score non disponible"}>
         {/* Background circle */}
         <circle
           cx="85"
@@ -42,7 +42,7 @@ export function ScoreGauge({ score }: { score: number | null }) {
         />
       </svg>
       <div className="absolute flex flex-col items-center">
-        <span className="text-4xl font-bold" style={{ color }}>
+        <span className="text-4xl font-bold tabular-nums" style={{ color }}>
           {score ?? "?"}
         </span>
         <span className="text-xs text-slate-400">/100</span>
