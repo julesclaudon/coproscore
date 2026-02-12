@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { AddressAutocomplete } from "@/components/address-autocomplete";
@@ -16,8 +17,55 @@ import {
   Database,
   Map,
   ChevronRight,
+  Clock,
 } from "lucide-react";
 import { Header } from "@/components/header";
+
+/* ─── Count-up animation ─── */
+const COUNT_DURATION = 2000;
+
+function easeOutCubic(t: number): number {
+  return 1 - Math.pow(1 - t, 3);
+}
+
+const SOURCES = [
+  {
+    icon: Database,
+    title: "RNIC",
+    target: 619402,
+    format: (v: number) => Math.round(v).toLocaleString("fr-FR"),
+    unit: "copropriétés",
+    desc: "Registre National d'Immatriculation des Copropriétés — données de gestion, structure et gouvernance.",
+    updatedAt: "Mis à jour : août 2025",
+  },
+  {
+    icon: TrendingUp,
+    title: "DVF",
+    target: 1025444,
+    format: (v: number) => Math.round(v).toLocaleString("fr-FR"),
+    unit: "transactions",
+    desc: "Demandes de Valeurs Foncières — ventes d'appartements 2023–2025, prix au m² et évolutions.",
+    updatedAt: "Mis à jour : juin 2025",
+  },
+  {
+    icon: Zap,
+    title: "DPE ADEME",
+    target: 13.5,
+    format: (v: number) => v.toFixed(1).replace(".", ",") + " M",
+    unit: "diagnostics",
+    desc: "Diagnostics de Performance Énergétique de l'ADEME — classes A à G par logement.",
+    updatedAt: "Mis à jour : décembre 2025",
+  },
+  {
+    icon: Map,
+    title: "BAN",
+    target: 99.99,
+    format: (v: number) => v.toFixed(2).replace(".", ",") + " %",
+    unit: "géolocalisés",
+    desc: "Base Adresse Nationale — géocodage précis et recherche par adresse.",
+    updatedAt: "Géocodage permanent",
+  },
+];
 
 /* ─── Mini score bar for the example section ─── */
 function MiniBar({ label, value, max, color }: { label: string; value: number; max: number; color: string }) {
@@ -35,6 +83,40 @@ function MiniBar({ label, value, max, color }: { label: string; value: number; m
 
 export default function Home() {
   const router = useRouter();
+  const sourcesRef = useRef<HTMLDivElement>(null);
+  const hasAnimated = useRef(false);
+  const [animatedValues, setAnimatedValues] = useState(() =>
+    SOURCES.map(() => 0),
+  );
+
+  useEffect(() => {
+    const el = sourcesRef.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !hasAnimated.current) {
+          hasAnimated.current = true;
+          const start = performance.now();
+          const targets = SOURCES.map((s) => s.target);
+
+          function tick(now: number) {
+            const elapsed = now - start;
+            const t = Math.min(elapsed / COUNT_DURATION, 1);
+            const eased = easeOutCubic(t);
+            setAnimatedValues(targets.map((target) => target * eased));
+            if (t < 1) requestAnimationFrame(tick);
+          }
+
+          requestAnimationFrame(tick);
+        }
+      },
+      { threshold: 0.3 },
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   function handleSelect(v: { label: string; lon: number; lat: number }) {
     const params = new URLSearchParams({
@@ -265,7 +347,7 @@ export default function Home() {
       </section>
 
       {/* ─── Données ─── */}
-      <section className="border-t bg-white py-20">
+      <section ref={sourcesRef} className="border-t bg-white py-20">
         <div className="mx-auto max-w-6xl px-4">
           <h2 className="mb-4 text-center text-3xl font-bold text-slate-900">
             Sources de données
@@ -274,36 +356,7 @@ export default function Home() {
             CoproScore croise quatre bases de données publiques ouvertes pour construire un score fiable.
           </p>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {[
-              {
-                icon: Database,
-                title: "RNIC",
-                stat: "619 402",
-                unit: "copropriétés",
-                desc: "Registre National d’Immatriculation des Copropriétés — données de gestion, structure et gouvernance.",
-              },
-              {
-                icon: TrendingUp,
-                title: "DVF",
-                stat: "1 025 444",
-                unit: "transactions",
-                desc: "Demandes de Valeurs Foncières — ventes d’appartements 2023–2025, prix au m² et évolutions.",
-              },
-              {
-                icon: Zap,
-                title: "DPE ADEME",
-                stat: "13,5 M",
-                unit: "diagnostics",
-                desc: "Diagnostics de Performance Énergétique de l’ADEME — classes A à G par logement.",
-              },
-              {
-                icon: Map,
-                title: "BAN",
-                stat: "99,99 %",
-                unit: "géolocalisés",
-                desc: "Base Adresse Nationale — géocodage précis et recherche par adresse.",
-              },
-            ].map((src) => (
+            {SOURCES.map((src, i) => (
               <div
                 key={src.title}
                 className="rounded-xl border border-teal-100 bg-teal-50/50 p-6 transition-shadow hover:shadow-md"
@@ -312,11 +365,15 @@ export default function Home() {
                   <src.icon className="h-5 w-5 text-teal-600" />
                 </div>
                 <h3 className="mb-1 text-sm font-bold text-slate-900">{src.title}</h3>
-                <p className="mb-3 text-2xl font-bold text-teal-700">
-                  {src.stat}{" "}
+                <p className="mb-3 text-2xl font-bold tabular-nums text-teal-700">
+                  {src.format(animatedValues[i])}{" "}
                   <span className="text-sm font-normal text-slate-500">{src.unit}</span>
                 </p>
                 <p className="text-xs leading-relaxed text-slate-500">{src.desc}</p>
+                <p className="mt-2 flex items-center gap-1 text-xs text-gray-400">
+                  <Clock className="h-3 w-3" />
+                  {src.updatedAt}
+                </p>
               </div>
             ))}
           </div>
