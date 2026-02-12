@@ -190,23 +190,23 @@ export default function Home() {
 
         <div className="relative mx-auto max-w-6xl px-4">
           <div className="mx-auto max-w-2xl text-center">
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-teal-200 bg-teal-50 px-4 py-1.5 text-sm font-medium text-teal-700">
-              <ShieldCheck className="h-4 w-4" />
+            <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-teal-200 bg-teal-50 px-5 py-2 text-base font-medium text-teal-700 md:mb-6 md:px-4 md:py-1.5 md:text-sm">
+              <ShieldCheck className="h-5 w-5 md:h-4 md:w-4" />
               619 402 copropriétés analysées
             </div>
 
-            <h1 className="mb-5 text-3xl font-bold tracking-tight text-slate-900 sm:text-5xl lg:text-6xl">
+            <h1 className="mb-6 text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl md:mb-5 lg:text-6xl">
               Analysez la{" "}
               <span className="text-teal-600">santé</span>{" "}
               de votre copropriété
             </h1>
-            <p className="mx-auto mb-8 max-w-lg text-base leading-relaxed text-slate-500 sm:mb-10 sm:text-lg">
+            <p className="mx-auto mb-10 max-w-lg text-lg leading-relaxed text-slate-500 md:mb-10 md:text-lg">
               Un score de 0 à 100 calculé à partir du registre national, d'1 million
               de transactions immobilières et de 13,5 millions de diagnostics énergétiques.
             </p>
 
             {/* Search bar */}
-            <div className="mx-auto flex max-w-xl flex-col gap-2 sm:flex-row">
+            <div className="mx-auto flex max-w-xl flex-col gap-3 sm:flex-row sm:gap-2">
               <div className="flex-1">
                 <AddressAutocomplete
                   onSelect={handleSelect}
@@ -216,20 +216,20 @@ export default function Home() {
               </div>
               <Button
                 type="button"
-                className="h-12 rounded-xl bg-teal-700 px-6 text-base font-semibold text-white shadow-sm hover:bg-teal-800 sm:h-14 sm:px-8"
+                className="h-14 rounded-xl bg-teal-700 px-6 text-base font-semibold text-white shadow-sm hover:bg-teal-800 sm:px-8"
                 onClick={() => {
                   // The autocomplete handles submission internally via onSubmit
                   // This button is just visual — Enter key or suggestion click is the primary UX
                 }}
               >
                 <span className="flex items-center gap-2">
-                  <Search className="h-4 w-4" />
+                  <Search className="h-5 w-5 md:h-4 md:w-4" />
                   Rechercher
                 </span>
               </Button>
             </div>
 
-            <p className="mt-4 text-sm text-slate-400">
+            <p className="mt-5 text-base text-slate-400 md:mt-4 md:text-sm">
               Exemple :{" "}
               <Link
                 href="/copropriete/score-copropriete-45-bd-saint-marcel-75013-paris"
