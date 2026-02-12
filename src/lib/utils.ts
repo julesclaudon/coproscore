@@ -24,6 +24,19 @@ const LIAISON_WORDS = new Set([
   "de", "du", "des", "le", "la", "les", "au", "aux", "en", "sur", "et",
 ]);
 
+/** Common RNIC typos in street names (case-insensitive match → correct form) */
+const NAME_TYPOS: [RegExp, string][] = [
+  [/\bJuleitte\b/gi, "Juliette"],
+  [/\bAndree\b/g, "Andrée"],
+  [/\bRennee\b/gi, "Renée"],
+  [/\bTherese\b/g, "Thérèse"],
+  [/\bHelene\b/g, "Hélène"],
+  [/\bGeneral\b/g, "Général"],
+  [/\bMarechal\b/g, "Maréchal"],
+  [/\bRepublique\b/g, "République"],
+  [/\bPresidant\b/gi, "Président"],
+];
+
 /**
  * Converts an all-caps copropriété name to readable Title Case.
  * "SDC 42 AV CLAUDE VELLEFAUX" → "SDC 42 Avenue Claude Vellefaux"
@@ -36,7 +49,7 @@ export function formatCoproName(name: string): string {
     .replace(/([a-zA-Z])(\d)/g, "$1 $2")
     .replace(/(\d)([a-zA-Z])/g, "$1 $2");
 
-  return spaced
+  let result = spaced
     .split(/\s+/)
     .map((word, index) => {
       const upper = word.toUpperCase();
@@ -69,4 +82,11 @@ export function formatCoproName(name: string): string {
       return titled;
     })
     .join(" ");
+
+  // Fix common RNIC typos
+  for (const [pattern, replacement] of NAME_TYPOS) {
+    result = result.replace(pattern, replacement);
+  }
+
+  return result;
 }

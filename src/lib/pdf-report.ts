@@ -23,7 +23,7 @@ const WHITE = "#ffffff";
 
 const PW = 595.28;
 const PH = 841.89;
-const M = 50;
+const M = 40;
 const CW = PW - 2 * M;
 const CT = 56;
 const CB = PH - 50;
@@ -43,6 +43,16 @@ const EVENT_COLORS: Record<string, string> = {
   transaction: TEAL,
   risque: "#dc2626",
   gouvernance: "#8b5cf6",
+};
+
+const DPE_COLORS: Record<string, string> = {
+  A: "#319834",
+  B: "#33cc31",
+  C: "#cbfc34",
+  D: "#fbfe06",
+  E: "#fbcc05",
+  F: "#fc9935",
+  G: "#fc0205",
 };
 
 const EVENT_LABELS: Record<string, string> = {
@@ -94,6 +104,8 @@ export interface ReportInput {
   communeAvgPrix: number | null;
   communeLabel: string;
 
+  quarterlyPrices: { year: number; quarter: number; avgPrixM2: number }[];
+
   transactions: {
     date: string;
     adresse: string;
@@ -120,9 +132,9 @@ export interface ReportInput {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Doc = any;
 
-/** Replace U+202F (narrow no-break space) that fr-FR locale inserts */
+/** Replace U+202F (narrow no-break space) and U+00A0 (no-break space) that fr-FR locale inserts — Helvetica lacks U+202F glyph */
 function sanitize(s: string): string {
-  return s.replace(/\u202F/g, " ");
+  return s.replace(/[\u202F\u00A0]/g, " ");
 }
 
 function sc(score: number): string {
@@ -159,6 +171,25 @@ function fmtDate(): string {
   );
 }
 
+/** Check space and add a new page if needed, returning the new y */
+function ensureSpace(doc: Doc, y: number, minH: number): number {
+  if (y + minH > CB) {
+    doc.addPage();
+    return CT;
+  }
+  return y;
+}
+
+/** Add inter-section gap; start new page if not enough room for title + some content */
+function sectionGap(doc: Doc, y: number, minContentH: number = 80): number {
+  y += 16;
+  if (y + minContentH > CB) {
+    doc.addPage();
+    return CT;
+  }
+  return y;
+}
+
 // ─── Drawing primitives ──────────────────────────────────────────────────────
 
 /** Draw a smooth arc stroke via line segments */
@@ -187,7 +218,7 @@ function drawArcStroke(
   doc.restore();
 }
 
-/** Draw a score gauge (240\u00b0 arc opening at bottom) */
+/** Draw a score gauge (240° arc opening at bottom) */
 function drawScoreGauge(
   doc: Doc,
   cx: number,
@@ -198,7 +229,7 @@ function drawScoreGauge(
   const START = 150;
   const SWEEP = 240;
   const END = START + SWEEP;
-  const LW = 14;
+  const LW = r > 65 ? 16 : 14;
 
   // Background arc
   drawArcStroke(doc, cx, cy, r, START, END, LW, BORDER);
@@ -210,16 +241,17 @@ function drawScoreGauge(
   }
 
   // Score number
-  doc.font("Helvetica-Bold").fontSize(38).fillColor(TEXT);
+  const numFS = r > 65 ? 44 : 38;
+  doc.font("Helvetica-Bold").fontSize(numFS).fillColor(TEXT);
   const sStr = score.toString();
   const tw = doc.widthOfString(sStr);
-  doc.text(sStr, cx - tw / 2, cy - 20, { lineBreak: false });
+  doc.text(sStr, cx - tw / 2, cy - numFS / 2 - 2, { lineBreak: false });
 
   // /100
   doc.font("Helvetica").fontSize(13).fillColor(TEXT_SEC);
   const sub = "/ 100";
   const sw = doc.widthOfString(sub);
-  doc.text(sub, cx - sw / 2, cy + 16, { lineBreak: false });
+  doc.text(sub, cx - sw / 2, cy + numFS / 2 - 8, { lineBreak: false });
 }
 
 /** Draw a horizontal progress bar with rounded ends */
@@ -320,9 +352,9 @@ function drawTable(
   startY: number
 ): number {
   const ROW_H = 18;
-  const HDR_H = 24;
-  const FS = 7.5;
-  const PAD = 6;
+  const HDR_H = 22;
+  const FS = 8;
+  const PAD = 5;
   let y = startY;
 
   function header(atY: number): number {
@@ -331,7 +363,7 @@ function drawTable(
     doc.font("Helvetica-Bold").fontSize(FS).fillColor(WHITE);
     let x = M;
     for (const col of columns) {
-      doc.text(col.label, x + PAD, atY + 7, {
+      doc.text(col.label, x + PAD, atY + 6, {
         width: col.width - 2 * PAD,
         align: col.align || "left",
         lineBreak: false,
@@ -359,7 +391,7 @@ function drawTable(
     doc.font("Helvetica").fontSize(FS).fillColor(TEXT);
     let x = M;
     for (let j = 0; j < columns.length; j++) {
-      doc.text(rows[i][j] || "\u2014", x + PAD, y + 5, {
+      doc.text(rows[i][j] || "\u2014", x + PAD, y + 4, {
         width: columns[j].width - 2 * PAD,
         align: columns[j].align || "left",
         lineBreak: false,
@@ -373,22 +405,87 @@ function drawTable(
   return y;
 }
 
+// ─── Bar chart for quarterly prices ─────────────────────────────────────────
+
+function drawQuarterlyChart(
+  doc: Doc,
+  data: { year: number; quarter: number; avgPrixM2: number }[],
+  x: number,
+  y: number,
+  w: number,
+  h: number
+): number {
+  if (data.length === 0) return y;
+
+  const chartH = h - 22;
+  const maxVal = Math.max(...data.map((d) => d.avgPrixM2));
+  const minVal = Math.min(...data.map((d) => d.avgPrixM2)) * 0.85;
+  const range = maxVal - minVal || 1;
+
+  const gap = 3;
+  const barW = Math.min(28, (w - 10) / data.length - gap);
+  const totalBarsW = data.length * (barW + gap) - gap;
+  const startX = x + (w - totalBarsW) / 2;
+
+  // Background
+  doc.save();
+  doc.roundedRect(x, y, w, h, 4).fill(BG_ALT);
+
+  // Baseline
+  doc
+    .moveTo(startX - 4, y + chartH)
+    .lineTo(startX + totalBarsW + 4, y + chartH)
+    .lineWidth(0.5)
+    .strokeColor(BORDER)
+    .stroke();
+
+  // Bars
+  for (let i = 0; i < data.length; i++) {
+    const d = data[i];
+    const barH = Math.max(4, ((d.avgPrixM2 - minVal) / range) * (chartH - 8));
+    const bx = startX + i * (barW + gap);
+    const by = y + chartH - barH;
+    doc.roundedRect(bx, by, barW, barH, 2).fill(TEAL);
+
+    // Quarter label
+    doc.font("Helvetica").fontSize(6).fillColor(TEXT_MUTED);
+    doc.text(`T${d.quarter}`, bx, y + chartH + 3, {
+      width: barW,
+      align: "center",
+      lineBreak: false,
+    });
+
+    // Year label on Q1 or first bar
+    if (d.quarter === 1 || i === 0) {
+      doc.font("Helvetica-Bold").fontSize(6).fillColor(TEXT_SEC);
+      doc.text(d.year.toString(), bx, y + chartH + 11, {
+        width: barW + gap + barW,
+        align: "left",
+        lineBreak: false,
+      });
+    }
+  }
+
+  doc.restore();
+  return y + h;
+}
+
 // ─── Section title ───────────────────────────────────────────────────────────
 
 function sectionTitle(doc: Doc, text: string, y: number): number {
-  doc.font("Helvetica-Bold").fontSize(16).fillColor(TEAL);
+  doc.font("Helvetica-Bold").fontSize(14).fillColor(TEAL);
   doc.text(text, M, y, { width: CW });
-  const bottom = y + 22;
+  const bottom = y + 20;
   doc.save();
   doc
     .moveTo(M, bottom)
-    .lineTo(M + 50, bottom)
+    .lineTo(M + 45, bottom)
     .lineWidth(2.5)
     .strokeColor(TEAL)
     .lineCap("round")
     .stroke();
   doc.restore();
-  return bottom + 14;
+  return bottom + 10;
 }
 
 // ─── Page chrome (final pass) ────────────────────────────────────────────────
@@ -443,27 +540,27 @@ function renderCover(doc: Doc, data: ReportInput) {
   const cx = PW / 2;
 
   // ── Teal banner ──
-  doc.rect(0, 0, PW, 180).fill(TEAL);
+  doc.rect(0, 0, PW, 160).fill(TEAL);
 
-  doc.font("Helvetica-Bold").fontSize(34).fillColor(WHITE);
-  doc.text("CoproScore", 0, 55, { width: PW, align: "center" });
+  doc.font("Helvetica-Bold").fontSize(32).fillColor(WHITE);
+  doc.text("CoproScore", 0, 48, { width: PW, align: "center" });
 
-  doc.font("Helvetica").fontSize(14).fillColor(TEAL_100);
-  doc.text("Rapport d'analyse complet", 0, 100, {
+  doc.font("Helvetica").fontSize(13).fillColor(TEAL_100);
+  doc.text("Rapport d'analyse complet", 0, 88, {
     width: PW,
     align: "center",
   });
 
-  // ── Score gauge ──
-  const gaugeY = 295;
-  drawScoreGauge(doc, cx, gaugeY, 62, data.scoreGlobal);
+  // ── Score gauge (bigger) ──
+  const gaugeY = 270;
+  drawScoreGauge(doc, cx, gaugeY, 75, data.scoreGlobal);
 
   // Score label
   doc
     .font("Helvetica-Bold")
-    .fontSize(16)
+    .fontSize(15)
     .fillColor(sc(data.scoreGlobal))
-    .text(sl(data.scoreGlobal), 0, gaugeY + 58, {
+    .text(sl(data.scoreGlobal), 0, gaugeY + 65, {
       width: PW,
       align: "center",
     });
@@ -477,42 +574,42 @@ function renderCover(doc: Doc, data: ReportInput) {
       .text(
         `Indice de confiance : ${Math.round(data.indiceConfiance)} %`,
         0,
-        gaugeY + 80,
+        gaugeY + 84,
         { width: PW, align: "center" }
       );
   }
 
   // ── Copro info card ──
-  const cardY = gaugeY + 108;
-  doc.font("Helvetica-Bold").fontSize(13);
+  const cardY = gaugeY + 104;
+  doc.font("Helvetica-Bold").fontSize(12);
   const nameH = doc.heightOfString(data.displayName, { width: CW - 32 });
   const cityLine = [data.codePostal, data.commune].filter(Boolean).join(" ");
-  const cardH = nameH + (cityLine ? 30 : 18);
+  const cardH = nameH + (cityLine ? 28 : 16);
 
   doc.save();
   doc.lineWidth(0.5);
   doc.roundedRect(M, cardY, CW, cardH, 6).fillAndStroke(WHITE, BORDER);
 
-  doc.font("Helvetica-Bold").fontSize(13).fillColor(TEXT);
-  doc.text(data.displayName, M + 16, cardY + 10, {
+  doc.font("Helvetica-Bold").fontSize(12).fillColor(TEXT);
+  doc.text(data.displayName, M + 16, cardY + 8, {
     width: CW - 32,
     align: "center",
   });
   if (cityLine) {
     doc.font("Helvetica").fontSize(10).fillColor(TEXT_SEC);
-    doc.text(cityLine, M + 16, cardY + 10 + nameH + 4, {
+    doc.text(cityLine, M + 16, cardY + 8 + nameH + 3, {
       width: CW - 32,
       align: "center",
     });
   }
   doc.restore();
 
-  // ── Stat cards ──
-  const cardsY = cardY + cardH + 22;
+  // ── Stat cards (bigger) ──
+  const cardsY = cardY + cardH + 14;
   const gap = 10;
   const cardW = (CW - 3 * gap) / 4;
 
-  const stats: { label: string; value: string }[] = [
+  const stats: { label: string; value: string; accent?: string }[] = [
     {
       label: "Lots",
       value: data.nbTotalLots != null ? fmtNum(data.nbTotalLots) : "\u2014",
@@ -531,20 +628,33 @@ function renderCover(doc: Doc, data: ReportInput) {
     {
       label: "DPE",
       value: data.dpeClasseMediane || "\u2014",
+      accent: data.dpeClasseMediane
+        ? DPE_COLORS[data.dpeClasseMediane]
+        : undefined,
     },
   ];
 
   for (let i = 0; i < stats.length; i++) {
     const sx = M + i * (cardW + gap);
-    drawStatCard(doc, sx, cardsY, cardW, 42, stats[i].label, stats[i].value);
+    drawStatCard(
+      doc,
+      sx,
+      cardsY,
+      cardW,
+      52,
+      stats[i].label,
+      stats[i].value,
+      stats[i].accent
+    );
   }
 
-  // ── Contents ──
-  const contentsY = cardsY + 70;
+  // ── Dimension score strip ──
+  const stripY = cardsY + 66;
+
   doc.save();
   doc
-    .moveTo(M + 100, contentsY)
-    .lineTo(PW - M - 100, contentsY)
+    .moveTo(M + 60, stripY - 6)
+    .lineTo(PW - M - 60, stripY - 6)
     .strokeColor(BORDER)
     .lineWidth(0.5)
     .stroke();
@@ -554,27 +664,47 @@ function renderCover(doc: Doc, data: ReportInput) {
     .font("Helvetica-Bold")
     .fontSize(9)
     .fillColor(TEXT)
-    .text("Contenu du rapport", 0, contentsY + 12, {
-      width: PW,
+    .text("Sous-scores", 0, stripY + 4, { width: PW, align: "center" });
+
+  const dimStripY = stripY + 20;
+  const dimSlotW = CW / 5;
+  const barW = dimSlotW - 24;
+
+  for (let i = 0; i < data.dimensions.length; i++) {
+    const dim = data.dimensions[i];
+    const dx = M + i * dimSlotW;
+    const dimColor = DIM_COLORS[dim.label] || TEAL;
+    const pct = dim.score != null ? dim.score / dim.max : 0;
+
+    // Label
+    const shortLabel =
+      dim.label === "Gouvernance"
+        ? "Gouv."
+        : dim.label === "\u00c9nergie"
+          ? "\u00c9ner."
+          : dim.label === "March\u00e9"
+            ? "March."
+            : dim.label;
+    doc.font("Helvetica").fontSize(7).fillColor(TEXT_SEC);
+    doc.text(shortLabel, dx, dimStripY, {
+      width: dimSlotW,
       align: "center",
+      lineBreak: false,
     });
 
-  const contents: string[] = ["Score global et analyse d\u00e9taill\u00e9e"];
-  if (data.analyse) contents.push("Analyse IA personnalis\u00e9e");
-  if (data.estimation && data.estimation.postes.length > 0)
-    contents.push("Estimation des travaux potentiels");
-  if (data.timeline.length > 0)
-    contents.push("Chronologie de la copropri\u00e9t\u00e9");
-  if (data.marchePrixM2 != null || data.transactions.length > 0)
-    contents.push("Donn\u00e9es du march\u00e9 immobilier");
-  if (data.nearby.length > 0)
-    contents.push("Copropri\u00e9t\u00e9s \u00e0 proximit\u00e9");
+    // Mini progress bar
+    const bx = dx + (dimSlotW - barW) / 2;
+    drawProgressBar(doc, bx, dimStripY + 12, barW, 5, pct, BG_CARD, dimColor);
 
-  doc.font("Helvetica").fontSize(8.5).fillColor(TEXT_SEC);
-  let cy = contentsY + 30;
-  for (const item of contents) {
-    doc.text(`\u2022  ${item}`, 0, cy, { width: PW, align: "center" });
-    cy += 14;
+    // Score
+    const scoreText =
+      dim.score != null ? `${dim.score}/${dim.max}` : "\u2014";
+    doc.font("Helvetica-Bold").fontSize(7).fillColor(TEXT);
+    doc.text(scoreText, dx, dimStripY + 22, {
+      width: dimSlotW,
+      align: "center",
+      lineBreak: false,
+    });
   }
 
   // ── Footer ──
@@ -582,7 +712,7 @@ function renderCover(doc: Doc, data: ReportInput) {
     .font("Helvetica")
     .fontSize(9)
     .fillColor(TEXT_MUTED)
-    .text(`Rapport g\u00e9n\u00e9r\u00e9 le ${fmtDate()}`, 0, 710, {
+    .text(`Rapport g\u00e9n\u00e9r\u00e9 le ${fmtDate()}`, 0, 720, {
       width: PW,
       align: "center",
     });
@@ -593,18 +723,18 @@ function renderCover(doc: Doc, data: ReportInput) {
     .text(
       "coproscore.fr \u2014 Donn\u00e9es issues du RNIC, DVF, DPE ADEME",
       0,
-      735,
+      738,
       { width: PW, align: "center" }
     );
 }
 
-// ─── Page 2: Score d\u00e9taill\u00e9 ──────────────────────────────────────────────────
+// ─── Score détaillé ─────────────────────────────────────────────────────────
 
-function renderScoreDetail(doc: Doc, data: ReportInput) {
-  let y = sectionTitle(doc, "Score d\u00e9taill\u00e9", CT);
+function renderScoreDetail(doc: Doc, data: ReportInput, startY: number): number {
+  let y = sectionTitle(doc, "Score d\u00e9taill\u00e9", startY);
 
   for (const dim of data.dimensions) {
-    if (y + 80 > CB) {
+    if (y + 60 > CB) {
       doc.addPage();
       y = CT;
     }
@@ -614,52 +744,57 @@ function renderScoreDetail(doc: Doc, data: ReportInput) {
     const dimColor = DIM_COLORS[dim.label] || TEAL;
 
     // Label + score on same line
-    doc.font("Helvetica-Bold").fontSize(11).fillColor(TEXT);
+    doc.font("Helvetica-Bold").fontSize(10).fillColor(TEXT);
     doc.text(dim.label, M, y, { lineBreak: false });
 
     const scoreText =
       dim.score != null ? `${dim.score} / ${dim.max}` : "\u2014";
     doc
       .font("Helvetica-Bold")
-      .fontSize(11)
+      .fontSize(10)
       .fillColor(dim.score != null ? sc(pct100) : TEXT_MUTED);
     doc.text(scoreText, M, y, { width: CW, align: "right" });
-    y += 18;
+    y += 16;
 
     // Progress bar
-    drawProgressBar(doc, M, y, CW, 7, pct, BG_CARD, dimColor);
-    y += 14;
+    drawProgressBar(doc, M, y, CW, 6, pct, BG_CARD, dimColor);
+    y += 12;
 
     // Explanation
-    doc.font("Helvetica").fontSize(8.5).fillColor(TEXT_SEC);
-    const textH = doc.heightOfString(dim.detailedExplanation, { width: CW });
-    doc.text(dim.detailedExplanation, M, y, { width: CW });
-    y += textH + 18;
+    const explText = sanitize(dim.detailedExplanation);
+    doc.font("Helvetica").fontSize(8).fillColor(TEXT_SEC);
+    const textH = doc.heightOfString(explText, { width: CW });
+    doc.text(explText, M, y, { width: CW });
+    y += textH + 10;
   }
+
+  return y;
 }
 
-// ─── Page 3: Analyse IA ─────────────────────────────────────────────────────
+// ─── Analyse IA ─────────────────────────────────────────────────────────────
 
-function renderAnalyse(doc: Doc, data: ReportInput) {
-  if (!data.analyse) return;
+function renderAnalyse(doc: Doc, data: ReportInput, startY: number): number {
+  if (!data.analyse) return startY;
 
-  let y = sectionTitle(doc, "Analyse CoproScore", CT);
+  let y = sectionTitle(doc, "Analyse CoproScore", startY);
 
-  doc.font("Helvetica").fontSize(8).fillColor(TEXT_MUTED);
+  doc.font("Helvetica").fontSize(7.5).fillColor(TEXT_MUTED);
   doc.text(
     "G\u00e9n\u00e9r\u00e9e par intelligence artificielle \u00e0 partir des donn\u00e9es publiques",
     M,
     y,
     { width: CW }
   );
-  y += 16;
+  y += 14;
 
   // Resume box
   doc.save();
   const resumeText = sanitize(data.analyse.resume);
-  doc.font("Helvetica").fontSize(9);
-  const resumeH = doc.heightOfString(resumeText, { width: CW - 28 });
-  const boxH = resumeH + 22;
+  doc.font("Helvetica").fontSize(8.5);
+  const resumeH = doc.heightOfString(resumeText, { width: CW - 24 });
+  const boxH = resumeH + 18;
+
+  y = ensureSpace(doc, y, boxH + 10);
 
   doc.roundedRect(M, y, CW, boxH, 5).fill(TEAL_50);
   doc
@@ -668,10 +803,10 @@ function renderAnalyse(doc: Doc, data: ReportInput) {
     .strokeColor(TEAL)
     .stroke();
 
-  doc.font("Helvetica").fontSize(9).fillColor(TEXT);
-  doc.text(resumeText, M + 14, y + 11, { width: CW - 28 });
+  doc.font("Helvetica").fontSize(8.5).fillColor(TEXT);
+  doc.text(resumeText, M + 12, y + 9, { width: CW - 24 });
   doc.restore();
-  y += boxH + 22;
+  y += boxH + 14;
 
   // Points forts
   y = renderAnalyseSection(
@@ -701,19 +836,14 @@ function renderAnalyse(doc: Doc, data: ReportInput) {
   );
 
   // Date
-  if (data.analyseDate) {
-    if (y + 20 > CB) {
-      doc.addPage();
-      y = CT;
-    }
-    doc.font("Helvetica").fontSize(7).fillColor(TEXT_MUTED);
-    doc.text(
-      `Analyse g\u00e9n\u00e9r\u00e9e le ${sanitize(data.analyseDate)}`,
-      M,
-      y + 8,
-      { width: CW }
-    );
-  }
+  y = ensureSpace(doc, y, 16);
+  doc.font("Helvetica").fontSize(7).fillColor(TEXT_MUTED);
+  doc.text(`Analyse g\u00e9n\u00e9r\u00e9e le ${fmtDate()}`, M, y, {
+    width: CW,
+  });
+  y += 12;
+
+  return y;
 }
 
 function renderAnalyseSection(
@@ -723,58 +853,56 @@ function renderAnalyseSection(
   items: string[],
   color: string
 ): number {
-  if (y + 30 > CB) {
-    doc.addPage();
-    y = CT;
-  }
+  y = ensureSpace(doc, y, 30);
 
-  doc.font("Helvetica-Bold").fontSize(10).fillColor(TEXT);
+  doc.font("Helvetica-Bold").fontSize(9.5).fillColor(TEXT);
   doc.text(title, M, y, { width: CW });
-  y += 16;
+  y += 14;
 
   for (const item of items) {
     const text = sanitize(item);
-    const itemH = doc.heightOfString(text, { width: CW - 22 });
-    if (y + itemH + 8 > CB) {
-      doc.addPage();
-      y = CT;
-    }
+    const itemH = doc.heightOfString(text, { width: CW - 18 });
+    y = ensureSpace(doc, y, itemH + 6);
 
     // Colored bullet
-    doc.circle(M + 4, y + 5, 3).fill(color);
+    doc.circle(M + 4, y + 4.5, 2.5).fill(color);
     // Text
-    doc.font("Helvetica").fontSize(8.5).fillColor(TEXT_SEC);
-    doc.text(text, M + 14, y, { width: CW - 22 });
-    y += itemH + 6;
+    doc.font("Helvetica").fontSize(8).fillColor(TEXT_SEC);
+    doc.text(text, M + 14, y, { width: CW - 18 });
+    y += itemH + 4;
   }
 
-  return y + 12;
+  return y + 8;
 }
 
-// ─── Page: Estimation des travaux ────────────────────────────────────────────
+// ─── Estimation des travaux ─────────────────────────────────────────────────
 
-function renderEstimation(doc: Doc, data: ReportInput) {
-  if (!data.estimation || data.estimation.postes.length === 0) return;
+function renderEstimation(
+  doc: Doc,
+  data: ReportInput,
+  startY: number
+): number {
+  if (!data.estimation || data.estimation.postes.length === 0) return startY;
 
-  let y = sectionTitle(doc, "Estimation des travaux potentiels", CT);
+  let y = sectionTitle(doc, "Estimation des travaux potentiels", startY);
 
-  doc.font("Helvetica").fontSize(8).fillColor(TEXT_MUTED);
+  doc.font("Helvetica").fontSize(7.5).fillColor(TEXT_MUTED);
   doc.text(
     "Fourchettes bas\u00e9es sur les moyennes nationales ANAH/ADEME. Ne remplace pas un devis professionnel.",
     M,
     y,
     { width: CW }
   );
-  y += 18;
+  y += 14;
 
   const est = data.estimation;
 
   // Table
   const cols: Column[] = [
-    { label: "Poste de travaux", width: 185 },
-    { label: "Description", width: 160 },
+    { label: "Poste de travaux", width: 190 },
+    { label: "Description", width: 165 },
     { label: "Min", width: 75, align: "right" },
-    { label: "Max", width: CW - 185 - 160 - 75, align: "right" },
+    { label: "Max", width: CW - 190 - 165 - 75, align: "right" },
   ];
 
   const rows = est.postes.map((p) => [
@@ -785,41 +913,40 @@ function renderEstimation(doc: Doc, data: ReportInput) {
   ]);
 
   y = drawTable(doc, cols, rows, y);
-  y += 14;
+  y += 10;
 
   // Total box
-  if (y + 55 > CB) {
-    doc.addPage();
-    y = CT;
-  }
+  y = ensureSpace(doc, y, 48);
 
   doc.save();
   doc.lineWidth(1);
-  doc.roundedRect(M, y, CW, 48, 5).fillAndStroke(TEAL_50, TEAL);
+  doc.roundedRect(M, y, CW, 44, 5).fillAndStroke(TEAL_50, TEAL);
 
   doc.font("Helvetica-Bold").fontSize(10).fillColor(TEXT);
-  doc.text("Total estim\u00e9", M + 14, y + 10, { lineBreak: false });
+  doc.text("Total estim\u00e9", M + 12, y + 8, { lineBreak: false });
 
-  doc.font("Helvetica-Bold").fontSize(13).fillColor(TEAL);
-  doc.text(`${fmtPrix(est.totalMin)} \u2014 ${fmtPrix(est.totalMax)}`, M + 14, y + 10, {
-    width: CW - 28,
-    align: "right",
-  });
+  doc.font("Helvetica-Bold").fontSize(12).fillColor(TEAL);
+  doc.text(
+    `${fmtPrix(est.totalMin)} \u2014 ${fmtPrix(est.totalMax)}`,
+    M + 12,
+    y + 8,
+    { width: CW - 24, align: "right" }
+  );
 
   // Per lot
   if (data.nbLotsHabitation && data.nbLotsHabitation > 1) {
     const perMin = Math.round(est.totalMin / data.nbLotsHabitation);
     const perMax = Math.round(est.totalMax / data.nbLotsHabitation);
-    doc.font("Helvetica").fontSize(8).fillColor(TEXT_SEC);
+    doc.font("Helvetica").fontSize(7.5).fillColor(TEXT_SEC);
     doc.text(
       `soit ${fmtPrix(perMin)} \u2014 ${fmtPrix(perMax)} par lot`,
-      M + 14,
-      y + 30,
-      { width: CW - 28, align: "right" }
+      M + 12,
+      y + 26,
+      { width: CW - 24, align: "right" }
     );
   }
 
-  // Fiabilit\u00e9
+  // Fiabilité
   const fiabLabel =
     est.fiabilite === "haute"
       ? "Fiabilit\u00e9 haute (DPE + p\u00e9riode)"
@@ -832,53 +959,88 @@ function renderEstimation(doc: Doc, data: ReportInput) {
       : est.fiabilite === "moyenne"
         ? AMBER
         : RED;
-  doc.font("Helvetica").fontSize(8).fillColor(fiabColor);
-  doc.text(fiabLabel, M + 14, y + 30, { lineBreak: false });
+  doc.font("Helvetica").fontSize(7.5).fillColor(fiabColor);
+  doc.text(fiabLabel, M + 12, y + 26, { lineBreak: false });
 
   doc.restore();
-  y += 62;
+  y += 52;
 
   // Disclaimer
-  if (y + 16 > CB) {
-    doc.addPage();
-    y = CT;
-  }
+  y = ensureSpace(doc, y, 14);
   doc.font("Helvetica").fontSize(7).fillColor(TEXT_MUTED);
   doc.text(
-    "Ces estimations sont indicatives et bas\u00e9es sur des moyennes nationales. Elles ne remplacent pas un devis professionnel.",
+    "Ces estimations sont indicatives et bas\u00e9es sur des moyennes nationales.",
     M,
     y,
     { width: CW }
   );
+  y += 12;
+
+  return y;
 }
 
-// ─── Page: Chronologie ───────────────────────────────────────────────────────
+// ─── Chronologie ────────────────────────────────────────────────────────────
 
-function renderTimeline(doc: Doc, data: ReportInput) {
-  let y = sectionTitle(doc, "Chronologie", CT);
-
+function renderTimeline(
+  doc: Doc,
+  data: ReportInput,
+  startY: number
+): number {
   const events = data.timeline;
-  if (events.length === 0) return;
+  if (events.length === 0) return startY;
 
-  const dateW = 82;
-  const dotX = M + dateW + 14;
-  const textX = dotX + 16;
+  let y = sectionTitle(doc, "Chronologie", startY);
+
+  // Group transaction events into a summary when > 2
+  const txEvents = events.filter((e) => e.type === "transaction");
+  const otherEvents = events.filter((e) => e.type !== "transaction");
+
+  let displayEvents: TimelineEvent[];
+  if (txEvents.length > 2) {
+    // Build a summary event
+    const earliest = txEvents[txEvents.length - 1];
+    const latest = txEvents[0];
+    const eDate = new Date(earliest.date);
+    const lDate = new Date(latest.date);
+    const yearRange =
+      eDate.getFullYear() === lDate.getFullYear()
+        ? lDate.getFullYear().toString()
+        : `${eDate.getFullYear()}\u2013${lDate.getFullYear()}`;
+
+    const summaryEvent: TimelineEvent = {
+      date: latest.date,
+      sortDate: latest.sortDate,
+      type: "transaction",
+      titre: `${txEvents.length} transactions immobili\u00e8res`,
+      description: `Ventes enregistr\u00e9es dans un rayon de 100 m (${yearRange})`,
+      dateLabel: yearRange,
+    };
+    displayEvents = [...otherEvents, summaryEvent].sort(
+      (a, b) => b.sortDate - a.sortDate
+    );
+  } else {
+    displayEvents = events;
+  }
+
+  const dateW = 76;
+  const dotX = M + dateW + 12;
+  const textX = dotX + 14;
   const textW = M + CW - textX;
-  const dotR = 5;
+  const dotR = 4;
 
   let prevDotY: number | null = null;
 
-  for (let i = 0; i < events.length; i++) {
-    const ev = events[i];
+  for (let i = 0; i < displayEvents.length; i++) {
+    const ev = displayEvents[i];
     const title = sanitize(ev.titre);
     const desc = sanitize(ev.description);
 
     // Calculate height
-    doc.font("Helvetica-Bold").fontSize(9);
+    doc.font("Helvetica-Bold").fontSize(8.5);
     const titleH = doc.heightOfString(title, { width: textW });
-    doc.font("Helvetica").fontSize(8);
+    doc.font("Helvetica").fontSize(7.5);
     const descH = doc.heightOfString(desc, { width: textW });
-    const rowH = Math.max(28, titleH + descH + 8);
+    const rowH = Math.max(24, titleH + descH + 6);
 
     // Page break
     if (y + rowH > CB) {
@@ -887,7 +1049,7 @@ function renderTimeline(doc: Doc, data: ReportInput) {
       prevDotY = null;
     }
 
-    const eventDotY = y + 7;
+    const eventDotY = y + 6;
 
     // Vertical connector line from previous dot
     if (prevDotY != null) {
@@ -895,7 +1057,7 @@ function renderTimeline(doc: Doc, data: ReportInput) {
       doc
         .moveTo(dotX, prevDotY)
         .lineTo(dotX, eventDotY)
-        .lineWidth(2)
+        .lineWidth(1.5)
         .strokeColor(BORDER)
         .stroke();
       doc.restore();
@@ -906,20 +1068,18 @@ function renderTimeline(doc: Doc, data: ReportInput) {
     doc.circle(dotX, eventDotY, dotR).fill(evColor);
 
     // Date (left of dot)
-    const d = new Date(ev.date);
-    const dateStr =
-      d.getFullYear() < 1990
-        ? `~ ${d.getFullYear()}`
-        : sanitize(
-            d.toLocaleDateString("fr-FR", {
-              day: "2-digit",
-              month: "2-digit",
-              year: "numeric",
-            })
-          );
+    const dateStr = ev.dateLabel
+      ? ev.dateLabel
+      : sanitize(
+          new Date(ev.date).toLocaleDateString("fr-FR", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+          })
+        );
 
-    doc.font("Helvetica").fontSize(8).fillColor(TEXT_MUTED);
-    doc.text(dateStr, M, y + 2, {
+    doc.font("Helvetica").fontSize(7.5).fillColor(TEXT_MUTED);
+    doc.text(dateStr, M, y + 1, {
       width: dateW,
       align: "right",
       lineBreak: false,
@@ -927,36 +1087,42 @@ function renderTimeline(doc: Doc, data: ReportInput) {
 
     // Type badge
     const typeLabel = EVENT_LABELS[ev.type] ?? ev.type;
-    doc.font("Helvetica").fontSize(6.5).fillColor(evColor);
-    doc.text(typeLabel, M, y + 14, {
+    doc.font("Helvetica").fontSize(6).fillColor(evColor);
+    doc.text(typeLabel, M, y + 12, {
       width: dateW,
       align: "right",
       lineBreak: false,
     });
 
     // Title
-    doc.font("Helvetica-Bold").fontSize(9).fillColor(TEXT);
+    doc.font("Helvetica-Bold").fontSize(8.5).fillColor(TEXT);
     doc.text(title, textX, y, { width: textW });
 
     // Description
-    doc.font("Helvetica").fontSize(8).fillColor(TEXT_SEC);
-    doc.text(desc, textX, y + titleH + 2, { width: textW });
+    doc.font("Helvetica").fontSize(7.5).fillColor(TEXT_SEC);
+    doc.text(desc, textX, y + titleH + 1, { width: textW });
 
     prevDotY = eventDotY;
-    y += rowH + 10;
+    y += rowH + 6;
   }
+
+  return y;
 }
 
-// ─── Page: March\u00e9 immobilier ────────────────────────────────────────────────
+// ─── Marché immobilier ──────────────────────────────────────────────────────
 
-function renderMarket(doc: Doc, data: ReportInput) {
-  let y = sectionTitle(doc, "March\u00e9 immobilier", CT);
+function renderMarket(
+  doc: Doc,
+  data: ReportInput,
+  startY: number
+): number {
+  let y = sectionTitle(doc, "March\u00e9 immobilier", startY);
 
   // Stat cards
   if (data.marchePrixM2 != null) {
-    const gap = 12;
+    const gap = 10;
     const cardW = (CW - 2 * gap) / 3;
-    const cardH = 55;
+    const cardH = 50;
 
     drawStatCard(
       doc,
@@ -996,7 +1162,7 @@ function renderMarket(doc: Doc, data: ReportInput) {
       );
     }
 
-    y += cardH + 16;
+    y += cardH + 12;
 
     // Commune comparison
     if (data.communeAvgPrix != null) {
@@ -1007,31 +1173,48 @@ function renderMarket(doc: Doc, data: ReportInput) {
         diff >= 0
           ? `+${diff} % par rapport \u00e0 la moyenne de ${data.communeLabel} (${fmtPrix(data.communeAvgPrix)}/m\u00b2)`
           : `${diff} % par rapport \u00e0 la moyenne de ${data.communeLabel} (${fmtPrix(data.communeAvgPrix)}/m\u00b2)`;
-      doc.font("Helvetica").fontSize(8.5).fillColor(TEXT_SEC);
+      doc.font("Helvetica").fontSize(8).fillColor(TEXT_SEC);
       doc.text(compText, M, y, { width: CW });
-      y += 18;
+      y += 14;
     }
   }
 
-  y += 6;
+  // Quarterly price chart
+  if (data.quarterlyPrices.length > 2) {
+    y += 4;
+    y = ensureSpace(doc, y, 90);
+    doc.font("Helvetica-Bold").fontSize(9.5).fillColor(TEXT);
+    doc.text("\u00c9volution trimestrielle du prix / m\u00b2", M, y, {
+      width: CW,
+    });
+    y += 14;
+    y = drawQuarterlyChart(doc, data.quarterlyPrices, M, y, CW, 80);
+    y += 10;
+  }
 
   // Transaction table
   if (data.transactions.length > 0) {
-    doc.font("Helvetica-Bold").fontSize(11).fillColor(TEXT);
+    y += 4;
+    y = ensureSpace(doc, y, 60);
+    doc.font("Helvetica-Bold").fontSize(10).fillColor(TEXT);
     doc.text(
       `Derni\u00e8res transactions (${data.transactions.length})`,
       M,
       y,
       { width: CW }
     );
-    y += 20;
+    y += 16;
 
     const cols: Column[] = [
-      { label: "Date", width: 65 },
-      { label: "Adresse", width: 175 },
-      { label: "Surface", width: 60, align: "right" },
-      { label: "Prix", width: 95, align: "right" },
-      { label: "Prix/m\u00b2", width: CW - 65 - 175 - 60 - 95, align: "right" },
+      { label: "Date", width: 60 },
+      { label: "Adresse", width: 185 },
+      { label: "Surface", width: 55, align: "right" },
+      { label: "Prix", width: 90, align: "right" },
+      {
+        label: "Prix/m\u00b2",
+        width: CW - 60 - 185 - 55 - 90,
+        align: "right",
+      },
     ];
 
     const rows = data.transactions.map((t) => [
@@ -1046,89 +1229,108 @@ function renderMarket(doc: Doc, data: ReportInput) {
   }
 
   // Source
-  if (y + 20 > CB) {
-    doc.addPage();
-    y = CT;
-  }
+  y = ensureSpace(doc, y, 16);
   doc.font("Helvetica").fontSize(7).fillColor(TEXT_MUTED);
   doc.text(
     "Source : DVF (demandes de valeurs fonci\u00e8res), rayon 500 m, 3 derni\u00e8res ann\u00e9es",
     M,
-    y + 10,
+    y + 6,
     { width: CW }
   );
+  y += 16;
+
+  return y;
 }
 
-// ─── Page: Copropri\u00e9t\u00e9s \u00e0 proximit\u00e9 ──────────────────────────────────────────
+// ─── Copropriétés à proximité (2-column grid) ──────────────────────────────
 
-function renderNearby(doc: Doc, data: ReportInput) {
+function renderNearby(
+  doc: Doc,
+  data: ReportInput,
+  startY: number
+): number {
+  if (data.nearby.length === 0) return startY;
+
   let y = sectionTitle(
     doc,
     `Copropri\u00e9t\u00e9s \u00e0 proximit\u00e9 (${data.nearby.length})`,
-    CT
+    startY
   );
 
-  doc.font("Helvetica").fontSize(8.5).fillColor(TEXT_SEC);
+  doc.font("Helvetica").fontSize(8).fillColor(TEXT_SEC);
   doc.text("Dans un rayon de 500 m, tri\u00e9es par distance", M, y, {
     width: CW,
   });
-  y += 18;
+  y += 14;
 
-  for (const n of data.nearby) {
-    if (y + 38 > CB) {
-      doc.addPage();
-      y = CT;
-    }
+  const colGap = 10;
+  const colW = (CW - colGap) / 2;
+  const cardH = 30;
+  const rowGap = 6;
 
-    // Card row
-    doc.save();
-    doc.lineWidth(0.5);
-    doc.roundedRect(M, y, CW, 32, 4).fillAndStroke(BG_ALT, BORDER);
+  for (let i = 0; i < data.nearby.length; i += 2) {
+    y = ensureSpace(doc, y, cardH + rowGap);
 
-    // Score badge
-    if (n.score != null) {
-      drawScoreBadge(doc, M + 10, y + 7, n.score);
-    } else {
-      doc.font("Helvetica").fontSize(8).fillColor(TEXT_MUTED);
-      doc.text("\u2014", M + 10, y + 10, { width: 34, align: "center" });
-    }
+    // Render up to 2 cards per row
+    for (let col = 0; col < 2; col++) {
+      const idx = i + col;
+      if (idx >= data.nearby.length) break;
+      const n = data.nearby[idx];
+      const cx = M + col * (colW + colGap);
 
-    // Name
-    doc.font("Helvetica-Bold").fontSize(8.5).fillColor(TEXT);
-    doc.text(n.name, M + 52, y + 5, { width: 220, lineBreak: false });
+      doc.save();
+      doc.lineWidth(0.5);
+      doc.roundedRect(cx, y, colW, cardH, 3).fillAndStroke(BG_ALT, BORDER);
 
-    // Commune
-    doc.font("Helvetica").fontSize(7.5).fillColor(TEXT_SEC);
-    doc.text(n.commune || "", M + 52, y + 18, {
-      width: 220,
-      lineBreak: false,
-    });
+      // Score badge
+      if (n.score != null) {
+        drawScoreBadge(doc, cx + 6, y + 6, n.score);
+      } else {
+        doc.font("Helvetica").fontSize(7).fillColor(TEXT_MUTED);
+        doc.text("\u2014", cx + 6, y + 9, { width: 34, align: "center" });
+      }
 
-    // Lots + Distance (right side)
-    const rightX = PW - M - 110;
-    doc.font("Helvetica").fontSize(8).fillColor(TEXT_SEC);
-    if (n.nbLots != null) {
-      doc.text(`${n.nbLots} lots`, rightX, y + 8, {
-        width: 50,
+      // Name (truncated to fit)
+      const nameX = cx + 46;
+      const nameW = colW - 46 - 48;
+      doc.font("Helvetica-Bold").fontSize(7.5).fillColor(TEXT);
+      doc.text(n.name, nameX, y + 4, {
+        width: nameW,
+        lineBreak: false,
+      });
+
+      // Commune
+      doc.font("Helvetica").fontSize(6.5).fillColor(TEXT_SEC);
+      doc.text(n.commune || "", nameX, y + 16, {
+        width: nameW,
+        lineBreak: false,
+      });
+
+      // Distance (right)
+      doc.font("Helvetica").fontSize(7).fillColor(TEXT_SEC);
+      doc.text(`${Math.round(n.distance)} m`, cx + colW - 44, y + 10, {
+        width: 38,
         align: "right",
         lineBreak: false,
       });
-    }
-    doc.text(`${Math.round(n.distance)} m`, rightX + 56, y + 8, {
-      width: 50,
-      align: "right",
-      lineBreak: false,
-    });
 
-    doc.restore();
-    y += 38;
+      doc.restore();
+    }
+
+    y += cardH + rowGap;
   }
+
+  return y;
 }
 
-// ─── Last page: Mentions l\u00e9gales ────────────────────────────────────────────
+// ─── Mentions légales ───────────────────────────────────────────────────────
 
-function renderDisclaimer(doc: Doc, data: ReportInput) {
-  let y = sectionTitle(doc, "Mentions l\u00e9gales", CT);
+function renderDisclaimer(
+  doc: Doc,
+  data: ReportInput,
+  startY: number
+): number {
+  let y = sectionTitle(doc, "Mentions l\u00e9gales", startY);
 
   const lines = [
     "Ce rapport est g\u00e9n\u00e9r\u00e9 automatiquement \u00e0 partir de donn\u00e9es publiques ouvertes.",
@@ -1141,19 +1343,32 @@ function renderDisclaimer(doc: Doc, data: ReportInput) {
     "\u2014  BAN \u2014 Base Adresse Nationale",
     "",
     `\u00a9 CoproScore ${new Date().getFullYear()} \u2014 coproscore.fr`,
-    "",
-    `Rapport : coproscore.fr/copropriete/${data.slug}`,
   ];
 
-  doc.font("Helvetica").fontSize(9).fillColor(TEXT_SEC);
+  doc.font("Helvetica").fontSize(8.5).fillColor(TEXT_SEC);
   for (const line of lines) {
     if (line === "") {
-      y += 10;
+      y += 8;
     } else {
+      y = ensureSpace(doc, y, 14);
       doc.text(line, M, y, { width: CW });
-      y += 14;
+      y += 13;
     }
   }
+
+  // Clickable report link
+  y += 8;
+  y = ensureSpace(doc, y, 14);
+  const reportUrl = `https://coproscore.fr/copropriete/${data.slug}`;
+  doc.font("Helvetica").fontSize(8.5).fillColor(TEAL);
+  doc.text(`Rapport : ${reportUrl}`, M, y, {
+    width: CW,
+    link: reportUrl,
+    underline: true,
+  });
+  y += 14;
+
+  return y;
 }
 
 // ─── Main generator ──────────────────────────────────────────────────────────
@@ -1178,46 +1393,49 @@ export async function generatePdfReport(
     doc.on("end", () => resolve(Buffer.concat(chunks)));
     doc.on("error", reject);
 
-    // Page 1: Cover
+    // Page 1: Cover (always full page)
     renderCover(doc, input);
 
-    // Page 2: Score d\u00e9taill\u00e9
+    // Page 2+: flowing content
     doc.addPage();
-    renderScoreDetail(doc, input);
+    let y: number = CT;
 
-    // Page 3: Analyse IA
+    // Score détaillé
+    y = renderScoreDetail(doc, input, y);
+
+    // Analyse IA
     if (input.analyse) {
-      doc.addPage();
-      renderAnalyse(doc, input);
+      y = sectionGap(doc, y, 100);
+      y = renderAnalyse(doc, input, y);
     }
 
-    // Page: Estimation travaux
+    // Estimation travaux
     if (input.estimation && input.estimation.postes.length > 0) {
-      doc.addPage();
-      renderEstimation(doc, input);
+      y = sectionGap(doc, y, 100);
+      y = renderEstimation(doc, input, y);
     }
 
-    // Page: Chronologie
+    // Chronologie
     if (input.timeline.length > 0) {
-      doc.addPage();
-      renderTimeline(doc, input);
+      y = sectionGap(doc, y, 80);
+      y = renderTimeline(doc, input, y);
     }
 
-    // Page: March\u00e9 immobilier
+    // Marché immobilier
     if (input.marchePrixM2 != null || input.transactions.length > 0) {
-      doc.addPage();
-      renderMarket(doc, input);
+      y = sectionGap(doc, y, 100);
+      y = renderMarket(doc, input, y);
     }
 
-    // Page: Copros \u00e0 proximit\u00e9
+    // Copros à proximité
     if (input.nearby.length > 0) {
-      doc.addPage();
-      renderNearby(doc, input);
+      y = sectionGap(doc, y, 60);
+      y = renderNearby(doc, input, y);
     }
 
-    // Last: Disclaimer
-    doc.addPage();
-    renderDisclaimer(doc, input);
+    // Disclaimer
+    y = sectionGap(doc, y, 80);
+    renderDisclaimer(doc, input, y);
 
     // ── Final pass: add page chrome with Page X/N ──
     const range = doc.bufferedPageRange();

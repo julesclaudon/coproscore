@@ -36,7 +36,7 @@ export async function fetchDvfTransactions(
      FROM dvf_transactions
      WHERE latitude BETWEEN $1 - $3 AND $1 + $3
        AND longitude BETWEEN $2 - $4 AND $2 + $4
-       AND surface > 0
+       AND surface >= 9
        AND date_mutation >= $5
      ORDER BY date_mutation DESC
      LIMIT $6`,
@@ -65,7 +65,7 @@ export async function fetchDvfQuarterlyAvg(
      FROM dvf_transactions
      WHERE latitude BETWEEN $1 - $3 AND $1 + $3
        AND longitude BETWEEN $2 - $4 AND $2 + $4
-       AND surface > 0
+       AND surface >= 9
        AND date_mutation >= $5
      GROUP BY year, quarter
      ORDER BY year ASC, quarter ASC`,

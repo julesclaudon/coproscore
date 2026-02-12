@@ -11,7 +11,7 @@ import {
   detailedEnergie,
   detailedMarche,
 } from "@/lib/score-explanations";
-import { fetchDvfTransactions } from "@/lib/dvf-queries";
+import { fetchDvfTransactions, fetchDvfQuarterlyAvg } from "@/lib/dvf-queries";
 import { estimerBudgetTravaux } from "@/lib/budget-travaux";
 import { buildTimeline, type DpeForTimeline } from "@/lib/timeline";
 import { checkAccess } from "@/lib/api-auth";
@@ -90,7 +90,7 @@ async function fetchTimelineDvf(lon: number, lat: number) {
      FROM dvf_transactions
      WHERE latitude BETWEEN $1 - $3 AND $1 + $3
        AND longitude BETWEEN $2 - $4 AND $2 + $4
-       AND surface > 0
+       AND surface >= 9
      ORDER BY date_mutation DESC
      LIMIT 10`,
     lat, lon, dLat, dLon
@@ -162,7 +162,7 @@ export async function GET(
   const hasCoords = copro.longitude != null && copro.latitude != null;
 
   // Fetch all data in parallel
-  const [analyseResult, transactions, nearby, communeAvgPrix, timelineDvf, timelineDpe] =
+  const [analyseResult, transactions, nearby, communeAvgPrix, quarterlyRows, timelineDvf, timelineDpe] =
     await Promise.all([
       getOrGenerateAnalyse(copro).catch(() => null),
       hasCoords
@@ -174,6 +174,9 @@ export async function GET(
       copro.codeOfficielCommune
         ? fetchCommuneAvgPrix(copro.codeOfficielCommune)
         : Promise.resolve(null),
+      hasCoords
+        ? fetchDvfQuarterlyAvg(copro.longitude!, copro.latitude!)
+        : Promise.resolve([]),
       hasCoords
         ? fetchTimelineDvf(copro.longitude!, copro.latitude!)
         : Promise.resolve([]),
@@ -256,6 +259,12 @@ export async function GET(
     communeAvgPrix,
     communeLabel:
       copro.nomOfficielArrondissement || copro.communeAdresse || "",
+
+    quarterlyPrices: quarterlyRows.map((q) => ({
+      year: q.year,
+      quarter: q.quarter,
+      avgPrixM2: Number(q.avg_prix_m2),
+    })),
 
     transactions: transactions.map((t) => ({
       date: new Date(t.date_mutation).toLocaleDateString("fr-FR"),

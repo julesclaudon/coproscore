@@ -13,6 +13,7 @@ export type TimelineEventType =
 
 export interface TimelineEvent {
   date: string; // ISO or display string (e.g. "1949-01-01" or "2024-06-15")
+  dateLabel?: string; // optional display override (e.g. "Avant 1949")
   sortDate: number; // timestamp for sorting
   type: TimelineEventType;
   titre: string;
@@ -62,8 +63,11 @@ export function buildTimeline(
     const label = formatPeriod(copro.periodeConstruction);
     if (label) {
       const year = PERIOD_YEAR[copro.periodeConstruction] ?? 1960;
+      // Capitalize first letter of the period label for display
+      const displayLabel = label.charAt(0).toUpperCase() + label.slice(1);
       events.push({
         date: `${year}-01-01`,
+        dateLabel: displayLabel,
         sortDate: new Date(year, 0, 1).getTime(),
         type: "construction",
         titre: "Construction de l'immeuble",
@@ -188,12 +192,9 @@ function formatDateFr(d: Date): string {
   });
 }
 
-export function formatEventDateDisplay(isoDate: string): string {
-  const d = new Date(isoDate);
-  // For very old dates (construction), show just the year
-  if (d.getFullYear() < 1990) {
-    return `~ ${d.getFullYear()}`;
-  }
+export function formatEventDateDisplay(event: TimelineEvent): string {
+  if (event.dateLabel) return event.dateLabel;
+  const d = new Date(event.date);
   return d.toLocaleDateString("fr-FR", {
     day: "numeric",
     month: "short",

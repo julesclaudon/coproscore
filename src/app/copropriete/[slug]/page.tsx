@@ -323,7 +323,7 @@ async function fetchTimelineDvf(lon: number, lat: number): Promise<import("@/lib
      FROM dvf_transactions
      WHERE latitude BETWEEN $1 - $3 AND $1 + $3
        AND longitude BETWEEN $2 - $4 AND $2 + $4
-       AND surface > 0
+       AND surface >= 9
      ORDER BY date_mutation DESC
      LIMIT 10`,
     lat, lon, dLat, dLon

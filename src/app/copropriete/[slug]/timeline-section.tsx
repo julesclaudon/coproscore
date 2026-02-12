@@ -113,7 +113,7 @@ function TimelineItem({
           isLeft ? "order-1" : "order-3 text-left"
         }`}
       >
-        {formatEventDateDisplay(event.date)}
+        {formatEventDateDisplay(event)}
       </div>
 
       {/* Dot + line */}
@@ -133,7 +133,7 @@ function TimelineItem({
       >
         {/* Mobile date */}
         <p className="mb-1 text-xs text-slate-400 lg:hidden">
-          {formatEventDateDisplay(event.date)}
+          {formatEventDateDisplay(event)}
         </p>
         <p className="break-words text-sm font-medium text-slate-900">{event.titre}</p>
         <p className="mt-0.5 break-words text-sm text-slate-500">{event.description}</p>
