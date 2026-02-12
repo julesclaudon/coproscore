@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { AddressAutocomplete } from "@/components/address-autocomplete";
@@ -22,10 +22,10 @@ import {
 import { Header } from "@/components/header";
 
 /* ─── Count-up animation ─── */
-const COUNT_DURATION = 2000;
+const COUNT_DURATION = 2500;
 
-function easeOutCubic(t: number): number {
-  return 1 - Math.pow(1 - t, 3);
+function easeOutQuart(t: number): number {
+  return 1 - Math.pow(1 - t, 4);
 }
 
 const SOURCES = [
@@ -84,10 +84,8 @@ function MiniBar({ label, value, max, color }: { label: string; value: number; m
 export default function Home() {
   const router = useRouter();
   const sourcesRef = useRef<HTMLDivElement>(null);
+  const statRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const hasAnimated = useRef(false);
-  const [animatedValues, setAnimatedValues] = useState(() =>
-    SOURCES.map(() => 0),
-  );
 
   useEffect(() => {
     const el = sourcesRef.current;
@@ -98,13 +96,17 @@ export default function Home() {
         if (entry.isIntersecting && !hasAnimated.current) {
           hasAnimated.current = true;
           const start = performance.now();
-          const targets = SOURCES.map((s) => s.target);
 
           function tick(now: number) {
             const elapsed = now - start;
             const t = Math.min(elapsed / COUNT_DURATION, 1);
-            const eased = easeOutCubic(t);
-            setAnimatedValues(targets.map((target) => target * eased));
+            const eased = easeOutQuart(t);
+
+            SOURCES.forEach((src, i) => {
+              const span = statRefs.current[i];
+              if (span) span.textContent = src.format(src.target * eased);
+            });
+
             if (t < 1) requestAnimationFrame(tick);
           }
 
@@ -366,7 +368,9 @@ export default function Home() {
                 </div>
                 <h3 className="mb-1 text-sm font-bold text-slate-900">{src.title}</h3>
                 <p className="mb-3 text-2xl font-bold tabular-nums text-teal-700">
-                  {src.format(animatedValues[i])}{" "}
+                  <span ref={(el) => { statRefs.current[i] = el; }}>
+                    {src.format(0)}
+                  </span>{" "}
                   <span className="text-sm font-normal text-slate-500">{src.unit}</span>
                 </p>
                 <p className="text-xs leading-relaxed text-slate-500">{src.desc}</p>
