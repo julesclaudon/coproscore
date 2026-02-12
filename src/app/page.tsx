@@ -17,6 +17,7 @@ import {
   Database,
   Map,
   ChevronRight,
+  ChevronDown,
   Clock,
 } from "lucide-react";
 import { Header } from "@/components/header";
@@ -182,14 +183,17 @@ export default function Home() {
       <Header variant="homepage" />
 
       {/* ─── Hero ─── */}
-      <section className="relative flex min-h-svh flex-col justify-center overflow-hidden bg-gradient-to-br from-slate-50 via-teal-50/30 to-white pt-16 pb-10 md:min-h-0 md:block md:pt-32 md:pb-20">
+      <section className="relative flex min-h-svh flex-col overflow-hidden bg-gradient-to-br from-slate-50 via-teal-50/30 to-white px-4 md:min-h-0 md:block md:px-0 md:pt-32 md:pb-20">
         <div className="pointer-events-none absolute inset-0">
           <div className="absolute -top-24 right-0 h-96 w-96 rounded-full bg-teal-100/40 blur-3xl" />
           <div className="absolute top-32 -left-24 h-64 w-64 rounded-full bg-teal-50/60 blur-3xl" />
         </div>
 
-        <div className="relative mx-auto max-w-6xl px-4">
-          <div className="mx-auto max-w-2xl text-center">
+        {/* Top spacer — mobile only */}
+        <div className="flex-1 md:hidden" />
+
+        <div className="relative mx-auto max-w-6xl text-center md:px-4">
+          <div className="mx-auto max-w-2xl">
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-teal-200 bg-teal-50 px-4 py-1.5 text-sm font-medium text-teal-700">
               <ShieldCheck className="h-4 w-4" />
               619 402 copropriétés analysées
@@ -200,45 +204,58 @@ export default function Home() {
               <span className="text-teal-600">santé</span>{" "}
               de votre copropriété
             </h1>
-            <p className="mx-auto mb-8 max-w-lg text-base leading-relaxed text-slate-500 sm:mb-10 sm:text-lg">
+            <p className="mx-auto max-w-lg text-base leading-relaxed text-slate-500 sm:text-lg">
               Un score de 0 à 100 calculé à partir du registre national, d'1 million
               de transactions immobilières et de 13,5 millions de diagnostics énergétiques.
             </p>
-
-            {/* Search bar */}
-            <div className="mx-auto flex max-w-xl flex-col gap-2 sm:flex-row">
-              <div className="flex-1">
-                <AddressAutocomplete
-                  onSelect={handleSelect}
-                  onSubmit={handleSubmit}
-                  placeholder="Entrez une adresse, une ville..."
-                />
-              </div>
-              <Button
-                type="button"
-                className="h-12 rounded-xl bg-teal-700 px-6 text-base font-semibold text-white shadow-sm hover:bg-teal-800 sm:h-14 sm:px-8"
-                onClick={() => {
-                  // The autocomplete handles submission internally via onSubmit
-                  // This button is just visual — Enter key or suggestion click is the primary UX
-                }}
-              >
-                <span className="flex items-center gap-2">
-                  <Search className="h-4 w-4" />
-                  Rechercher
-                </span>
-              </Button>
-            </div>
-
-            <p className="mt-4 text-sm text-slate-400">
-              Exemple :{" "}
-              <Link
-                href="/copropriete/score-copropriete-45-bd-saint-marcel-75013-paris"
-                className="text-teal-600 underline decoration-teal-300 underline-offset-2 hover:text-teal-700"
-              >
-                45 Boulevard Saint-Marcel, 75013 Paris
-              </Link>
-            </p>
           </div>
+        </div>
+
+        {/* Middle spacer — mobile only */}
+        <div className="flex-[0.5] md:hidden" />
+
+        <div className="relative mx-auto max-w-2xl text-center md:mt-10 md:px-4">
+          {/* Search bar */}
+          <div className="mx-auto flex max-w-xl flex-col gap-2 sm:flex-row">
+            <div className="flex-1">
+              <AddressAutocomplete
+                onSelect={handleSelect}
+                onSubmit={handleSubmit}
+                placeholder="Entrez une adresse, une ville..."
+              />
+            </div>
+            <Button
+              type="button"
+              className="h-12 rounded-xl bg-teal-700 px-6 text-base font-semibold text-white shadow-sm hover:bg-teal-800 sm:h-14 sm:px-8"
+              onClick={() => {
+                // The autocomplete handles submission internally via onSubmit
+                // This button is just visual — Enter key or suggestion click is the primary UX
+              }}
+            >
+              <span className="flex items-center gap-2">
+                <Search className="h-4 w-4" />
+                Rechercher
+              </span>
+            </Button>
+          </div>
+
+          <p className="mt-4 text-sm text-slate-400">
+            Exemple :{" "}
+            <Link
+              href="/copropriete/score-copropriete-45-bd-saint-marcel-75013-paris"
+              className="text-teal-600 underline decoration-teal-300 underline-offset-2 hover:text-teal-700"
+            >
+              45 Boulevard Saint-Marcel, 75013 Paris
+            </Link>
+          </p>
+        </div>
+
+        {/* Bottom spacer — mobile only */}
+        <div className="flex-1 md:hidden" />
+
+        {/* Scroll indicator — mobile only */}
+        <div className="pb-6 text-center md:hidden">
+          <ChevronDown className="mx-auto h-5 w-5 animate-bounce text-gray-300" />
         </div>
       </section>
 
