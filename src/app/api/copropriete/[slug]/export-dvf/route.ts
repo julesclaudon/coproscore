@@ -46,23 +46,23 @@ export async function GET(
   const headers = [
     "Date",
     "Adresse",
-    "Surface (m\u00b2)",
-    "Pi\u00e8ces",
-    "Prix (\u20ac)",
-    "Prix/m\u00b2 (\u20ac/m\u00b2)",
+    "Surface (m²)",
+    "Pièces",
+    "Prix (€)",
+    "Prix/m² (€/m²)",
   ];
 
   const today = new Date().toISOString().slice(0, 10);
   const displayName = formatCoproName(
-    copro.nomUsage || copro.adresseReference || "Copropri\u00e9t\u00e9"
+    copro.nomUsage || copro.adresseReference || "Copropriété"
   );
 
   if (format === "csv") {
     const rows = transactions.map((t) => [
       new Date(t.date_mutation).toLocaleDateString("fr-FR"),
-      t.adresse ?? "\u2014",
+      t.adresse ?? "—",
       String(Math.round(Number(t.surface))),
-      t.nb_pieces != null ? String(t.nb_pieces) : "\u2014",
+      t.nb_pieces != null ? String(t.nb_pieces) : "—",
       String(Math.round(Number(t.prix))),
       String(Number(t.prix_m2)),
     ]);
@@ -80,7 +80,7 @@ export async function GET(
   // XLSX
   const rows = transactions.map((t) => [
     new Date(t.date_mutation).toLocaleDateString("fr-FR"),
-    t.adresse ?? "\u2014",
+    t.adresse ?? "—",
     Math.round(Number(t.surface)),
     t.nb_pieces != null ? Number(t.nb_pieces) : null,
     Math.round(Number(t.prix)),
@@ -91,7 +91,7 @@ export async function GET(
     sheetName: "Transactions DVF",
     headers,
     rows,
-    title: `${displayName} \u2014 Export DVF ${today}`,
+    title: `${displayName} — Export DVF ${today}`,
   });
 
   return new NextResponse(new Uint8Array(buffer), {

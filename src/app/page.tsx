@@ -108,17 +108,17 @@ export default function Home() {
           <div className="mx-auto max-w-2xl text-center">
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-teal-200 bg-teal-50 px-4 py-1.5 text-sm font-medium text-teal-700">
               <ShieldCheck className="h-4 w-4" />
-              619 402 copropri&eacute;t&eacute;s analys&eacute;es
+              619 402 copropriétés analysées
             </div>
 
             <h1 className="mb-5 text-3xl font-bold tracking-tight text-slate-900 sm:text-5xl lg:text-6xl">
               Analysez la{" "}
-              <span className="text-teal-600">sant&eacute;</span>{" "}
-              de votre copropri&eacute;t&eacute;
+              <span className="text-teal-600">santé</span>{" "}
+              de votre copropriété
             </h1>
             <p className="mx-auto mb-8 max-w-lg text-base leading-relaxed text-slate-500 sm:mb-10 sm:text-lg">
-              Un score de 0 &agrave; 100 calcul&eacute; &agrave; partir du registre national, d&apos;1 million
-              de transactions immobili&egrave;res et de 13,5 millions de diagnostics &eacute;nerg&eacute;tiques.
+              Un score de 0 à 100 calculé à partir du registre national, d'1 million
+              de transactions immobilières et de 13,5 millions de diagnostics énergétiques.
             </p>
 
             {/* Search bar */}
@@ -162,13 +162,13 @@ export default function Home() {
       <section className="border-t bg-white py-20">
         <div className="mx-auto max-w-6xl px-4">
           <h2 className="mb-4 text-center text-3xl font-bold text-slate-900">
-            Comment &ccedil;a marche
+            Comment ça marche
           </h2>
           <p className="mx-auto mb-14 max-w-lg text-center text-slate-500">
-            Un diagnostic complet en quelques secondes, enti&egrave;rement gratuit
-            et bas&eacute; sur les donn&eacute;es publiques.{" "}
+            Un diagnostic complet en quelques secondes, entièrement gratuit
+            et basé sur les données publiques.{" "}
             <Link href="/methodologie" className="text-teal-600 underline decoration-teal-300 underline-offset-2 hover:text-teal-700">
-              D&eacute;couvrez notre m&eacute;thodologie
+              Découvrez notre méthodologie
             </Link>
           </p>
           <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
@@ -177,19 +177,19 @@ export default function Home() {
                 num: "01",
                 icon: Search,
                 title: "Recherchez votre adresse",
-                desc: "Tapez une adresse ou une ville. L\u2019autocompl\u00e9tion vous guide en temps r\u00e9el.",
+                desc: "Tapez une adresse ou une ville. L’autocomplétion vous guide en temps réel.",
               },
               {
                 num: "02",
                 icon: BarChart3,
                 title: "Consultez le score",
-                desc: "Score global de 0 \u00e0 100 d\u00e9taill\u00e9 en 5 dimensions : technique, risques, gouvernance, \u00e9nergie, march\u00e9.",
+                desc: "Score global de 0 à 100 détaillé en 5 dimensions : technique, risques, gouvernance, énergie, marché.",
               },
               {
                 num: "03",
                 icon: Eye,
-                title: "Explorez les d\u00e9tails",
-                desc: "DPE, prix au m\u00b2, copropri\u00e9t\u00e9s voisines, \u00e9volution du march\u00e9 \u2014 toutes les donn\u00e9es sur une fiche.",
+                title: "Explorez les détails",
+                desc: "DPE, prix au m², copropriétés voisines, évolution du marché — toutes les données sur une fiche.",
               },
             ].map((step) => (
               <div key={step.num} className="text-center">
@@ -219,7 +219,7 @@ export default function Home() {
               Exemple de fiche
             </h2>
             <p className="mx-auto mb-10 max-w-lg text-center text-slate-500">
-              Voici un aper&ccedil;u du score d&eacute;taill&eacute; disponible pour chaque copropri&eacute;t&eacute;.
+              Voici un aperçu du score détaillé disponible pour chaque copropriété.
             </p>
 
             <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
@@ -238,14 +238,14 @@ export default function Home() {
                     45 Boulevard Saint-Marcel
                   </h3>
                   <p className="mb-4 text-sm text-slate-500">
-                    75013 Paris &mdash; 47 lots d&apos;habitation
+                    75013 Paris — 47 lots d'habitation
                   </p>
                   <div className="space-y-2.5">
                     <MiniBar label="Technique" value={13} max={25} color="bg-teal-500" />
                     <MiniBar label="Risques" value={30} max={30} color="bg-teal-600" />
                     <MiniBar label="Gouvernance" value={25} max={25} color="bg-teal-600" />
-                    <MiniBar label="&Eacute;nergie" value={14} max={20} color="bg-teal-500" />
-                    <MiniBar label="March&eacute;" value={14} max={20} color="bg-teal-500" />
+                    <MiniBar label="Énergie" value={14} max={20} color="bg-teal-500" />
+                    <MiniBar label="Marché" value={14} max={20} color="bg-teal-500" />
                   </div>
                 </div>
               </div>
@@ -255,7 +255,7 @@ export default function Home() {
                   href="/copropriete/score-copropriete-45-bd-saint-marcel-75013-paris"
                   className="group flex items-center gap-1 text-sm font-medium text-teal-700 hover:text-teal-800"
                 >
-                  Voir la fiche compl&egrave;te
+                  Voir la fiche complète
                   <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                 </Link>
               </div>
@@ -268,10 +268,10 @@ export default function Home() {
       <section className="border-t bg-white py-20">
         <div className="mx-auto max-w-6xl px-4">
           <h2 className="mb-4 text-center text-3xl font-bold text-slate-900">
-            Sources de donn&eacute;es
+            Sources de données
           </h2>
           <p className="mx-auto mb-12 max-w-lg text-center text-slate-500">
-            CoproScore croise quatre bases de donn&eacute;es publiques ouvertes pour construire un score fiable.
+            CoproScore croise quatre bases de données publiques ouvertes pour construire un score fiable.
           </p>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {[
@@ -279,29 +279,29 @@ export default function Home() {
                 icon: Database,
                 title: "RNIC",
                 stat: "619 402",
-                unit: "copropri\u00e9t\u00e9s",
-                desc: "Registre National d\u2019Immatriculation des Copropri\u00e9t\u00e9s \u2014 donn\u00e9es de gestion, structure et gouvernance.",
+                unit: "copropriétés",
+                desc: "Registre National d’Immatriculation des Copropriétés — données de gestion, structure et gouvernance.",
               },
               {
                 icon: TrendingUp,
                 title: "DVF",
                 stat: "1 025 444",
                 unit: "transactions",
-                desc: "Demandes de Valeurs Fonci\u00e8res \u2014 ventes d\u2019appartements 2023\u20132025, prix au m\u00b2 et \u00e9volutions.",
+                desc: "Demandes de Valeurs Foncières — ventes d’appartements 2023–2025, prix au m² et évolutions.",
               },
               {
                 icon: Zap,
                 title: "DPE ADEME",
                 stat: "13,5 M",
                 unit: "diagnostics",
-                desc: "Diagnostics de Performance \u00c9nerg\u00e9tique de l\u2019ADEME \u2014 classes A \u00e0 G par logement.",
+                desc: "Diagnostics de Performance Énergétique de l’ADEME — classes A à G par logement.",
               },
               {
                 icon: Map,
                 title: "BAN",
                 stat: "99,99 %",
-                unit: "g\u00e9olocalis\u00e9s",
-                desc: "Base Adresse Nationale \u2014 g\u00e9ocodage pr\u00e9cis et recherche par adresse.",
+                unit: "géolocalisés",
+                desc: "Base Adresse Nationale — géocodage précis et recherche par adresse.",
               },
             ].map((src) => (
               <div

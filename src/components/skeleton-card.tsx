@@ -19,7 +19,7 @@ export function SkeletonMapPlaceholder() {
     <div className="flex h-[250px] flex-col items-center justify-center rounded-xl bg-slate-100">
       <div className="h-6 w-6 animate-spin rounded-full border-2 border-teal-600 border-t-transparent" />
       <p className="mt-2 text-xs text-slate-400">
-        Chargement de la carte&hellip;
+        Chargement de la carte…
       </p>
     </div>
   );

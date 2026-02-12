@@ -38,7 +38,7 @@ function scoreBg(score: number | null): string {
 function timeAgo(iso: string): string {
   const diff = Date.now() - new Date(iso).getTime();
   const minutes = Math.floor(diff / 60000);
-  if (minutes < 1) return "\u00e0 l\u2019instant";
+  if (minutes < 1) return "à l’instant";
   if (minutes < 60) return `il y a ${minutes} min`;
   const hours = Math.floor(minutes / 60);
   if (hours < 24) return `il y a ${hours}h`;
@@ -94,8 +94,8 @@ export default function HistoriquePage() {
           </h1>
           {mounted && history.length > 0 && (
             <p className="mt-2 text-sm text-slate-500">
-              {history.length} copropri&eacute;t&eacute;
-              {history.length > 1 ? "s" : ""} consult&eacute;e
+              {history.length} copropriété
+              {history.length > 1 ? "s" : ""} consultée
               {history.length > 1 ? "s" : ""}
             </p>
           )}
@@ -110,7 +110,7 @@ export default function HistoriquePage() {
                 onClick={handleClear}
               >
                 <Trash2 className="h-3.5 w-3.5" />
-                Vider l&apos;historique
+                Vider l'historique
               </Button>
               <Button
                 variant="outline"
@@ -187,7 +187,7 @@ export default function HistoriquePage() {
                       className="flex items-center gap-1.5 rounded-full bg-white px-5 py-2.5 text-sm font-medium text-teal-700 shadow-sm transition-colors hover:text-teal-900"
                     >
                       <Lock className="h-3.5 w-3.5" />
-                      Passez Pro &mdash; 29&euro;/mois
+                      Passez Pro — 29€/mois
                     </Link>
                   </div>
                 </div>
@@ -202,16 +202,16 @@ export default function HistoriquePage() {
                 <Clock className="h-7 w-7 text-slate-400" />
               </div>
               <p className="text-lg font-semibold text-slate-700">
-                Aucune copropri&eacute;t&eacute; consult&eacute;e
+                Aucune copropriété consultée
               </p>
               <p className="mt-2 max-w-sm text-sm text-slate-400">
-                Vos consultations de fiches copropri&eacute;t&eacute;
-                appara&icirc;tront ici automatiquement.
+                Vos consultations de fiches copropriété
+                apparaîtront ici automatiquement.
               </p>
               <Link href="/" className="mt-6">
                 <Button className="gap-2 bg-teal-700 text-white hover:bg-teal-800">
                   <Search className="h-4 w-4" />
-                  Rechercher une copropri&eacute;t&eacute;
+                  Rechercher une copropriété
                 </Button>
               </Link>
             </div>

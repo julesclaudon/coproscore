@@ -81,12 +81,12 @@ export function DownloadButton({ slug, className, children, accessLevel, hasPurc
       {loading ? (
         <>
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          {canDownload ? "G\u00e9n\u00e9ration en cours..." : "Redirection..."}
+          {canDownload ? "Génération en cours..." : "Redirection..."}
         </>
       ) : hasPurchased && accessLevel === "free" ? (
         <>
           <CheckCircle2 className="mr-2 h-4 w-4 text-green-400" />
-          T\u00e9l\u00e9charger votre rapport
+          Télécharger votre rapport
         </>
       ) : !canDownload ? (
         <>

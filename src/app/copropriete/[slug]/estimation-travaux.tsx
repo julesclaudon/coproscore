@@ -4,7 +4,7 @@ import type { EstimationTravaux } from "@/lib/budget-travaux";
 import type { AccessLevel } from "@/lib/access";
 
 function fmtEur(n: number): string {
-  return Math.round(n).toLocaleString("fr-FR") + "\u00a0\u20ac";
+  return Math.round(n).toLocaleString("fr-FR") + " €";
 }
 
 function FiabiliteBadge({ fiabilite }: { fiabilite: EstimationTravaux["fiabilite"] }) {
@@ -27,7 +27,7 @@ function FiabiliteBadge({ fiabilite }: { fiabilite: EstimationTravaux["fiabilite
   return (
     <span className="inline-flex items-center gap-1 rounded-full bg-red-50 px-2.5 py-1 text-xs font-medium text-red-700">
       <ShieldAlert className="h-3 w-3" />
-      Donn&eacute;es insuffisantes
+      Données insuffisantes
     </span>
   );
 }
@@ -55,7 +55,7 @@ function PosteCard({
           <p className="mt-0.5 text-xs text-slate-400">{description}</p>
         </div>
         <p className="text-sm font-bold text-slate-900 sm:shrink-0 sm:text-right">
-          {fmtEur(min)} &mdash; {fmtEur(max)}
+          {fmtEur(min)} — {fmtEur(max)}
         </p>
       </div>
       <div className="mt-3 h-1.5 max-w-full overflow-hidden rounded-full bg-slate-100">
@@ -88,16 +88,16 @@ export function EstimationTravauxSection({
           Estimation des travaux potentiels
         </h2>
         <p className="mb-4 text-xs text-slate-400">
-          Fourchette estim&eacute;e &agrave; partir de la p&eacute;riode de construction, du DPE et des moyennes nationales (ANAH/ADEME)
+          Fourchette estimée à partir de la période de construction, du DPE et des moyennes nationales (ANAH/ADEME)
         </p>
         <div className="flex items-center gap-3 rounded-lg border border-teal-200 bg-teal-50/60 p-5">
           <CheckCircle2 className="h-6 w-6 shrink-0 text-teal-600" />
           <div>
             <p className="text-sm font-medium text-teal-800">
-              Aucun poste de travaux majeur identifi&eacute;
+              Aucun poste de travaux majeur identifié
             </p>
             <p className="mt-0.5 text-xs text-teal-600">
-              La copropri&eacute;t&eacute; semble en bon &eacute;tat technique.
+              La copropriété semble en bon état technique.
             </p>
           </div>
         </div>
@@ -123,7 +123,7 @@ export function EstimationTravauxSection({
         Estimation des travaux potentiels
       </h2>
       <p className="mb-4 text-xs text-slate-500">
-        Fourchette estim&eacute;e &agrave; partir de la p&eacute;riode de construction, du DPE et des moyennes nationales (ANAH/ADEME)
+        Fourchette estimée à partir de la période de construction, du DPE et des moyennes nationales (ANAH/ADEME)
       </p>
 
       <div className="space-y-3">
@@ -169,14 +169,14 @@ export function EstimationTravauxSection({
         {/* Total */}
         <div className="overflow-hidden rounded-lg border border-slate-200 bg-slate-50 p-4">
           <div className="flex flex-col gap-1 sm:flex-row sm:flex-wrap sm:items-baseline sm:justify-between sm:gap-2">
-            <p className="text-sm font-medium text-slate-600">Total estim&eacute;</p>
+            <p className="text-sm font-medium text-slate-600">Total estimé</p>
             <p className="break-words text-xl font-bold text-slate-900">
-              {fmtEur(totalMin)} &mdash; {fmtEur(totalMax)}
+              {fmtEur(totalMin)} — {fmtEur(totalMax)}
             </p>
           </div>
           {lots > 1 && (
             <p className="mt-1 break-words text-right text-xs text-slate-400">
-              soit {fmtEur(Math.round(totalMin / lots))} &mdash;{" "}
+              soit {fmtEur(Math.round(totalMin / lots))} —{" "}
               {fmtEur(Math.round(totalMax / lots))} par lot
             </p>
           )}

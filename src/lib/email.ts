@@ -27,7 +27,7 @@ export async function sendConfirmationEmail({
           Confirmer votre alerte
         </h2>
         <p style="color: #475569; font-size: 15px; line-height: 1.6; margin: 0 0 8px;">
-          Vous avez demand&eacute; &agrave; recevoir un email si le score de
+          Vous avez demandé à recevoir un email si le score de
           <strong>${coproName}</strong> change.
         </p>
         <p style="color: #475569; font-size: 15px; line-height: 1.6; margin: 0 0 24px;">
@@ -37,7 +37,7 @@ export async function sendConfirmationEmail({
           Confirmer mon alerte
         </a>
         <p style="color: #94a3b8; font-size: 13px; margin: 24px 0 0; line-height: 1.5;">
-          Si vous n&rsquo;avez pas demand&eacute; cette alerte, ignorez simplement cet email.
+          Si vous n’avez pas demandé cette alerte, ignorez simplement cet email.
         </p>
       </div>
     `,

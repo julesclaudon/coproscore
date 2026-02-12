@@ -29,7 +29,7 @@ function buildPrompt(copro: any): string {
   const residenceService = copro.residenceService === "oui" ? "Oui" : "Non";
   const dpe = copro.dpeClasseMediane ?? "non disponible";
   const dpeNb = copro.dpeNbLogements ?? 0;
-  const prixM2 = copro.marchePrixM2 != null ? `${Math.round(copro.marchePrixM2)} \u20AC/m\u00b2` : "non disponible";
+  const prixM2 = copro.marchePrixM2 != null ? `${Math.round(copro.marchePrixM2)} €/m²` : "non disponible";
   const evolution = copro.marcheEvolution != null ? `${copro.marcheEvolution >= 0 ? "+" : ""}${copro.marcheEvolution.toFixed(1)}%` : "non disponible";
   const nbTransactions = copro.marcheNbTransactions ?? "non disponible";
   const confiance = copro.indiceConfiance != null ? `${Math.round(copro.indiceConfiance)}%` : "non disponible";
@@ -39,58 +39,58 @@ function buildPrompt(copro: any): string {
   const acv = copro.coproDansAcv === "oui";
   const pvd = copro.coproDansPvd === "oui";
 
-  return `Tu es un expert en immobilier et copropri\u00e9t\u00e9 en France. Analyse cette copropri\u00e9t\u00e9 et produis un avis structur\u00e9.
+  return `Tu es un expert en immobilier et copropriété en France. Analyse cette copropriété et produis un avis structuré.
 
-DONN\u00c9ES DE LA COPROPRI\u00c9T\u00c9 :
+DONNÉES DE LA COPROPRIÉTÉ :
 
 Localisation : ${adresse}, ${copro.codePostal} ${commune}
 Score global : ${copro.scoreGlobal}/100
 - Technique : ${copro.scoreTechnique ?? "N/A"}/25
 - Risques : ${copro.scoreRisques ?? "N/A"}/30
 - Gouvernance : ${copro.scoreGouvernance ?? "N/A"}/25
-- \u00c9nergie : ${copro.scoreEnergie ?? "N/A"}/20
-- March\u00e9 : ${copro.scoreMarche ?? "N/A"}/20
+- Énergie : ${copro.scoreEnergie ?? "N/A"}/20
+- Marché : ${copro.scoreMarche ?? "N/A"}/20
 Indice de confiance : ${confiance}
 
 Informations RNIC :
 - Type de syndic : ${syndic}
-- Syndicat coop\u00e9ratif : ${cooperative}
+- Syndicat coopératif : ${cooperative}
 - Nombre total de lots : ${lots}
 - Lots habitation : ${lotsHab}
-- P\u00e9riode de construction : ${period}
-- Plan de p\u00e9ril : ${peril}
-- R\u00e9sidence service : ${residenceService}
-- Date immatriculation : ${copro.dateImmatriculation ? new Date(copro.dateImmatriculation).toLocaleDateString("fr-FR") : "non renseign\u00e9e"}
+- Période de construction : ${period}
+- Plan de péril : ${peril}
+- Résidence service : ${residenceService}
+- Date immatriculation : ${copro.dateImmatriculation ? new Date(copro.dateImmatriculation).toLocaleDateString("fr-FR") : "non renseignée"}
 ${qp ? `- Quartier prioritaire : ${qp}` : ""}
-${acv ? "- Situ\u00e9e en zone Action C\u0153ur de Ville" : ""}
-${pvd ? "- Situ\u00e9e en zone Petites Villes de Demain" : ""}
+${acv ? "- Située en zone Action Cœur de Ville" : ""}
+${pvd ? "- Située en zone Petites Villes de Demain" : ""}
 
-Donn\u00e9es DPE :
-- Classe DPE m\u00e9diane : ${dpe}${dpeNb > 0 ? ` (bas\u00e9e sur ${dpeNb} diagnostic${dpeNb > 1 ? "s" : ""})` : ""}
+Données DPE :
+- Classe DPE médiane : ${dpe}${dpeNb > 0 ? ` (basée sur ${dpeNb} diagnostic${dpeNb > 1 ? "s" : ""})` : ""}
 
-Donn\u00e9es march\u00e9 immobilier (rayon 500m, 3 ans) :
+Données marché immobilier (rayon 500m, 3 ans) :
 - Prix moyen : ${prixM2}
-- \u00c9volution annuelle : ${evolution}
+- Évolution annuelle : ${evolution}
 - Nombre de transactions : ${nbTransactions}
 
 CONSIGNES :
 - Sois factuel et professionnel, pas marketing
-- N'utilise jamais "excellent" ou "mauvais" de fa\u00e7on absolue \u2014 pr\u00e9f\u00e8re "le score sugg\u00e8re", "les donn\u00e9es indiquent"
-- Croise les donn\u00e9es entre elles pour identifier des corr\u00e9lations (ex: immeuble ancien + pas de DPE = vigilance)
-- Les recommandations doivent \u00eatre concr\u00e8tes et actionnables pour un acheteur potentiel
+- N'utilise jamais "excellent" ou "mauvais" de façon absolue — préfère "le score suggère", "les données indiquent"
+- Croise les données entre elles pour identifier des corrélations (ex: immeuble ancien + pas de DPE = vigilance)
+- Les recommandations doivent être concrètes et actionnables pour un acheteur potentiel
 
-R\u00e9ponds UNIQUEMENT avec un JSON valide (sans markdown, sans backticks) au format suivant :
+Réponds UNIQUEMENT avec un JSON valide (sans markdown, sans backticks) au format suivant :
 {
   "points_forts": ["point 1", "point 2", ...],
   "vigilances": ["vigilance 1", "vigilance 2", ...],
   "recommandations": ["recommandation 1", "recommandation 2", ...],
-  "resume": "Synth\u00e8se de 2-3 phrases."
+  "resume": "Synthèse de 2-3 phrases."
 }
 
 Contraintes :
-- points_forts : 2 \u00e0 4 \u00e9l\u00e9ments
-- vigilances : 2 \u00e0 4 \u00e9l\u00e9ments
-- recommandations : 2 \u00e0 3 \u00e9l\u00e9ments
+- points_forts : 2 à 4 éléments
+- vigilances : 2 à 4 éléments
+- recommandations : 2 à 3 éléments
 - resume : 2-3 phrases concises`;
 }
 

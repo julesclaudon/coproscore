@@ -89,16 +89,16 @@ function validateCp(cp: unknown): string | undefined {
 
 const DPE_COLORS: Record<string, { bg: string; text: string; label: string }> = {
   A: { bg: "bg-green-50", text: "text-green-700", label: "Excellent" },
-  B: { bg: "bg-green-50", text: "text-green-600", label: "Tr\u00e8s bon" },
+  B: { bg: "bg-green-50", text: "text-green-600", label: "Très bon" },
   C: { bg: "bg-lime-50", text: "text-lime-700", label: "Bon" },
   D: { bg: "bg-yellow-50", text: "text-yellow-700", label: "Moyen" },
-  E: { bg: "bg-orange-50", text: "text-orange-600", label: "M\u00e9diocre" },
-  F: { bg: "bg-red-50", text: "text-red-600", label: "Passoire \u00e9nerg\u00e9tique" },
-  G: { bg: "bg-red-50", text: "text-red-700", label: "Passoire \u00e9nerg\u00e9tique" },
+  E: { bg: "bg-orange-50", text: "text-orange-600", label: "Médiocre" },
+  F: { bg: "bg-red-50", text: "text-red-600", label: "Passoire énergétique" },
+  G: { bg: "bg-red-50", text: "text-red-700", label: "Passoire énergétique" },
 };
 
 function syndicInterpretation(pct: number | null): { bg: string; text: string; label: string } {
-  if (pct === null) return { bg: "bg-slate-50", text: "text-slate-500", label: "Donn\u00e9es insuffisantes" };
+  if (pct === null) return { bg: "bg-slate-50", text: "text-slate-500", label: "Données insuffisantes" };
   if (pct >= 70) return { bg: "bg-teal-50", text: "text-teal-700", label: "Bonne gouvernance" };
   if (pct >= 40) return { bg: "bg-amber-50", text: "text-amber-700", label: "Gouvernance mixte" };
   return { bg: "bg-orange-50", text: "text-orange-700", label: "Gouvernance fragile" };
@@ -107,8 +107,8 @@ function syndicInterpretation(pct: number | null): { bg: string; text: string; l
 function perilInterpretation(nb: number, total: number): { bg: string; text: string; label: string } {
   if (nb === 0) return { bg: "bg-teal-50", text: "text-teal-700", label: "Aucun signalement" };
   const pct = (nb / total) * 100;
-  if (pct < 1) return { bg: "bg-amber-50", text: "text-amber-700", label: "Quelques copros en difficult\u00e9" };
-  return { bg: "bg-red-50", text: "text-red-700", label: `${pct.toFixed(1)}% en difficult\u00e9` };
+  if (pct < 1) return { bg: "bg-amber-50", text: "text-amber-700", label: "Quelques copros en difficulté" };
+  return { bg: "bg-red-50", text: "text-red-700", label: `${pct.toFixed(1)}% en difficulté` };
 }
 
 async function resolveArrondissement(
@@ -189,34 +189,34 @@ export async function generateMetadata({
   const displayName = arrondissementName ?? info.nom;
 
   const prixPart = info.avg_prix_m2
-    ? `, prix moyen ${Number(info.avg_prix_m2).toLocaleString("fr-FR")} \u20ac/m\u00b2`
+    ? `, prix moyen ${Number(info.avg_prix_m2).toLocaleString("fr-FR")} €/m²`
     : "";
   const dpePart = info.dpe_median ? `, DPE ${info.dpe_median}` : "";
 
   const scoreText = info.avg_score != null ? `Score moyen ${info.avg_score}/100` : "";
   const ogTitle = info.avg_score != null
-    ? `Copropri\u00e9t\u00e9s \u00e0 ${displayName} \u2014 Score moyen ${info.avg_score}/100`
-    : `Copropri\u00e9t\u00e9s \u00e0 ${displayName}`;
+    ? `Copropriétés à ${displayName} — Score moyen ${info.avg_score}/100`
+    : `Copropriétés à ${displayName}`;
 
   const cpParam = effectiveCp ? `?cp=${effectiveCp}` : "";
   const ogImage = `${process.env.NEXT_PUBLIC_BASE_URL || "https://coproscore.fr"}/api/og/ville/${slug}${cpParam}`;
 
   const titleText = info.avg_score != null
-    ? `Copropri\u00e9t\u00e9s \u00e0 ${displayName} \u2014 Score moyen ${info.avg_score}/100`
-    : `Copropri\u00e9t\u00e9s \u00e0 ${displayName} : score, DPE, prix`;
+    ? `Copropriétés à ${displayName} — Score moyen ${info.avg_score}/100`
+    : `Copropriétés à ${displayName} : score, DPE, prix`;
 
   return {
     title: titleText,
-    description: `${Number(info.total)} copropri\u00e9t\u00e9s analys\u00e9es \u00e0 ${displayName} (${info.nom_dept}). ${scoreText}${prixPart}${dpePart}. Consultez scores et d\u00e9tails.`,
+    description: `${Number(info.total)} copropriétés analysées à ${displayName} (${info.nom_dept}). ${scoreText}${prixPart}${dpePart}. Consultez scores et détails.`,
     openGraph: {
       title: ogTitle,
-      description: `${Number(info.total)} copropri\u00e9t\u00e9s analys\u00e9es \u00e0 ${displayName}. ${scoreText}.`,
+      description: `${Number(info.total)} copropriétés analysées à ${displayName}. ${scoreText}.`,
       images: [{ url: ogImage, width: 1200, height: 630, alt: ogTitle }],
     },
     twitter: {
       card: "summary_large_image",
       title: ogTitle,
-      description: `${Number(info.total)} copropri\u00e9t\u00e9s \u00e0 ${displayName}. ${scoreText}.`,
+      description: `${Number(info.total)} copropriétés à ${displayName}. ${scoreText}.`,
       images: [ogImage],
     },
   };
@@ -399,7 +399,7 @@ export default async function VillePage({
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Place",
-    name: `Copropri\u00e9t\u00e9s \u00e0 ${displayName}`,
+    name: `Copropriétés à ${displayName}`,
     address: {
       "@type": "PostalAddress",
       addressLocality: locationLabel,
@@ -461,11 +461,11 @@ export default async function VillePage({
               )}
               <div className="min-w-0 flex-1">
                 <h1 className="text-lg font-bold text-slate-900 sm:text-2xl">
-                  Copropri&eacute;t&eacute;s &agrave; {displayName}
+                  Copropriétés à {displayName}
                 </h1>
                 <p className="mt-0.5 text-sm text-slate-500">
-                  {total.toLocaleString("fr-FR")} copropri&eacute;t&eacute;
-                  {total > 1 ? "s" : ""} analys&eacute;e{total > 1 ? "s" : ""} &mdash;{" "}
+                  {total.toLocaleString("fr-FR")} copropriété
+                  {total > 1 ? "s" : ""} analysée{total > 1 ? "s" : ""} —{" "}
                   {effectiveCp ? `${communeName}, ${nomDept}` : nomDept}
                 </p>
                 {effectiveCp && (
@@ -484,18 +484,18 @@ export default async function VillePage({
             <div className="mt-4 flex flex-wrap gap-2">
               {medianScore !== null && (
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-700">
-                  M&eacute;dian <strong>{medianScore}</strong>
+                  Médian <strong>{medianScore}</strong>
                 </span>
               )}
               {minScore !== null && maxScore !== null && (
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-700">
-                  Min&ndash;Max <strong>{minScore} &mdash; {maxScore}</strong>
+                  Min–Max <strong>{minScore} — {maxScore}</strong>
                 </span>
               )}
               {avgPrixM2 != null && (
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-700">
                   <DollarSign className="h-3 w-3 text-slate-400" />
-                  <strong>{avgPrixM2.toLocaleString("fr-FR")}&nbsp;&euro;/m&sup2;</strong>
+                  <strong>{avgPrixM2.toLocaleString("fr-FR")} €/m²</strong>
                 </span>
               )}
               {dpeMedian && (
@@ -509,10 +509,10 @@ export default async function VillePage({
         </section>
 
         <div className="mx-auto max-w-6xl px-4 py-6 sm:py-8">
-          {/* ─── 2. Sant&eacute; globale ─── */}
+          {/* ─── 2. Santé globale ─── */}
           <section className="mb-8">
             <h2 className="mb-4 text-base font-semibold text-slate-900">
-              Sant&eacute; globale
+              Santé globale
             </h2>
 
             <div className="grid items-start gap-4 lg:grid-cols-[1fr_280px]">
@@ -531,19 +531,19 @@ export default async function VillePage({
                 <div className="flex-1 rounded-lg border border-teal-200 bg-teal-50 px-3 py-3 text-center">
                   <p className="text-xl font-bold text-teal-700">{bon.toLocaleString("fr-FR")}</p>
                   <p className="text-[11px] text-teal-700/70">
-                    Bon (&ge;&nbsp;70) &mdash; {total > 0 ? Math.round((bon / total) * 100) : 0}%
+                    Bon (≥ 70) — {total > 0 ? Math.round((bon / total) * 100) : 0}%
                   </p>
                 </div>
                 <div className="flex-1 rounded-lg border border-amber-200 bg-amber-50 px-3 py-3 text-center">
                   <p className="text-xl font-bold text-amber-600">{moyen.toLocaleString("fr-FR")}</p>
                   <p className="text-[11px] text-amber-600/70">
-                    Moyen (40-69) &mdash; {total > 0 ? Math.round((moyen / total) * 100) : 0}%
+                    Moyen (40-69) — {total > 0 ? Math.round((moyen / total) * 100) : 0}%
                   </p>
                 </div>
                 <div className="flex-1 rounded-lg border border-red-200 bg-red-50 px-3 py-3 text-center">
                   <p className="text-xl font-bold text-red-600">{attention.toLocaleString("fr-FR")}</p>
                   <p className="text-[11px] text-red-600/70">
-                    Attention (&lt;&nbsp;40) &mdash; {total > 0 ? Math.round((attention / total) * 100) : 0}%
+                    Attention (&lt; 40) — {total > 0 ? Math.round((attention / total) * 100) : 0}%
                   </p>
                 </div>
               </div>
@@ -565,10 +565,10 @@ export default async function VillePage({
             )}
           </section>
 
-          {/* ─── 3. Points cl&eacute;s ─── */}
+          {/* ─── 3. Points clés ─── */}
           <section className="mb-8">
             <h2 className="mb-4 text-base font-semibold text-slate-900">
-              Points cl&eacute;s {effectiveCp ? "de l\u2019arrondissement" : "de la commune"}
+              Points clés {effectiveCp ? "de l’arrondissement" : "de la commune"}
             </h2>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               {/* Syndic pro */}
@@ -578,18 +578,18 @@ export default async function VillePage({
                   <span className="text-xs text-slate-500">Syndic pro</span>
                 </div>
                 <p className="text-lg font-bold text-slate-900">
-                  {pctSyndicPro != null ? `${pctSyndicPro}%` : "\u2014"}
+                  {pctSyndicPro != null ? `${pctSyndicPro}%` : "—"}
                 </p>
                 <p className={`mt-0.5 text-[11px] font-medium ${syndicInfo.text}`}>
                   {syndicInfo.label}
                 </p>
               </div>
 
-              {/* P&eacute;ril */}
+              {/* Péril */}
               <div className={`rounded-lg border p-3.5 ${perilInfo.bg === "bg-teal-50" ? "border-teal-200" : perilInfo.bg === "bg-amber-50" ? "border-amber-200" : "border-red-200"} ${perilInfo.bg}`}>
                 <div className="mb-2 flex items-center gap-2">
                   <ShieldAlert className="h-4 w-4 text-slate-500" />
-                  <span className="text-xs text-slate-500">P&eacute;ril / PDP</span>
+                  <span className="text-xs text-slate-500">Péril / PDP</span>
                 </div>
                 <p className="text-lg font-bold text-slate-900">{nbPeril}</p>
                 <p className={`mt-0.5 text-[11px] font-medium ${perilInfo.text}`}>
@@ -601,26 +601,26 @@ export default async function VillePage({
               <div className="rounded-lg border border-slate-200 bg-white p-3.5">
                 <div className="mb-2 flex items-center gap-2">
                   <DollarSign className="h-4 w-4 text-slate-500" />
-                  <span className="text-xs text-slate-500">Prix moyen / m&sup2;</span>
+                  <span className="text-xs text-slate-500">Prix moyen / m²</span>
                 </div>
                 <p className="text-lg font-bold text-slate-900">
                   {avgPrixM2
-                    ? `${avgPrixM2.toLocaleString("fr-FR")}\u00a0\u20ac`
-                    : "\u2014"}
+                    ? `${avgPrixM2.toLocaleString("fr-FR")} €`
+                    : "—"}
                 </p>
                 <p className="mt-0.5 text-[11px] text-slate-400">
                   Source DVF 3 ans
                 </p>
               </div>
 
-              {/* DPE m&eacute;dian */}
+              {/* DPE médian */}
               <div className={`rounded-lg border p-3.5 ${dpeInfo ? `${dpeInfo.bg} ${dpeInfo.bg === "bg-red-50" ? "border-red-200" : dpeInfo.bg === "bg-orange-50" ? "border-orange-200" : "border-slate-200"}` : "border-slate-200 bg-white"}`}>
                 <div className="mb-2 flex items-center gap-2">
                   <Zap className="h-4 w-4 text-slate-500" />
-                  <span className="text-xs text-slate-500">DPE m&eacute;dian</span>
+                  <span className="text-xs text-slate-500">DPE médian</span>
                 </div>
                 <p className="text-lg font-bold text-slate-900">
-                  {dpeMedian ?? "\u2014"}
+                  {dpeMedian ?? "—"}
                 </p>
                 <p className={`mt-0.5 text-[11px] font-medium ${dpeInfo ? dpeInfo.text : "text-slate-400"}`}>
                   {dpeInfo ? dpeInfo.label : "Non disponible"}
@@ -662,7 +662,7 @@ export default async function VillePage({
                               {c.score_global}
                             </span>
                             <span className="min-w-0 flex-1 truncate text-sm text-slate-700">
-                              {formatCoproName(c.nom_usage || c.adresse_reference || "Copropri\u00e9t\u00e9")}
+                              {formatCoproName(c.nom_usage || c.adresse_reference || "Copropriété")}
                             </span>
                             {c.nb_lots_habitation != null && (
                               <span className="hidden text-xs text-slate-400 sm:inline">
@@ -682,7 +682,7 @@ export default async function VillePage({
                     <CardHeader className="pb-2">
                       <CardTitle className="flex items-center gap-2 text-sm font-semibold text-red-600">
                         <ShieldAlert className="h-4 w-4" />
-                        5 plus en difficult&eacute;
+                        5 plus en difficulté
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="pb-4 pt-0">
@@ -699,7 +699,7 @@ export default async function VillePage({
                               {c.score_global}
                             </span>
                             <span className="min-w-0 flex-1 truncate text-sm text-slate-700">
-                              {formatCoproName(c.nom_usage || c.adresse_reference || "Copropri\u00e9t\u00e9")}
+                              {formatCoproName(c.nom_usage || c.adresse_reference || "Copropriété")}
                             </span>
                             {c.nb_lots_habitation != null && (
                               <span className="hidden text-xs text-slate-400 sm:inline">
@@ -719,7 +719,7 @@ export default async function VillePage({
           {/* ─── 5. Toutes les copros ─── */}
           <section className="mb-8">
             <h2 className="mb-4 text-base font-semibold text-slate-900">
-              Toutes les copropri&eacute;t&eacute;s
+              Toutes les copropriétés
             </h2>
             <Card className="border-slate-200 bg-white">
               <CardContent className="pt-5">
@@ -754,7 +754,7 @@ export default async function VillePage({
                       </p>
                       <p className="text-xs text-slate-400">
                         {Number(v.total).toLocaleString("fr-FR")} copro
-                        {Number(v.total) > 1 ? "s" : ""} &middot; score moyen{" "}
+                        {Number(v.total) > 1 ? "s" : ""} · score moyen{" "}
                         {v.avg_score != null ? Number(v.avg_score) : "N/A"}
                       </p>
                     </div>
@@ -772,15 +772,15 @@ export default async function VillePage({
             <Crown className="h-8 w-8 shrink-0 text-teal-200" />
             <div className="min-w-0 flex-1">
               <p className="text-base font-semibold text-white">
-                Besoin d&apos;analyser cette commune en profondeur&nbsp;?
+                Besoin d'analyser cette commune en profondeur ?
               </p>
               <p className="mt-0.5 text-sm text-teal-100">
-                Acc&eacute;dez &agrave; toutes les donn&eacute;es avec l&apos;offre Pro.
+                Accédez à toutes les données avec l'offre Pro.
               </p>
             </div>
             <Link href="/tarifs">
               <Button className="bg-white text-teal-700 hover:bg-teal-50">
-                D&eacute;couvrir l&apos;offre Pro &rarr;
+                Découvrir l'offre Pro →
               </Button>
             </Link>
           </div>
@@ -813,14 +813,14 @@ function EmptyCommunePage({ communeName }: { communeName: string }) {
         </div>
         <h1 className="text-2xl font-bold text-slate-900">{communeName}</h1>
         <p className="mt-3 max-w-md text-center text-slate-500">
-          Aucune copropri&eacute;t&eacute; r&eacute;f&eacute;renc&eacute;e dans
-          cette commune pour le moment. Les donn&eacute;es sont issues du RNIC et
-          couvrent les copropri&eacute;t&eacute;s immatricul&eacute;es.
+          Aucune copropriété référencée dans
+          cette commune pour le moment. Les données sont issues du RNIC et
+          couvrent les copropriétés immatriculées.
         </p>
         <Link href="/" className="mt-8">
           <Button variant="outline" className="gap-2">
             <Home className="h-4 w-4" />
-            Retour &agrave; l&apos;accueil
+            Retour à l'accueil
           </Button>
         </Link>
       </main>

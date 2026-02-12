@@ -34,8 +34,8 @@ export default function NotFound() {
           Page introuvable
         </h1>
         <p className="mt-2 max-w-md text-center text-slate-500">
-          La copropri&eacute;t&eacute; ou la page que vous cherchez n&apos;existe
-          pas ou a &eacute;t&eacute; d&eacute;plac&eacute;e.
+          La copropriété ou la page que vous cherchez n'existe
+          pas ou a été déplacée.
         </p>
 
         <div className="mt-8 w-full max-w-md">
@@ -50,7 +50,7 @@ export default function NotFound() {
         <Link href="/" className="mt-6">
           <Button variant="outline" className="gap-2">
             <Home className="h-4 w-4" />
-            Retour &agrave; l&apos;accueil
+            Retour à l'accueil
           </Button>
         </Link>
       </main>

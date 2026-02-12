@@ -428,7 +428,7 @@ export default function CarteMap({ points, onBoundsChange, flyTo, isPro }: Carte
                     href={`/copropriete/${clicked.point.slug}`}
                     className="flex-1 rounded-lg bg-teal-600 px-3 py-2 text-center text-xs font-medium text-white hover:bg-teal-700 transition-colors"
                   >
-                    Voir la fiche &rarr;
+                    Voir la fiche →
                   </Link>
                   <button className="rounded-lg border border-slate-200 p-2 text-slate-400 hover:text-amber-500 transition-colors">
                     <Star className="h-4 w-4" />

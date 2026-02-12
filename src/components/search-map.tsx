@@ -54,7 +54,7 @@ export default function SearchMap({
       style={{ height: 250, borderRadius: "0.75rem" }}
     >
       <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        attribution='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
       <FitBounds markers={results} />
@@ -82,7 +82,7 @@ export default function SearchMap({
                 href={`/copropriete/${r.slug ?? r.id}`}
                 style={{ color: "#0D9488", textDecoration: "underline", fontSize: 12 }}
               >
-                Voir la fiche &rarr;
+                Voir la fiche →
               </a>
             </div>
           </Popup>

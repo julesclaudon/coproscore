@@ -112,7 +112,7 @@ export function CarteSidebar({
       {/* Score slider with gradient track */}
       <div>
         <p className="mb-2 text-xs font-medium text-slate-500">
-          Score : {filters.scoreMin} &ndash; {filters.scoreMax}
+          Score : {filters.scoreMin} – {filters.scoreMax}
         </p>
         <div
           className="relative"

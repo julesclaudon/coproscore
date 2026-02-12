@@ -16,7 +16,7 @@ export function PaywallOverlay({
   children,
   ctaFreeText = "Créez un compte gratuit pour débloquer",
   ctaFreeHref = "/inscription",
-  ctaProText = "Passez Pro — 29\u00a0€/mois",
+  ctaProText = "Passez Pro — 29 €/mois",
   ctaProHref = "/tarifs",
 }: PaywallOverlayProps) {
   const ctaText = level === "visitor" ? ctaFreeText : ctaProText;

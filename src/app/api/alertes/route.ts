@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
   });
 
   if (!copro) {
-    return NextResponse.json({ error: "Copropri\u00e9t\u00e9 introuvable" }, { status: 404 });
+    return NextResponse.json({ error: "Copropriété introuvable" }, { status: 404 });
   }
 
   // Check free limit
@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
   }
 
   const normalizedEmail = email.toLowerCase();
-  const coproName = formatCoproName(copro.adresseReference || copro.nomUsage || "cette copropri\u00e9t\u00e9");
+  const coproName = formatCoproName(copro.adresseReference || copro.nomUsage || "cette copropriété");
 
   // Upsert alert
   const alert = await prisma.scoreAlert.upsert({
@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
   });
 
   if (alert.active) {
-    return NextResponse.json({ message: "Vous \u00eates d\u00e9j\u00e0 abonn\u00e9 \u00e0 cette alerte." });
+    return NextResponse.json({ message: "Vous êtes déjà abonné à cette alerte." });
   }
 
   // Create confirmation token
@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
   await sendConfirmationEmail({ to: normalizedEmail, token, coproName });
 
   return NextResponse.json(
-    { message: "Un email de confirmation vous a \u00e9t\u00e9 envoy\u00e9." },
+    { message: "Un email de confirmation vous a été envoyé." },
     { status: 201 }
   );
 }

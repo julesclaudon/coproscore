@@ -173,7 +173,7 @@ export function AddressAutocomplete({
             </li>
           ) : !loading && suggestions.length === 0 ? (
             <li className="px-4 py-3 text-sm text-slate-400">
-              Aucun r&eacute;sultat trouv&eacute;
+              Aucun résultat trouvé
             </li>
           ) : (
             suggestions.map((s, i) => {

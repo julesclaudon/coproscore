@@ -71,7 +71,7 @@ export function buildTimeline(
         sortDate: new Date(year, 0, 1).getTime(),
         type: "construction",
         titre: "Construction de l'immeuble",
-        description: `P\u00e9riode : ${label}`,
+        description: `Période : ${label}`,
       });
     }
   }
@@ -83,8 +83,8 @@ export function buildTimeline(
       date: d.toISOString().slice(0, 10),
       sortDate: d.getTime(),
       type: "administratif",
-      titre: "R\u00e8glement de copropri\u00e9t\u00e9",
-      description: `\u00c9tabli le ${formatDateFr(d)}`,
+      titre: "Règlement de copropriété",
+      description: `Établi le ${formatDateFr(d)}`,
     });
   }
 
@@ -96,7 +96,7 @@ export function buildTimeline(
       sortDate: d.getTime(),
       type: "administratif",
       titre: "Immatriculation au registre national",
-      description: `Immatricul\u00e9e le ${formatDateFr(d)}`,
+      description: `Immatriculée le ${formatDateFr(d)}`,
     });
   }
 
@@ -109,8 +109,8 @@ export function buildTimeline(
       date: d.toISOString().slice(0, 10),
       sortDate: d.getTime(),
       type: "energie",
-      titre: "DPE r\u00e9alis\u00e9",
-      description: `Diagnostic \u00e9nerg\u00e9tique : ${classeText}`,
+      titre: "DPE réalisé",
+      description: `Diagnostic énergétique : ${classeText}`,
     });
   }
 
@@ -125,8 +125,8 @@ export function buildTimeline(
       date: d.toISOString().slice(0, 10),
       sortDate: d.getTime(),
       type: "transaction",
-      titre: "Vente immobili\u00e8re",
-      description: `${surface} m\u00b2 \u00e0 ${fmtNum(prixM2)} \u20ac/m\u00b2 (${fmtNum(prix)} \u20ac)`,
+      titre: "Vente immobilière",
+      description: `${surface} m² à ${fmtNum(prixM2)} €/m² (${fmtNum(prix)} €)`,
     });
   }
 
@@ -141,8 +141,8 @@ export function buildTimeline(
         : new Date().toISOString().slice(0, 10),
       sortDate,
       type: "risque",
-      titre: "Copropri\u00e9t\u00e9 en plan de p\u00e9ril",
-      description: "Inscrite dans un plan de pr\u00e9vention des risques",
+      titre: "Copropriété en plan de péril",
+      description: "Inscrite dans un plan de prévention des risques",
     });
   }
 
@@ -155,7 +155,7 @@ export function buildTimeline(
       sortDate: d.getTime(),
       type: "gouvernance",
       titre: `Syndic ${syndicLabel} en place`,
-      description: `Type de gestion constat\u00e9 au ${formatDateFr(d)}`,
+      description: `Type de gestion constaté au ${formatDateFr(d)}`,
     });
   }
 
@@ -166,8 +166,8 @@ export function buildTimeline(
       date: d.toISOString().slice(0, 10),
       sortDate: d.getTime() + 1, // slightly after syndic event to appear first
       type: "administratif",
-      titre: "Mise \u00e0 jour des donn\u00e9es RNIC",
-      description: `Derni\u00e8re mise \u00e0 jour le ${formatDateFr(d)}`,
+      titre: "Mise à jour des données RNIC",
+      description: `Dernière mise à jour le ${formatDateFr(d)}`,
     });
   }
 
@@ -181,7 +181,7 @@ export function buildTimeline(
 
 /** Format number with fr-FR locale, replacing U+202F (Helvetica lacks this glyph) */
 function fmtNum(n: number): string {
-  return Math.round(n).toLocaleString("fr-FR").replace(/\u202F/g, " ");
+  return Math.round(n).toLocaleString("fr-FR").replace(/ /g, " ");
 }
 
 function formatDateFr(d: Date): string {

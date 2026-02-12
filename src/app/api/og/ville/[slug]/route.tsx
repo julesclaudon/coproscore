@@ -175,7 +175,7 @@ export async function GET(
                 lineHeight: 1.2,
               }}
             >
-              Copropri\u00e9t\u00e9s \u00e0 {info.nom}
+              Copropriétés à {info.nom}
             </span>
             <span style={{ fontSize: 22, color: "#64748b" }}>
               {info.nom_dept}
@@ -199,7 +199,7 @@ export async function GET(
                   {total.toLocaleString("fr-FR")}
                 </span>
                 <span style={{ fontSize: 14, color: "#64748b" }}>
-                  copropri\u00e9t\u00e9s
+                  copropriétés
                 </span>
               </div>
 
@@ -217,10 +217,10 @@ export async function GET(
                   }}
                 >
                   <span style={{ fontSize: 36, fontWeight: 700, color: "#0f172a" }}>
-                    {prix} \u20ac
+                    {prix} €
                   </span>
                   <span style={{ fontSize: 14, color: "#64748b" }}>
-                    prix moyen /m\u00b2
+                    prix moyen /m²
                   </span>
                 </div>
               )}
@@ -248,7 +248,7 @@ export async function GET(
                     DPE {dpe}
                   </span>
                   <span style={{ fontSize: 14, color: "#64748b" }}>
-                    classe m\u00e9diane
+                    classe médiane
                   </span>
                 </div>
               )}
@@ -269,7 +269,7 @@ export async function GET(
           }}
         >
           <span>coproscore.fr</span>
-          <span>Donn\u00e9es publiques RNIC \u2022 DVF \u2022 ADEME</span>
+          <span>Données publiques RNIC • DVF • ADEME</span>
         </div>
       </div>
     ),

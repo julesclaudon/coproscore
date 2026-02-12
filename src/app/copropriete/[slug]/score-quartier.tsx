@@ -17,15 +17,15 @@ function scoreBgRing(score: number): string {
 
 function interpretation(q: ScoreQuartier): string {
   if (q.scoreMoyen >= 70) {
-    return "Ce quartier pr\u00e9sente un bon niveau de sant\u00e9 des copropri\u00e9t\u00e9s. Les immeubles sont globalement bien entretenus.";
+    return "Ce quartier présente un bon niveau de santé des copropriétés. Les immeubles sont globalement bien entretenus.";
   }
   if (q.scoreMoyen >= 55) {
-    return "Quartier correct avec des copropri\u00e9t\u00e9s en \u00e9tat variable. Certains immeubles m\u00e9ritent attention.";
+    return "Quartier correct avec des copropriétés en état variable. Certains immeubles méritent attention.";
   }
   if (q.scoreMoyen >= 40) {
-    return "Quartier mixte, attention aux copropri\u00e9t\u00e9s voisines en difficult\u00e9. V\u00e9rifiez l\u2019\u00e9tat des parties communes.";
+    return "Quartier mixte, attention aux copropriétés voisines en difficulté. Vérifiez l’état des parties communes.";
   }
-  return "Quartier avec de nombreuses copropri\u00e9t\u00e9s en difficult\u00e9. Vigilance accrue recommand\u00e9e.";
+  return "Quartier avec de nombreuses copropriétés en difficulté. Vigilance accrue recommandée.";
 }
 
 export function ScoreQuartierSection({
@@ -39,7 +39,7 @@ export function ScoreQuartierSection({
   const isLocked = accessLevel !== "pro";
   const ctaHref = accessLevel === "visitor" ? "/inscription" : "/tarifs";
   const ctaText = accessLevel === "visitor"
-    ? "Cr\u00e9ez un compte pour voir l'analyse"
+    ? "Créez un compte pour voir l'analyse"
     : "Passez Pro pour voir l'analyse";
 
   return (
@@ -49,7 +49,7 @@ export function ScoreQuartierSection({
         Score du quartier (rayon {quartier.rayon}m)
       </h2>
       <p className="mb-4 text-xs text-slate-400">
-        Agr&eacute;gation des scores de toutes les copropri&eacute;t&eacute;s &agrave; proximit&eacute;
+        Agrégation des scores de toutes les copropriétés à proximité
       </p>
 
       <div className="rounded-xl border border-slate-200 bg-white p-5">
@@ -68,7 +68,7 @@ export function ScoreQuartierSection({
               Score moyen du quartier
             </p>
             <p className="mt-0.5 text-xs text-slate-400">
-              Bas&eacute; sur {quartier.nbCopros} copropri&eacute;t&eacute;
+              Basé sur {quartier.nbCopros} copropriété
               {quartier.nbCopros > 1 ? "s" : ""} dans un rayon de {quartier.rayon}m
             </p>
 
@@ -124,7 +124,7 @@ export function ScoreQuartierSection({
                   {interpretation(quartier)}
                 </p>
                 <p className="mt-2 text-xs text-slate-400">
-                  Score m&eacute;dian : {quartier.scoreMedian}/100
+                  Score médian : {quartier.scoreMedian}/100
                 </p>
               </div>
             </div>
@@ -145,7 +145,7 @@ export function ScoreQuartierSection({
                 {interpretation(quartier)}
               </p>
               <p className="mt-2 text-xs text-slate-400">
-                Score m&eacute;dian : {quartier.scoreMedian}/100
+                Score médian : {quartier.scoreMedian}/100
               </p>
             </div>
           </div>
@@ -157,7 +157,7 @@ export function ScoreQuartierSection({
             href="/carte"
             className="text-xs font-medium text-teal-700 underline-offset-2 transition-colors hover:text-teal-900 hover:underline"
           >
-            Explorer la carte heatmap des copropri&eacute;t&eacute;s &rarr;
+            Explorer la carte heatmap des copropriétés →
           </Link>
         </div>
       </div>

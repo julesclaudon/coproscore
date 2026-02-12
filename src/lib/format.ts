@@ -5,11 +5,11 @@ export const PERIOD_LABELS: Record<string, string> = {
   DE_1975_A_1993: "entre 1975 et 1993",
   DE_1994_A_2000: "entre 1994 et 2000",
   DE_2001_A_2010: "entre 2001 et 2010",
-  A_COMPTER_DE_2011: "apr\u00e8s 2011",
+  A_COMPTER_DE_2011: "après 2011",
 };
 
 export function formatPeriod(p: string | null): string | null {
-  if (!p || p === "NON_CONNUE" || p === "non renseign\u00e9") return null;
+  if (!p || p === "NON_CONNUE" || p === "non renseigné") return null;
   return PERIOD_LABELS[p] ?? null;
 }
 

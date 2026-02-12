@@ -46,16 +46,16 @@ type SortKey = "pertinence" | "score_desc" | "score_asc" | "distance" | "lots";
 
 const SORT_OPTIONS: { key: SortKey; label: string }[] = [
   { key: "pertinence", label: "Pertinence" },
-  { key: "score_desc", label: "Score \u2193" },
-  { key: "score_asc", label: "Score \u2191" },
+  { key: "score_desc", label: "Score ↓" },
+  { key: "score_asc", label: "Score ↑" },
   { key: "distance", label: "Distance" },
   { key: "lots", label: "Lots" },
 ];
 
 const SYNDIC_BADGES: Record<string, string> = {
   Professionnel: "bg-teal-100 text-teal-700",
-  "Coop\u00e9ratif": "bg-indigo-100 text-indigo-700",
-  "B\u00e9n\u00e9vole": "bg-amber-100 text-amber-700",
+  "Coopératif": "bg-indigo-100 text-indigo-700",
+  "Bénévole": "bg-amber-100 text-amber-700",
 };
 
 function RechercheContent() {
@@ -162,10 +162,10 @@ function RechercheContent() {
           {/* Results header */}
           {!loading && total > 0 && (
             <p className="mb-4 text-sm font-medium text-slate-500">
-              {total.toLocaleString("fr-FR")} copropri&eacute;t&eacute;
-              {total > 1 ? "s" : ""} trouv&eacute;e{total > 1 ? "s" : ""}
+              {total.toLocaleString("fr-FR")} copropriété
+              {total > 1 ? "s" : ""} trouvée{total > 1 ? "s" : ""}
               {q && (
-                <> pr&egrave;s de <span className="text-slate-700">{q}</span></>
+                <> près de <span className="text-slate-700">{q}</span></>
               )}
             </p>
           )}
@@ -207,10 +207,10 @@ function RechercheContent() {
                 <SearchX className="h-7 w-7 text-slate-400" />
               </div>
               <p className="text-lg font-medium text-slate-700">
-                Aucun r&eacute;sultat pour &laquo;&nbsp;{q}&nbsp;&raquo;
+                Aucun résultat pour « {q} »
               </p>
               <p className="mt-1 text-sm text-slate-400">
-                V&eacute;rifiez l&apos;orthographe ou essayez une autre adresse.
+                Vérifiez l'orthographe ou essayez une autre adresse.
               </p>
               <div className="mt-5 flex flex-wrap justify-center gap-2">
                 {[
@@ -238,7 +238,7 @@ function RechercheContent() {
                   results={mappableResults.map((r) => ({
                     id: r.id,
                     slug: r.slug,
-                    label: formatCoproName(r.nomUsage || r.adresse || "Copropri\u00e9t\u00e9"),
+                    label: formatCoproName(r.nomUsage || r.adresse || "Copropriété"),
                     scoreGlobal: r.scoreGlobal,
                     latitude: r.latitude,
                     longitude: r.longitude,
@@ -265,7 +265,7 @@ function RechercheContent() {
                       {formatCoproName(r.nomUsage || r.adresse || "Adresse inconnue")}
                     </p>
                     <p className="mt-0.5 truncate text-sm text-slate-500">
-                      {r.adresse} &mdash; {r.codePostal} {r.commune}
+                      {r.adresse} — {r.codePostal} {r.commune}
                     </p>
                     <div className="mt-2 flex flex-wrap items-center gap-2">
                       {r.nbLots != null && (
@@ -299,7 +299,7 @@ function RechercheContent() {
                   <div className="ml-3 flex items-center gap-2 sm:ml-4 sm:gap-3">
                     <FavoriteToggle
                       slug={r.slug ?? String(r.id)}
-                      nom={formatCoproName(r.nomUsage || r.adresse || "Copropri\u00e9t\u00e9")}
+                      nom={formatCoproName(r.nomUsage || r.adresse || "Copropriété")}
                       adresse={r.adresse || ""}
                       commune={r.commune || ""}
                       score={r.scoreGlobal}
@@ -332,7 +332,7 @@ function RechercheContent() {
                 className="gap-1"
               >
                 <ChevronLeft className="h-4 w-4" />
-                Pr&eacute;c&eacute;dent
+                Précédent
               </Button>
               <span className="text-sm text-slate-500">
                 Page {page} sur {totalPages}

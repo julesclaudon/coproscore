@@ -39,7 +39,7 @@ export async function GET(
 
   const copro = await prisma.copropriete.findUnique({ where: { slug } });
   if (!copro) {
-    return NextResponse.json({ error: "Copropri\u00e9t\u00e9 introuvable" }, { status: 404 });
+    return NextResponse.json({ error: "Copropriété introuvable" }, { status: 404 });
   }
 
   if (copro.scoreGlobal == null) {
@@ -59,7 +59,7 @@ export async function GET(
   // Rate limit for new generations
   if (!checkRateLimit()) {
     return NextResponse.json(
-      { error: "Trop de requ\u00eates. R\u00e9essayez dans quelques instants." },
+      { error: "Trop de requêtes. Réessayez dans quelques instants." },
       { status: 429 }
     );
   }
@@ -74,7 +74,7 @@ export async function GET(
   } catch (err) {
     console.error("Analyse generation failed:", err);
     return NextResponse.json(
-      { error: "\u00c9chec de la g\u00e9n\u00e9ration. R\u00e9essayez plus tard." },
+      { error: "Échec de la génération. Réessayez plus tard." },
       { status: 500 }
     );
   }

@@ -52,7 +52,7 @@ function Skeleton() {
       </div>
       <p className="flex items-center justify-center gap-2 text-sm text-teal-600">
         <Sparkles className="h-4 w-4 animate-pulse" />
-        Analyse en cours de g&eacute;n&eacute;ration&hellip;
+        Analyse en cours de génération…
       </p>
     </div>
   );
@@ -107,7 +107,7 @@ export function AnalyseIA({ slug, accessLevel }: { slug: string; accessLevel: Ac
           Analyse CoproScore
         </h2>
         <p className="mb-5 text-sm font-medium text-teal-600">
-          G&eacute;n&eacute;r&eacute;e par intelligence artificielle
+          Générée par intelligence artificielle
         </p>
 
         {/* Blurred fake content */}
@@ -115,9 +115,9 @@ export function AnalyseIA({ slug, accessLevel }: { slug: string; accessLevel: Ac
           <div className="select-none space-y-3 blur-sm" aria-hidden="true">
             <div className="rounded-lg border border-teal-100 bg-white/80 p-4">
               <p className="text-base leading-relaxed text-slate-700">
-                Cette copropri&eacute;t&eacute; pr&eacute;sente un profil globalement positif avec une bonne gestion
-                et un entretien r&eacute;gulier. Quelques points de vigilance sont &agrave; noter concernant
-                la performance &eacute;nerg&eacute;tique du b&acirc;timent.
+                Cette copropriété présente un profil globalement positif avec une bonne gestion
+                et un entretien régulier. Quelques points de vigilance sont à noter concernant
+                la performance énergétique du bâtiment.
               </p>
             </div>
             <div className="rounded-lg border border-slate-200 bg-white p-4">
@@ -132,21 +132,21 @@ export function AnalyseIA({ slug, accessLevel }: { slug: string; accessLevel: Ac
                 </li>
                 <li className="flex items-start gap-2 text-sm text-slate-600">
                   <span className="mt-1 block h-1.5 w-1.5 shrink-0 rounded-full bg-teal-400" />
-                  March&eacute; immobilier dynamique dans le secteur
+                  Marché immobilier dynamique dans le secteur
                 </li>
               </ul>
             </div>
           </div>
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 rounded-lg bg-gradient-to-b from-white/30 via-white/70 to-white/90">
             <p className="text-sm font-medium text-slate-700">
-              D&eacute;bloquez l&apos;analyse compl&egrave;te de cette copropri&eacute;t&eacute;
+              Débloquez l'analyse complète de cette copropriété
             </p>
             <Link
               href="/tarifs"
               className="group inline-flex items-center gap-2 rounded-xl bg-teal-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-teal-200 transition-all hover:bg-teal-700 hover:shadow-xl hover:shadow-teal-200"
             >
               <Lock className="h-4 w-4 text-teal-200 transition-transform group-hover:scale-110" />
-              Passer Pro &mdash; D&eacute;couvrir les offres
+              Passer Pro — Découvrir les offres
             </Link>
           </div>
         </div>
@@ -169,7 +169,7 @@ export function AnalyseIA({ slug, accessLevel }: { slug: string; accessLevel: Ac
         Analyse CoproScore
       </h2>
       <p className="mb-5 text-sm font-medium text-teal-600">
-        G&eacute;n&eacute;r&eacute;e par intelligence artificielle
+        Générée par intelligence artificielle
       </p>
 
       {loading && <Skeleton />}
@@ -238,10 +238,10 @@ export function AnalyseIA({ slug, accessLevel }: { slug: string; accessLevel: Ac
           {/* Footer */}
           <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
             <p className="text-[11px] text-slate-400">
-              Derni&egrave;re analyse : {formatDate(data.generatedAt)}
+              Dernière analyse : {formatDate(data.generatedAt)}
             </p>
             <p className="min-w-0 text-[11px] text-slate-400">
-              Cette analyse est g&eacute;n&eacute;r&eacute;e automatiquement &agrave; partir de donn&eacute;es publiques. Elle ne constitue pas un avis professionnel.
+              Cette analyse est générée automatiquement à partir de données publiques. Elle ne constitue pas un avis professionnel.
             </p>
           </div>
         </div>

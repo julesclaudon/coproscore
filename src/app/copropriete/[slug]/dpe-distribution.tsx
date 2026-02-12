@@ -50,7 +50,7 @@ export function DpeDistribution({
               {count}
             </span>
             {isMedian && (
-              <span className="text-xs font-medium text-slate-500">(m&eacute;diane)</span>
+              <span className="text-xs font-medium text-slate-500">(médiane)</span>
             )}
           </div>
         );

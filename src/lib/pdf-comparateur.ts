@@ -34,36 +34,36 @@ interface RowDef {
 }
 
 function fmtPrix(n: number | null): string {
-  if (n === null) return "\u2014";
-  return Math.round(n).toLocaleString("fr-FR") + "\u00a0\u20ac";
+  if (n === null) return "—";
+  return Math.round(n).toLocaleString("fr-FR") + " €";
 }
 
 function fmtEvo(n: number | null): string {
-  if (n === null) return "\u2014";
-  return (n >= 0 ? "+" : "") + n.toFixed(1) + "\u00a0%";
+  if (n === null) return "—";
+  return (n >= 0 ? "+" : "") + n.toFixed(1) + " %";
 }
 
 const ROW_DEFS: RowDef[] = [
-  { label: "Nom", group: "Identit\u00e9", getValue: (c) => formatCoproName(c.nomUsage || c.adresseReference || "\u2014") },
-  { label: "Adresse", group: "Identit\u00e9", getValue: (c) => c.adresseReference || "\u2014" },
-  { label: "Commune", group: "Identit\u00e9", getValue: (c) => [c.codePostal, c.communeAdresse].filter(Boolean).join(" ") || "\u2014" },
-  { label: "Lots habitation", group: "Identit\u00e9", getValue: (c) => c.nbLotsHabitation != null ? String(c.nbLotsHabitation) : "\u2014" },
-  { label: "Lots total", group: "Identit\u00e9", getValue: (c) => c.nbTotalLots != null ? String(c.nbTotalLots) : "\u2014" },
-  { label: "Construction", group: "Identit\u00e9", getValue: (c) => formatPeriod(c.periodeConstruction) || "\u2014" },
-  { label: "Score global", group: "Scores", getValue: (c) => c.scoreGlobal != null ? `${c.scoreGlobal}/100` : "\u2014" },
-  { label: "Technique", group: "Scores", getValue: (c) => c.scoreTechnique != null ? `${c.scoreTechnique}/25` : "\u2014" },
-  { label: "Risques", group: "Scores", getValue: (c) => c.scoreRisques != null ? `${c.scoreRisques}/30` : "\u2014" },
-  { label: "Gouvernance", group: "Scores", getValue: (c) => c.scoreGouvernance != null ? `${c.scoreGouvernance}/25` : "\u2014" },
-  { label: "\u00c9nergie", group: "Scores", getValue: (c) => c.scoreEnergie != null ? `${c.scoreEnergie}/20` : "\u2014" },
-  { label: "March\u00e9", group: "Scores", getValue: (c) => c.scoreMarche != null ? `${c.scoreMarche}/20` : "\u2014" },
-  { label: "Confiance", group: "Scores", getValue: (c) => c.indiceConfiance != null ? `${Math.round(c.indiceConfiance)}%` : "\u2014" },
-  { label: "Type syndic", group: "Gouvernance", getValue: (c) => c.typeSyndic || "\u2014" },
-  { label: "Coop\u00e9ratif", group: "Gouvernance", getValue: (c) => c.syndicatCooperatif === "oui" ? "Oui" : c.syndicatCooperatif === "non" ? "Non" : "\u2014" },
-  { label: "Plan de p\u00e9ril", group: "Gouvernance", getValue: (c) => c.coproDansPdp != null && c.coproDansPdp > 0 ? "Oui" : "Non" },
-  { label: "Classe DPE", group: "\u00c9nergie", getValue: (c) => c.dpeClasseMediane || "\u2014" },
-  { label: "Prix moyen/m\u00b2", group: "March\u00e9", getValue: (c) => c.marchePrixM2 != null ? `${fmtPrix(c.marchePrixM2)}/m\u00b2` : "\u2014" },
-  { label: "\u00c9volution annuelle", group: "March\u00e9", getValue: (c) => fmtEvo(c.marcheEvolution) },
-  { label: "Transactions secteur", group: "March\u00e9", getValue: (c) => c.marcheNbTransactions != null ? String(c.marcheNbTransactions) : "\u2014" },
+  { label: "Nom", group: "Identité", getValue: (c) => formatCoproName(c.nomUsage || c.adresseReference || "—") },
+  { label: "Adresse", group: "Identité", getValue: (c) => c.adresseReference || "—" },
+  { label: "Commune", group: "Identité", getValue: (c) => [c.codePostal, c.communeAdresse].filter(Boolean).join(" ") || "—" },
+  { label: "Lots habitation", group: "Identité", getValue: (c) => c.nbLotsHabitation != null ? String(c.nbLotsHabitation) : "—" },
+  { label: "Lots total", group: "Identité", getValue: (c) => c.nbTotalLots != null ? String(c.nbTotalLots) : "—" },
+  { label: "Construction", group: "Identité", getValue: (c) => formatPeriod(c.periodeConstruction) || "—" },
+  { label: "Score global", group: "Scores", getValue: (c) => c.scoreGlobal != null ? `${c.scoreGlobal}/100` : "—" },
+  { label: "Technique", group: "Scores", getValue: (c) => c.scoreTechnique != null ? `${c.scoreTechnique}/25` : "—" },
+  { label: "Risques", group: "Scores", getValue: (c) => c.scoreRisques != null ? `${c.scoreRisques}/30` : "—" },
+  { label: "Gouvernance", group: "Scores", getValue: (c) => c.scoreGouvernance != null ? `${c.scoreGouvernance}/25` : "—" },
+  { label: "Énergie", group: "Scores", getValue: (c) => c.scoreEnergie != null ? `${c.scoreEnergie}/20` : "—" },
+  { label: "Marché", group: "Scores", getValue: (c) => c.scoreMarche != null ? `${c.scoreMarche}/20` : "—" },
+  { label: "Confiance", group: "Scores", getValue: (c) => c.indiceConfiance != null ? `${Math.round(c.indiceConfiance)}%` : "—" },
+  { label: "Type syndic", group: "Gouvernance", getValue: (c) => c.typeSyndic || "—" },
+  { label: "Coopératif", group: "Gouvernance", getValue: (c) => c.syndicatCooperatif === "oui" ? "Oui" : c.syndicatCooperatif === "non" ? "Non" : "—" },
+  { label: "Plan de péril", group: "Gouvernance", getValue: (c) => c.coproDansPdp != null && c.coproDansPdp > 0 ? "Oui" : "Non" },
+  { label: "Classe DPE", group: "Énergie", getValue: (c) => c.dpeClasseMediane || "—" },
+  { label: "Prix moyen/m²", group: "Marché", getValue: (c) => c.marchePrixM2 != null ? `${fmtPrix(c.marchePrixM2)}/m²` : "—" },
+  { label: "Évolution annuelle", group: "Marché", getValue: (c) => fmtEvo(c.marcheEvolution) },
+  { label: "Transactions secteur", group: "Marché", getValue: (c) => c.marcheNbTransactions != null ? String(c.marcheNbTransactions) : "—" },
 ];
 
 export async function generateComparateurPdf(
@@ -94,7 +94,7 @@ export async function generateComparateurPdf(
       .font("Helvetica")
       .fillColor("#666666")
       .text(
-        `G\u00e9n\u00e9r\u00e9 le ${new Date().toLocaleDateString("fr-FR")}`,
+        `Généré le ${new Date().toLocaleDateString("fr-FR")}`,
         40,
         62
       );
@@ -103,7 +103,7 @@ export async function generateComparateurPdf(
 
     // Table header: copro names
     doc.fontSize(8).font("Helvetica-Bold").fillColor("#0D9488");
-    doc.text("Crit\u00e8re", 40, y, { width: labelColWidth });
+    doc.text("Critère", 40, y, { width: labelColWidth });
     copros.forEach((c, i) => {
       const name = formatCoproName(
         c.nomUsage || c.adresseReference || "Copro"
@@ -186,7 +186,7 @@ export async function generateComparateurPdf(
       .font("Helvetica")
       .fillColor("#999999")
       .text(
-        "Donn\u00e9es issues du RNIC, DVF, DPE ADEME. Les scores sont calcul\u00e9s \u00e0 titre indicatif. coproscore.fr",
+        "Données issues du RNIC, DVF, DPE ADEME. Les scores sont calculés à titre indicatif. coproscore.fr",
         40,
         y,
         { width: pageWidth }

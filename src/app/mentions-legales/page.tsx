@@ -26,10 +26,10 @@ export default function MentionsLegalesPage() {
               Accueil
             </Link>
             <ChevronRight className="h-3.5 w-3.5" />
-            <span className="text-slate-600">Mentions l&eacute;gales</span>
+            <span className="text-slate-600">Mentions légales</span>
           </nav>
           <h1 className="text-3xl font-bold text-slate-900 sm:text-4xl">
-            Mentions l&eacute;gales
+            Mentions légales
           </h1>
         </div>
       </section>
@@ -40,19 +40,19 @@ export default function MentionsLegalesPage() {
             {/* Éditeur */}
             <section>
               <h2 className="mb-4 text-xl font-bold text-slate-900">
-                &Eacute;diteur du site
+                Éditeur du site
               </h2>
               <div className="space-y-2 text-base leading-relaxed text-slate-600">
                 <p>
                   Le site{" "}
-                  <strong>coproscore.fr</strong> est &eacute;dit&eacute; par :
+                  <strong>coproscore.fr</strong> est édité par :
                 </p>
                 <p>
-                  <strong>Jules Claudon</strong> &mdash; ComKeys, entrepreneur
+                  <strong>Jules Claudon</strong> — ComKeys, entrepreneur
                   individuel
                 </p>
-                <p>Adresse : [adresse &agrave; compl&eacute;ter]</p>
-                <p>SIRET : [&agrave; compl&eacute;ter]</p>
+                <p>Adresse : [adresse à compléter]</p>
+                <p>SIRET : [à compléter]</p>
                 <p>
                   Email :{" "}
                   <a
@@ -78,7 +78,7 @@ export default function MentionsLegalesPage() {
             {/* Hébergement */}
             <section>
               <h2 className="mb-4 text-xl font-bold text-slate-900">
-                H&eacute;bergement
+                Hébergement
               </h2>
               <div className="space-y-2 text-base leading-relaxed text-slate-600">
                 <p>
@@ -105,25 +105,25 @@ export default function MentionsLegalesPage() {
               </h2>
               <div className="space-y-3 text-base leading-relaxed text-slate-600">
                 <p>
-                  CoproScore est une plateforme d&apos;information bas&eacute;e
-                  sur des donn&eacute;es publiques ouvertes :
+                  CoproScore est une plateforme d'information basée
+                  sur des données publiques ouvertes :
                 </p>
                 <ul className="list-disc space-y-1 pl-6">
                   <li>
-                    <strong>RNIC</strong> &mdash; Registre National
-                    d&apos;Immatriculation des Copropri&eacute;t&eacute;s
+                    <strong>RNIC</strong> — Registre National
+                    d'Immatriculation des Copropriétés
                   </li>
                   <li>
-                    <strong>DVF</strong> &mdash; Demandes de Valeurs
-                    Fonci&egrave;res
+                    <strong>DVF</strong> — Demandes de Valeurs
+                    Foncières
                   </li>
                   <li>
-                    <strong>ADEME / DPE</strong> &mdash; Diagnostics de
-                    Performance &Eacute;nerg&eacute;tique
+                    <strong>ADEME / DPE</strong> — Diagnostics de
+                    Performance Énergétique
                   </li>
                 </ul>
                 <p>
-                  Ces donn&eacute;es sont mises &agrave; disposition sous{" "}
+                  Ces données sont mises à disposition sous{" "}
                   <strong>Licence Ouverte / Open Licence version 2.0</strong>{" "}
                   via{" "}
                   <a
@@ -155,22 +155,22 @@ export default function MentionsLegalesPage() {
               </h2>
               <div className="space-y-3 text-base leading-relaxed text-slate-600">
                 <p>
-                  Les scores CoproScore sont calcul&eacute;s
-                  algorithmiquement &agrave; titre purement indicatif. Ils{" "}
+                  Les scores CoproScore sont calculés
+                  algorithmiquement à titre purement indicatif. Ils{" "}
                   <strong>
                     ne constituent en aucun cas un diagnostic immobilier
                   </strong>
                   , un conseil financier ou juridique.
                 </p>
                 <p>
-                  Les donn&eacute;es utilis&eacute;es sont d&eacute;claratives
-                  et peuvent &ecirc;tre incompl&egrave;tes ou erron&eacute;es.
-                  CoproScore ne saurait &ecirc;tre tenu responsable des
-                  d&eacute;cisions prises sur la base de ces informations.
+                  Les données utilisées sont déclaratives
+                  et peuvent être incomplètes ou erronées.
+                  CoproScore ne saurait être tenu responsable des
+                  décisions prises sur la base de ces informations.
                 </p>
                 <p>
-                  Pour tout projet immobilier, il est recommand&eacute; de
-                  consulter un professionnel qualifi&eacute;.
+                  Pour tout projet immobilier, il est recommandé de
+                  consulter un professionnel qualifié.
                 </p>
               </div>
             </section>
@@ -178,17 +178,17 @@ export default function MentionsLegalesPage() {
             {/* Propriété intellectuelle */}
             <section>
               <h2 className="mb-4 text-xl font-bold text-slate-900">
-                Propri&eacute;t&eacute; intellectuelle
+                Propriété intellectuelle
               </h2>
               <div className="space-y-3 text-base leading-relaxed text-slate-600">
                 <p>
                   Le contenu du site (textes, design, code, algorithmes de
-                  scoring) est prot&eacute;g&eacute; par le droit
-                  d&apos;auteur. Toute reproduction non autoris&eacute;e est
+                  scoring) est protégé par le droit
+                  d'auteur. Toute reproduction non autorisée est
                   interdite.
                 </p>
                 <p>
-                  Les donn&eacute;es brutes proviennent de sources publiques
+                  Les données brutes proviennent de sources publiques
                   sous Licence Ouverte.
                 </p>
               </div>
@@ -201,13 +201,13 @@ export default function MentionsLegalesPage() {
               </h2>
               <div className="space-y-3 text-base leading-relaxed text-slate-600">
                 <p>
-                  CoproScore n&apos;utilise aucun cookie de tracking ni cookie
+                  CoproScore n'utilise aucun cookie de tracking ni cookie
                   publicitaire.
                 </p>
                 <p>
-                  Seuls des cookies techniques strictement n&eacute;cessaires
-                  au fonctionnement du site (session d&apos;authentification)
-                  sont utilis&eacute;s.
+                  Seuls des cookies techniques strictement nécessaires
+                  au fonctionnement du site (session d'authentification)
+                  sont utilisés.
                 </p>
               </div>
             </section>
@@ -223,7 +223,7 @@ export default function MentionsLegalesPage() {
                     href="/cgv"
                     className="text-teal-700 hover:underline"
                   >
-                    Conditions G&eacute;n&eacute;rales de Vente
+                    Conditions Générales de Vente
                   </Link>
                 </li>
                 <li>
@@ -231,7 +231,7 @@ export default function MentionsLegalesPage() {
                     href="/confidentialite"
                     className="text-teal-700 hover:underline"
                   >
-                    Politique de Confidentialit&eacute;
+                    Politique de Confidentialité
                   </Link>
                 </li>
               </ul>

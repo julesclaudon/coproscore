@@ -30,5 +30,5 @@ export async function DELETE(
 
   await prisma.scoreAlert.delete({ where: { id } });
 
-  return NextResponse.json({ message: "Alerte supprim\u00e9e" });
+  return NextResponse.json({ message: "Alerte supprimée" });
 }

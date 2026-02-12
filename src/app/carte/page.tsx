@@ -18,7 +18,7 @@ const CarteMap = dynamic(() => import("@/components/carte-map"), {
     <div className="flex h-full items-center justify-center bg-slate-50">
       <div className="text-center">
         <span className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-teal-600 border-t-transparent" />
-        <p className="mt-2 text-sm text-slate-400">Chargement de la carte&hellip;</p>
+        <p className="mt-2 text-sm text-slate-400">Chargement de la carte…</p>
       </div>
     </div>
   ),

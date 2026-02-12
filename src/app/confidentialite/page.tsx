@@ -27,14 +27,14 @@ export default function ConfidentialitePage() {
             </Link>
             <ChevronRight className="h-3.5 w-3.5" />
             <span className="text-slate-600">
-              Politique de confidentialit&eacute;
+              Politique de confidentialité
             </span>
           </nav>
           <h1 className="text-3xl font-bold text-slate-900 sm:text-4xl">
-            Politique de Confidentialit&eacute;
+            Politique de Confidentialité
           </h1>
           <p className="mt-3 text-base text-slate-500">
-            Derni&egrave;re mise &agrave; jour : f&eacute;vrier 2026
+            Dernière mise à jour : février 2026
           </p>
         </div>
       </section>
@@ -49,11 +49,11 @@ export default function ConfidentialitePage() {
               </h2>
               <div className="space-y-2 text-base leading-relaxed text-slate-600">
                 <p>
-                  Le responsable du traitement des donn&eacute;es personnelles
+                  Le responsable du traitement des données personnelles
                   est :
                 </p>
                 <p>
-                  <strong>Jules Claudon</strong> &mdash; ComKeys, entrepreneur
+                  <strong>Jules Claudon</strong> — ComKeys, entrepreneur
                   individuel
                 </p>
                 <p>
@@ -71,34 +71,34 @@ export default function ConfidentialitePage() {
             {/* Données collectées */}
             <section>
               <h2 className="mb-4 text-xl font-bold text-slate-900">
-                Donn&eacute;es collect&eacute;es
+                Données collectées
               </h2>
               <div className="space-y-3 text-base leading-relaxed text-slate-600">
                 <p>
-                  Dans le cadre de l&apos;utilisation du site coproscore.fr,
-                  les donn&eacute;es suivantes peuvent &ecirc;tre
-                  collect&eacute;es :
+                  Dans le cadre de l'utilisation du site coproscore.fr,
+                  les données suivantes peuvent être
+                  collectées :
                 </p>
                 <ul className="list-disc space-y-1 pl-6">
                   <li>
-                    <strong>Adresse email</strong> &mdash; lors de la
-                    cr&eacute;ation de compte
+                    <strong>Adresse email</strong> — lors de la
+                    création de compte
                   </li>
                   <li>
-                    <strong>Mot de passe</strong> &mdash; stock&eacute; sous
-                    forme hash&eacute;e (non lisible)
+                    <strong>Mot de passe</strong> — stocké sous
+                    forme hashée (non lisible)
                   </li>
                   <li>
-                    <strong>Historique de recherche</strong> &mdash;
-                    copropri&eacute;t&eacute;s consult&eacute;es
+                    <strong>Historique de recherche</strong> —
+                    copropriétés consultées
                   </li>
                   <li>
-                    <strong>Favoris</strong> &mdash;
-                    copropri&eacute;t&eacute;s enregistr&eacute;es
+                    <strong>Favoris</strong> —
+                    copropriétés enregistrées
                   </li>
                 </ul>
                 <p>
-                  Aucune donn&eacute;e personnelle n&apos;est collect&eacute;e
+                  Aucune donnée personnelle n'est collectée
                   lors de la simple consultation des scores sans compte.
                 </p>
               </div>
@@ -107,23 +107,23 @@ export default function ConfidentialitePage() {
             {/* Base légale */}
             <section>
               <h2 className="mb-4 text-xl font-bold text-slate-900">
-                Base l&eacute;gale du traitement
+                Base légale du traitement
               </h2>
               <div className="space-y-3 text-base leading-relaxed text-slate-600">
                 <p>
-                  Le traitement des donn&eacute;es personnelles repose sur les
-                  bases l&eacute;gales suivantes :
+                  Le traitement des données personnelles repose sur les
+                  bases légales suivantes :
                 </p>
                 <ul className="list-disc space-y-1 pl-6">
                   <li>
-                    <strong>Consentement</strong> &mdash; lors de
-                    l&apos;inscription et de la cr&eacute;ation de compte
+                    <strong>Consentement</strong> — lors de
+                    l'inscription et de la création de compte
                     (article 6.1.a du RGPD)
                   </li>
                   <li>
-                    <strong>Ex&eacute;cution du contrat</strong> &mdash; pour
-                    la fourniture des services li&eacute;s &agrave;
-                    l&apos;abonnement Pro et aux rapports PDF (article 6.1.b
+                    <strong>Exécution du contrat</strong> — pour
+                    la fourniture des services liés à
+                    l'abonnement Pro et aux rapports PDF (article 6.1.b
                     du RGPD)
                   </li>
                 </ul>
@@ -133,21 +133,21 @@ export default function ConfidentialitePage() {
             {/* Finalités */}
             <section>
               <h2 className="mb-4 text-xl font-bold text-slate-900">
-                Finalit&eacute;s du traitement
+                Finalités du traitement
               </h2>
               <div className="space-y-3 text-base leading-relaxed text-slate-600">
-                <p>Les donn&eacute;es collect&eacute;es sont utilis&eacute;es pour :</p>
+                <p>Les données collectées sont utilisées pour :</p>
                 <ul className="list-disc space-y-1 pl-6">
                   <li>
-                    G&eacute;rer votre compte utilisateur et
-                    l&apos;authentification
+                    Gérer votre compte utilisateur et
+                    l'authentification
                   </li>
                   <li>
-                    Fournir les services souscrits (rapports PDF, acc&egrave;s
+                    Fournir les services souscrits (rapports PDF, accès
                     Pro)
                   </li>
                   <li>Sauvegarder vos recherches et favoris</li>
-                  <li>Envoyer les alertes email auxquelles vous &ecirc;tes abonn&eacute;(e)</li>
+                  <li>Envoyer les alertes email auxquelles vous êtes abonné(e)</li>
                 </ul>
               </div>
             </section>
@@ -161,13 +161,13 @@ export default function ConfidentialitePage() {
                 <p>
                   CoproScore utilise uniquement des{" "}
                   <strong>cookies techniques de session</strong>, strictement
-                  n&eacute;cessaires au fonctionnement du site et &agrave;
-                  l&apos;authentification.
+                  nécessaires au fonctionnement du site et à
+                  l'authentification.
                 </p>
                 <p>
                   Aucun cookie de tracking, publicitaire ou analytique
-                  n&apos;est utilis&eacute;. Aucun bandeau de consentement
-                  n&apos;est donc n&eacute;cessaire.
+                  n'est utilisé. Aucun bandeau de consentement
+                  n'est donc nécessaire.
                 </p>
               </div>
             </section>
@@ -175,20 +175,20 @@ export default function ConfidentialitePage() {
             {/* Hébergement */}
             <section>
               <h2 className="mb-4 text-xl font-bold text-slate-900">
-                H&eacute;bergement des donn&eacute;es
+                Hébergement des données
               </h2>
               <div className="space-y-3 text-base leading-relaxed text-slate-600">
                 <p>
-                  Les donn&eacute;es sont h&eacute;berg&eacute;es en{" "}
+                  Les données sont hébergées en{" "}
                   <strong>France</strong> par :
                 </p>
                 <p>
-                  <strong>OVH SAS</strong> &mdash; 2 rue Kellermann, 59100
+                  <strong>OVH SAS</strong> — 2 rue Kellermann, 59100
                   Roubaix, France
                 </p>
                 <p>
-                  Aucun transfert de donn&eacute;es personnelles en dehors de
-                  l&apos;Union Europ&eacute;enne n&apos;est effectu&eacute;.
+                  Aucun transfert de données personnelles en dehors de
+                  l'Union Européenne n'est effectué.
                 </p>
               </div>
             </section>
@@ -196,20 +196,20 @@ export default function ConfidentialitePage() {
             {/* Durée de conservation */}
             <section>
               <h2 className="mb-4 text-xl font-bold text-slate-900">
-                Dur&eacute;e de conservation
+                Durée de conservation
               </h2>
               <div className="space-y-3 text-base leading-relaxed text-slate-600">
                 <p>
-                  Les donn&eacute;es personnelles sont conserv&eacute;es
-                  pendant la dur&eacute;e de vie de votre compte.
+                  Les données personnelles sont conservées
+                  pendant la durée de vie de votre compte.
                 </p>
                 <p>
-                  En cas de suppression de votre compte, vos donn&eacute;es
-                  sont conserv&eacute;es pendant une dur&eacute;e
-                  maximale de <strong>3 ans</strong> apr&egrave;s la
-                  suppression, conform&eacute;ment aux obligations
-                  l&eacute;gales, puis d&eacute;finitivement
-                  supprim&eacute;es.
+                  En cas de suppression de votre compte, vos données
+                  sont conservées pendant une durée
+                  maximale de <strong>3 ans</strong> après la
+                  suppression, conformément aux obligations
+                  légales, puis définitivement
+                  supprimées.
                 </p>
               </div>
             </section>
@@ -221,40 +221,40 @@ export default function ConfidentialitePage() {
               </h2>
               <div className="space-y-3 text-base leading-relaxed text-slate-600">
                 <p>
-                  Conform&eacute;ment au R&egrave;glement
-                  G&eacute;n&eacute;ral sur la Protection des
-                  Donn&eacute;es (RGPD), vous disposez des droits
+                  Conformément au Règlement
+                  Général sur la Protection des
+                  Données (RGPD), vous disposez des droits
                   suivants :
                 </p>
                 <ul className="list-disc space-y-1 pl-6">
                   <li>
-                    <strong>Droit d&apos;acc&egrave;s</strong> &mdash; obtenir
-                    une copie de vos donn&eacute;es personnelles
+                    <strong>Droit d'accès</strong> — obtenir
+                    une copie de vos données personnelles
                   </li>
                   <li>
-                    <strong>Droit de rectification</strong> &mdash; corriger
-                    des donn&eacute;es inexactes ou incompl&egrave;tes
+                    <strong>Droit de rectification</strong> — corriger
+                    des données inexactes ou incomplètes
                   </li>
                   <li>
-                    <strong>Droit de suppression</strong> &mdash; demander
-                    l&apos;effacement de vos donn&eacute;es
+                    <strong>Droit de suppression</strong> — demander
+                    l'effacement de vos données
                   </li>
                   <li>
-                    <strong>Droit &agrave; la portabilit&eacute;</strong>{" "}
-                    &mdash; recevoir vos donn&eacute;es dans un format
-                    structur&eacute;
+                    <strong>Droit à la portabilité</strong>{" "}
+                    — recevoir vos données dans un format
+                    structuré
                   </li>
                   <li>
-                    <strong>Droit d&apos;opposition</strong> &mdash;
-                    vous opposer au traitement de vos donn&eacute;es
+                    <strong>Droit d'opposition</strong> —
+                    vous opposer au traitement de vos données
                   </li>
                   <li>
-                    <strong>Droit &agrave; la limitation</strong> &mdash;
+                    <strong>Droit à la limitation</strong> —
                     demander la limitation du traitement
                   </li>
                 </ul>
                 <p>
-                  Pour exercer ces droits, contactez-nous &agrave; :{" "}
+                  Pour exercer ces droits, contactez-nous à :{" "}
                   <a
                     href="mailto:contact@coproscore.fr"
                     className="text-teal-700 hover:underline"
@@ -263,8 +263,8 @@ export default function ConfidentialitePage() {
                   </a>
                 </p>
                 <p>
-                  Nous nous engageons &agrave; r&eacute;pondre &agrave; votre
-                  demande dans un d&eacute;lai de 30 jours.
+                  Nous nous engageons à répondre à votre
+                  demande dans un délai de 30 jours.
                 </p>
               </div>
             </section>
@@ -272,16 +272,16 @@ export default function ConfidentialitePage() {
             {/* CNIL */}
             <section>
               <h2 className="mb-4 text-xl font-bold text-slate-900">
-                R&eacute;clamation aupr&egrave;s de la CNIL
+                Réclamation auprès de la CNIL
               </h2>
               <div className="space-y-3 text-base leading-relaxed text-slate-600">
                 <p>
-                  Si vous estimez que le traitement de vos donn&eacute;es ne
-                  respecte pas la r&eacute;glementation, vous pouvez introduire
-                  une r&eacute;clamation aupr&egrave;s de la{" "}
+                  Si vous estimez que le traitement de vos données ne
+                  respecte pas la réglementation, vous pouvez introduire
+                  une réclamation auprès de la{" "}
                   <strong>
-                    Commission Nationale de l&apos;Informatique et des
-                    Libert&eacute;s (CNIL)
+                    Commission Nationale de l'Informatique et des
+                    Libertés (CNIL)
                   </strong>{" "}
                   :
                 </p>
@@ -294,7 +294,7 @@ export default function ConfidentialitePage() {
                   >
                     www.cnil.fr
                   </a>{" "}
-                  &mdash; 3 Place de Fontenoy, TSA 80715, 75334 Paris Cedex 07
+                  — 3 Place de Fontenoy, TSA 80715, 75334 Paris Cedex 07
                 </p>
               </div>
             </section>
@@ -306,12 +306,12 @@ export default function ConfidentialitePage() {
               </h2>
               <div className="space-y-3 text-base leading-relaxed text-slate-600">
                 <p>
-                  Le responsable du traitement s&apos;engage &agrave; respecter
-                  le R&egrave;glement G&eacute;n&eacute;ral sur la Protection
-                  des Donn&eacute;es (RGPD) et &agrave; mettre en &oelig;uvre
+                  Le responsable du traitement s'engage à respecter
+                  le Règlement Général sur la Protection
+                  des Données (RGPD) et à mettre en œuvre
                   les mesures techniques et organisationnelles
-                  n&eacute;cessaires pour assurer la s&eacute;curit&eacute; et
-                  la confidentialit&eacute; des donn&eacute;es personnelles.
+                  nécessaires pour assurer la sécurité et
+                  la confidentialité des données personnelles.
                 </p>
               </div>
             </section>
@@ -327,7 +327,7 @@ export default function ConfidentialitePage() {
                     href="/mentions-legales"
                     className="text-teal-700 hover:underline"
                   >
-                    Mentions l&eacute;gales
+                    Mentions légales
                   </Link>
                 </li>
                 <li>
@@ -335,7 +335,7 @@ export default function ConfidentialitePage() {
                     href="/cgv"
                     className="text-teal-700 hover:underline"
                   >
-                    Conditions G&eacute;n&eacute;rales de Vente
+                    Conditions Générales de Vente
                   </Link>
                 </li>
               </ul>

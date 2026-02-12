@@ -109,24 +109,24 @@ export async function generateMetadata({
     copro.scoreTechnique != null ? `Technique ${copro.scoreTechnique}/25` : "",
     copro.scoreRisques != null ? `Risques ${copro.scoreRisques}/30` : "",
     copro.scoreGouvernance != null ? `Gouvernance ${copro.scoreGouvernance}/25` : "",
-    copro.scoreEnergie != null ? `\u00C9nergie ${copro.scoreEnergie}/20` : "",
-    copro.scoreMarche != null ? `March\u00e9 ${copro.scoreMarche}/20` : "",
+    copro.scoreEnergie != null ? `Énergie ${copro.scoreEnergie}/20` : "",
+    copro.scoreMarche != null ? `Marché ${copro.scoreMarche}/20` : "",
   ]
     .filter(Boolean)
     .join(", ");
 
   const displayName = formatCoproName(adresse);
   const ogTitle = copro.scoreGlobal != null
-    ? `${displayName} \u2014 Score ${copro.scoreGlobal}/100`
+    ? `${displayName} — Score ${copro.scoreGlobal}/100`
     : displayName;
 
   const ogImage = `${process.env.NEXT_PUBLIC_BASE_URL || "https://coproscore.fr"}/api/og/copropriete/${slug}`;
 
   const title = copro.scoreGlobal != null
-    ? `${displayName} \u2014 Score ${copro.scoreGlobal}/100`
-    : `${displayName} \u2014 Score copropri\u00e9t\u00e9`;
+    ? `${displayName} — Score ${copro.scoreGlobal}/100`
+    : `${displayName} — Score copropriété`;
 
-  const descParts = [`Score d\u00e9taill\u00e9 de ${displayName} \u00e0 ${ville}`];
+  const descParts = [`Score détaillé de ${displayName} à ${ville}`];
   if (dimensionText) descParts.push(dimensionText);
   if (details) descParts.push(details);
   const description = descParts.join(". ") + ".";
@@ -136,13 +136,13 @@ export async function generateMetadata({
     description,
     openGraph: {
       title: ogTitle,
-      description: `Score d\u00e9taill\u00e9 de ${displayName} \u00e0 ${ville} : technique, risques, gouvernance, \u00e9nergie, march\u00e9.`,
+      description: `Score détaillé de ${displayName} à ${ville} : technique, risques, gouvernance, énergie, marché.`,
       images: [{ url: ogImage, width: 1200, height: 630, alt: ogTitle }],
     },
     twitter: {
       card: "summary_large_image",
       title: ogTitle,
-      description: `Score d\u00e9taill\u00e9 de ${displayName} \u00e0 ${ville}. ${details}.`,
+      description: `Score détaillé de ${displayName} à ${ville}. ${details}.`,
       images: [ogImage],
     },
   };
@@ -158,19 +158,19 @@ function scoreColorClass(score: number | null) {
 }
 
 function scoreLabel(score: number | null) {
-  if (score === null) return "Non calcul\u00e9";
+  if (score === null) return "Non calculé";
   if (score >= 70) return "Bon";
   if (score >= 40) return "Moyen";
   return "Attention requise";
 }
 
 function formatPrix(n: number): string {
-  return n.toLocaleString("fr-FR") + "\u00A0\u20AC";
+  return n.toLocaleString("fr-FR") + " €";
 }
 
 function formatEvolution(n: number): string {
   const sign = n >= 0 ? "+" : "";
-  return sign + n.toFixed(1) + "\u00A0%";
+  return sign + n.toFixed(1) + " %";
 }
 
 function slugifyInline(text: string): string {
@@ -220,27 +220,27 @@ type CoproData = any;
 function techniqueExplanation(copro: CoproData): string {
   const period = formatPeriod(copro.periodeConstruction);
   if (period) return `Immeuble construit ${period}`;
-  return "P\u00e9riode de construction non renseign\u00e9e";
+  return "Période de construction non renseignée";
 }
 
 function risquesExplanation(copro: CoproData): string {
   if (copro.coproDansPdp && copro.coproDansPdp > 0)
-    return "Copropri\u00e9t\u00e9 en plan de pr\u00e9vention des risques";
-  return "Aucun risque ou proc\u00e9dure identifi\u00e9";
+    return "Copropriété en plan de prévention des risques";
+  return "Aucun risque ou procédure identifié";
 }
 
 function gouvernanceExplanation(copro: CoproData): string {
   const parts: string[] = [];
   if (copro.typeSyndic) parts.push(`Syndic ${copro.typeSyndic}`);
-  if (copro.syndicatCooperatif === "oui") parts.push("coop\u00e9ratif");
+  if (copro.syndicatCooperatif === "oui") parts.push("coopératif");
   if (copro.nbTotalLots) parts.push(`${copro.nbTotalLots} lots`);
-  return parts.length > 0 ? parts.join(", ") : "Type de syndic non renseign\u00e9";
+  return parts.length > 0 ? parts.join(", ") : "Type de syndic non renseigné";
 }
 
 function energieExplanation(copro: CoproData): string {
-  if (copro.dpeClasseMediane) return `DPE m\u00e9dian classe ${copro.dpeClasseMediane}`;
+  if (copro.dpeClasseMediane) return `DPE médian classe ${copro.dpeClasseMediane}`;
   const period = formatPeriod(copro.periodeConstruction);
-  if (period) return `Pas de DPE, estim\u00e9 selon p\u00e9riode (${period})`;
+  if (period) return `Pas de DPE, estimé selon période (${period})`;
   return "Aucun DPE collectif disponible";
 }
 
@@ -248,10 +248,10 @@ function marcheExplanation(copro: CoproData): string {
   if (copro.marchePrixM2 != null) {
     const prix = formatPrix(Math.round(copro.marchePrixM2));
     if (copro.marcheEvolution != null)
-      return `${prix}/m\u00b2, ${formatEvolution(copro.marcheEvolution)} /an`;
-    return `${prix}/m\u00b2`;
+      return `${prix}/m², ${formatEvolution(copro.marcheEvolution)} /an`;
+    return `${prix}/m²`;
   }
-  return "Donn\u00e9es de march\u00e9 insuffisantes";
+  return "Données de marché insuffisantes";
 }
 
 // ---------- Data fetching ----------
@@ -454,7 +454,7 @@ export default async function CoproprietePage({
       : null;
 
   const displayName = formatCoproName(
-    copro.nomUsage || copro.adresseReference || "Copropri\u00e9t\u00e9"
+    copro.nomUsage || copro.adresseReference || "Copropriété"
   );
   const communeLabel = copro.nomOfficielArrondissement || copro.communeAdresse || "";
   const ARRONDISSEMENT_COMMUNES = new Set(["75056", "69123", "13055"]);
@@ -541,7 +541,7 @@ export default async function CoproprietePage({
     },
     {
       key: "energie",
-      label: "\u00C9nergie",
+      label: "Énergie",
       score: copro.scoreEnergie,
       max: 20,
       explanation: energieExplanation(copro),
@@ -552,7 +552,7 @@ export default async function CoproprietePage({
     },
     {
       key: "marche",
-      label: "March\u00e9",
+      label: "Marché",
       score: copro.scoreMarche,
       max: 20,
       explanation: marcheExplanation(copro),
@@ -625,7 +625,7 @@ export default async function CoproprietePage({
   // CTA links based on access
   const dvfExportEnabled = accessLevel === "pro";
   const ctaHref = accessLevel === "visitor" ? "/inscription" : "/tarifs";
-  const ctaLabel = accessLevel === "visitor" ? "Cr\u00e9ez un compte gratuit" : "Passez Pro";
+  const ctaLabel = accessLevel === "visitor" ? "Créez un compte gratuit" : "Passez Pro";
 
   return (
     <div className="flex min-h-screen flex-col overflow-x-hidden bg-slate-50/50">
@@ -691,8 +691,8 @@ export default async function CoproprietePage({
                     accessLevel={accessLevel}
                   />
                   <ShareButton
-                    title={`${displayName} \u2014 Score ${copro.scoreGlobal ?? "?"}/100 | CoproScore`}
-                    text={`Score de sant\u00e9 de ${displayName} : ${copro.scoreGlobal ?? "?"}/100`}
+                    title={`${displayName} — Score ${copro.scoreGlobal ?? "?"}/100 | CoproScore`}
+                    text={`Score de santé de ${displayName} : ${copro.scoreGlobal ?? "?"}/100`}
                   />
                 </div>
               </div>
@@ -717,7 +717,7 @@ export default async function CoproprietePage({
                   </Badge>
                 )}
                 {copro.coproDansPdp != null && copro.coproDansPdp > 0 && (
-                  <Badge variant="destructive">Plan de p&eacute;ril</Badge>
+                  <Badge variant="destructive">Plan de péril</Badge>
                 )}
               </div>
               <Link
@@ -758,9 +758,9 @@ export default async function CoproprietePage({
           <div className="grid gap-6 sm:gap-8 lg:grid-cols-[1fr_360px]">
             {/* ===== LEFT COLUMN ===== */}
             <div className="min-w-0 space-y-8">
-              {/* --- 1. Score d\u00e9taill\u00e9 --- */}
+              {/* --- 1. Score détaillé --- */}
               <section>
-                <h2 className="mb-4 text-lg font-semibold text-slate-900">Score d&eacute;taill&eacute;</h2>
+                <h2 className="mb-4 text-lg font-semibold text-slate-900">Score détaillé</h2>
                 <div className="flex flex-col gap-3">
                   {dimensions.map((d) => {
                     const Icon = d.icon;
@@ -795,7 +795,7 @@ export default async function CoproprietePage({
                             {isNull ? (
                               <p className="mt-0.5 flex items-center gap-1 text-xs text-slate-400">
                                 <Info className="h-3 w-3" />
-                                Donn&eacute;es non disponibles
+                                Données non disponibles
                               </p>
                             ) : (
                               <p className="mt-0.5 truncate text-xs text-slate-500">{d.explanation}</p>
@@ -804,7 +804,7 @@ export default async function CoproprietePage({
                           <div className="flex items-center gap-3">
                             <div className="text-right">
                               <p className={`text-lg font-bold leading-tight ${showScore ? color : "text-slate-300"}`}>
-                                {showScore ? (d.score ?? "\u2014") : "\u2014"}
+                                {showScore ? (d.score ?? "—") : "—"}
                               </p>
                               <p className="text-[10px] text-slate-400">/{d.max}</p>
                             </div>
@@ -831,7 +831,7 @@ export default async function CoproprietePage({
                               className="inline-flex items-center gap-1.5 rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-teal-700"
                             >
                               <Lock className="h-3.5 w-3.5 text-teal-200" />
-                              Cr&eacute;ez un compte gratuit pour voir le d&eacute;tail
+                              Créez un compte gratuit pour voir le détail
                             </Link>
                           </div>
                         )}
@@ -858,7 +858,7 @@ export default async function CoproprietePage({
               <section>
                 <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold text-slate-900">
                   <Zap className="h-5 w-5 text-amber-500" />
-                  Diagnostic &Eacute;nerg&eacute;tique
+                  Diagnostic Énergétique
                 </h2>
                 <Card className="border-slate-200 bg-white">
                   <CardContent className="pt-6">
@@ -871,9 +871,9 @@ export default async function CoproprietePage({
                           Aucun DPE collectif disponible
                         </p>
                         <p className="mx-auto mt-1 max-w-sm text-xs text-slate-400">
-                          Les donn&eacute;es DPE sont issues de l&apos;ADEME et couvrent environ 11% des
-                          copropri&eacute;t&eacute;s. Le score &eacute;nergie est estim&eacute; &agrave;
-                          partir de la p&eacute;riode de construction.
+                          Les données DPE sont issues de l'ADEME et couvrent environ 11% des
+                          copropriétés. Le score énergie est estimé à
+                          partir de la période de construction.
                         </p>
                       </div>
                     ) : dpeTotal === 1 ? (
@@ -881,18 +881,18 @@ export default async function CoproprietePage({
                         <DpeBadge classe={copro.dpeClasseMediane!} />
                         <div>
                           <p className="text-sm font-medium text-slate-900">
-                            1 diagnostic trouv&eacute; &mdash; Classe {copro.dpeClasseMediane}
+                            1 diagnostic trouvé — Classe {copro.dpeClasseMediane}
                           </p>
                           <p className="mt-0.5 text-xs text-slate-400">
-                            Donn&eacute;e ADEME &agrave; proximit&eacute; (50m)
+                            Donnée ADEME à proximité (50m)
                           </p>
                         </div>
                       </div>
                     ) : (
                       <>
                         <p className="mb-4 text-xs text-slate-400">
-                          {copro.dpeNbLogements} DPE &agrave; proximit&eacute; (50m) &mdash; Classe
-                          m&eacute;diane : <span className="font-semibold text-slate-600">{copro.dpeClasseMediane}</span>
+                          {copro.dpeNbLogements} DPE à proximité (50m) — Classe
+                          médiane : <span className="font-semibold text-slate-600">{copro.dpeClasseMediane}</span>
                         </p>
                         <DpeDistribution distribution={dpeDistribution} median={copro.dpeClasseMediane!} />
                       </>
@@ -901,11 +901,11 @@ export default async function CoproprietePage({
                 </Card>
               </section>
 
-              {/* --- 3. March\u00e9 immobilier --- */}
+              {/* --- 3. Marché immobilier --- */}
               <section>
                 <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold text-slate-900">
                   <TrendingUp className="h-5 w-5 text-teal-600" />
-                  March&eacute; immobilier
+                  Marché immobilier
                 </h2>
                 <Card className="border-slate-200 bg-white">
                   <CardContent className="pt-6">
@@ -915,11 +915,11 @@ export default async function CoproprietePage({
                           <TrendingUp className="h-5 w-5 text-slate-400" />
                         </div>
                         <p className="text-sm font-medium text-slate-600">
-                          Donn&eacute;es de march&eacute; insuffisantes
+                          Données de marché insuffisantes
                         </p>
                         <p className="mx-auto mt-1 max-w-sm text-xs text-slate-400">
-                          Aucune transaction DVF trouv&eacute;e dans un rayon de 500m sur les 3
-                          derni&egrave;res ann&eacute;es.
+                          Aucune transaction DVF trouvée dans un rayon de 500m sur les 3
+                          dernières années.
                         </p>
                       </div>
                     ) : (
@@ -929,7 +929,7 @@ export default async function CoproprietePage({
                             <p className="text-lg font-bold text-slate-900 sm:text-2xl">
                               {formatPrix(Math.round(copro.marchePrixM2!))}
                             </p>
-                            <p className="mt-1 text-[10px] text-slate-400 sm:text-xs">Prix moyen / m&sup2;</p>
+                            <p className="mt-1 text-[10px] text-slate-400 sm:text-xs">Prix moyen / m²</p>
                           </div>
                           <div className="text-center">
                             <div className="flex items-center justify-center gap-1">
@@ -950,14 +950,14 @@ export default async function CoproprietePage({
                               >
                                 {copro.marcheEvolution != null
                                   ? formatEvolution(copro.marcheEvolution)
-                                  : "\u2014"}
+                                  : "—"}
                               </p>
                             </div>
-                            <p className="mt-1 text-[10px] text-slate-400 sm:text-xs">&Eacute;volution annuelle</p>
+                            <p className="mt-1 text-[10px] text-slate-400 sm:text-xs">Évolution annuelle</p>
                           </div>
                           <div className="text-center">
                             <p className="text-lg font-bold text-slate-900 sm:text-2xl">
-                              {copro.marcheNbTransactions ?? "\u2014"}
+                              {copro.marcheNbTransactions ?? "—"}
                             </p>
                             <p className="mt-1 text-[10px] text-slate-400 sm:text-xs">Transactions</p>
                           </div>
@@ -984,7 +984,7 @@ export default async function CoproprietePage({
                               {communeAvgPrix && (
                                 <span className="text-slate-400">
                                   {" "}
-                                  ({formatPrix(communeAvgPrix)}/m&sup2;)
+                                  ({formatPrix(communeAvgPrix)}/m²)
                                 </span>
                               )}
                             </p>
@@ -992,8 +992,8 @@ export default async function CoproprietePage({
                         )}
 
                         <p className="mt-3 text-[11px] text-slate-400">
-                          Source : DVF (demandes de valeurs fonci&egrave;res), rayon 500m,
-                          3 derni&egrave;res ann&eacute;es
+                          Source : DVF (demandes de valeurs foncières), rayon 500m,
+                          3 dernières années
                         </p>
                       </>
                     )}
@@ -1018,7 +1018,7 @@ export default async function CoproprietePage({
                       <a
                         href={dvfExportEnabled ? `/api/copropriete/${slug}/export-dvf?format=csv` : undefined}
                         className={`inline-flex items-center gap-1 rounded-md border border-slate-200 px-2.5 py-1.5 text-xs font-medium ${dvfExportEnabled ? "text-slate-700 hover:bg-slate-50" : "text-slate-400 opacity-60 pointer-events-none"}`}
-                        title={dvfExportEnabled ? "Exporter CSV" : "R\u00e9serv\u00e9 aux abonn\u00e9s Pro"}
+                        title={dvfExportEnabled ? "Exporter CSV" : "Réservé aux abonnés Pro"}
                       >
                         {!dvfExportEnabled && <Lock className="h-3 w-3" />}
                         <Download className="h-3 w-3" />
@@ -1027,7 +1027,7 @@ export default async function CoproprietePage({
                       <a
                         href={dvfExportEnabled ? `/api/copropriete/${slug}/export-dvf?format=xlsx` : undefined}
                         className={`inline-flex items-center gap-1 rounded-md border border-slate-200 px-2.5 py-1.5 text-xs font-medium ${dvfExportEnabled ? "text-slate-700 hover:bg-slate-50" : "text-slate-400 opacity-60 pointer-events-none"}`}
-                        title={dvfExportEnabled ? "Exporter Excel" : "R\u00e9serv\u00e9 aux abonn\u00e9s Pro"}
+                        title={dvfExportEnabled ? "Exporter Excel" : "Réservé aux abonnés Pro"}
                       >
                         {!dvfExportEnabled && <Lock className="h-3 w-3" />}
                         <Download className="h-3 w-3" />
@@ -1041,7 +1041,7 @@ export default async function CoproprietePage({
                       {sparklineData.length >= 2 && accessLevel !== "visitor" && (
                         <div className="mb-6">
                           <p className="mb-2 text-xs font-medium text-slate-500">
-                            Prix moyen au m&sup2; par trimestre
+                            Prix moyen au m² par trimestre
                           </p>
                           <Sparkline data={sparklineData} />
                         </div>
@@ -1051,14 +1051,14 @@ export default async function CoproprietePage({
                       {accessLevel === "visitor" ? (
                         <div className="py-4 text-center">
                           <p className="text-sm text-slate-600">
-                            {dvfTotalCount} transaction{dvfTotalCount > 1 ? "s" : ""} trouv&eacute;e{dvfTotalCount > 1 ? "s" : ""} &agrave; proximit&eacute;
+                            {dvfTotalCount} transaction{dvfTotalCount > 1 ? "s" : ""} trouvée{dvfTotalCount > 1 ? "s" : ""} à proximité
                           </p>
                           <Link
                             href="/inscription"
                             className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-teal-700"
                           >
                             <Lock className="h-3.5 w-3.5 text-teal-200" />
-                            Cr&eacute;ez un compte pour voir le d&eacute;tail
+                            Créez un compte pour voir le détail
                           </Link>
                         </div>
                       ) : (
@@ -1073,7 +1073,7 @@ export default async function CoproprietePage({
                                     <th className="pb-2 font-medium">Adresse</th>
                                     <th className="pb-2 text-right font-medium">Surface</th>
                                     <th className="pb-2 text-right font-medium">Prix</th>
-                                    <th className="pb-2 text-right font-medium">Prix/m&sup2;</th>
+                                    <th className="pb-2 text-right font-medium">Prix/m²</th>
                                   </tr>
                                 </thead>
                                 <tbody>
@@ -1083,16 +1083,16 @@ export default async function CoproprietePage({
                                         {new Date(t.date_mutation).toLocaleDateString("fr-FR")}
                                       </td>
                                       <td className="max-w-[200px] truncate py-2.5 text-slate-900" title={t.adresse ?? undefined}>
-                                        {t.adresse ?? "\u2014"}
+                                        {t.adresse ?? "—"}
                                       </td>
                                       <td className="py-2.5 text-right text-slate-600">
-                                        {Math.round(Number(t.surface))}&nbsp;m&sup2;
+                                        {Math.round(Number(t.surface))} m²
                                       </td>
                                       <td className="py-2.5 text-right font-medium text-slate-900">
                                         {formatPrix(Math.round(Number(t.prix)))}
                                       </td>
                                       <td className="py-2.5 text-right text-teal-700">
-                                        {formatPrix(Number(t.prix_m2))}/m&sup2;
+                                        {formatPrix(Number(t.prix_m2))}/m²
                                       </td>
                                     </tr>
                                   ))}
@@ -1109,10 +1109,10 @@ export default async function CoproprietePage({
                                       {[0, 1, 2].map((i) => (
                                         <tr key={i} className="border-b border-slate-50">
                                           <td className="py-2.5 text-slate-600">01/01/2024</td>
-                                          <td className="py-2.5 text-slate-900">Adresse masqu&eacute;e</td>
-                                          <td className="py-2.5 text-right text-slate-600">60&nbsp;m&sup2;</td>
-                                          <td className="py-2.5 text-right font-medium text-slate-900">250&nbsp;000&nbsp;&euro;</td>
-                                          <td className="py-2.5 text-right text-teal-700">4&nbsp;166&nbsp;&euro;/m&sup2;</td>
+                                          <td className="py-2.5 text-slate-900">Adresse masquée</td>
+                                          <td className="py-2.5 text-right text-slate-600">60 m²</td>
+                                          <td className="py-2.5 text-right font-medium text-slate-900">250 000 €</td>
+                                          <td className="py-2.5 text-right text-teal-700">4 166 €/m²</td>
                                         </tr>
                                       ))}
                                     </tbody>
@@ -1124,7 +1124,7 @@ export default async function CoproprietePage({
                                     className="flex items-center gap-1.5 rounded-lg bg-teal-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-teal-700"
                                   >
                                     <Lock className="h-4 w-4 text-teal-200" />
-                                    Voir les {dvfTotalCount - visibleDvf.length} autres transactions &mdash; Pro
+                                    Voir les {dvfTotalCount - visibleDvf.length} autres transactions — Pro
                                   </Link>
                                 </div>
                               </div>
@@ -1141,12 +1141,12 @@ export default async function CoproprietePage({
                                       {new Date(t.date_mutation).toLocaleDateString("fr-FR")}
                                     </span>
                                     <span className="text-sm font-bold text-teal-700">
-                                      {formatPrix(Number(t.prix_m2))}/m&sup2;
+                                      {formatPrix(Number(t.prix_m2))}/m²
                                     </span>
                                   </div>
-                                  <p className="mt-1 truncate text-sm text-slate-900" title={t.adresse ?? undefined}>{t.adresse ?? "\u2014"}</p>
+                                  <p className="mt-1 truncate text-sm text-slate-900" title={t.adresse ?? undefined}>{t.adresse ?? "—"}</p>
                                   <div className="mt-1 flex gap-3 text-xs text-slate-500">
-                                    <span>{Math.round(Number(t.surface))}&nbsp;m&sup2;</span>
+                                    <span>{Math.round(Number(t.surface))} m²</span>
                                     <span>{formatPrix(Math.round(Number(t.prix)))}</span>
                                   </div>
                                 </div>
@@ -1160,7 +1160,7 @@ export default async function CoproprietePage({
                                   className="inline-flex items-center gap-1.5 rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-teal-700"
                                 >
                                   <Lock className="h-3.5 w-3.5 text-teal-200" />
-                                  Voir les {dvfTotalCount - visibleDvf.length} autres &mdash; Pro
+                                  Voir les {dvfTotalCount - visibleDvf.length} autres — Pro
                                 </Link>
                               </div>
                             )}
@@ -1169,18 +1169,18 @@ export default async function CoproprietePage({
                       )}
 
                       <p className="mt-3 text-[11px] text-slate-400">
-                        Source : DVF (demandes de valeurs fonci&egrave;res), rayon 500m, 3 derni&egrave;res ann&eacute;es
+                        Source : DVF (demandes de valeurs foncières), rayon 500m, 3 dernières années
                       </p>
                     </CardContent>
                   </Card>
                 </section>
               )}
 
-              {/* --- 4. Informations cl\u00e9s --- */}
+              {/* --- 4. Informations clés --- */}
               <section>
                 <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold text-slate-900">
                   <FileText className="h-5 w-5 text-slate-500" />
-                  Informations cl&eacute;s
+                  Informations clés
                 </h2>
                 <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                   <Card className="border-slate-200 bg-white">
@@ -1241,7 +1241,7 @@ export default async function CoproprietePage({
                         value={copro.syndicatCooperatif === "oui" ? "Oui" : copro.syndicatCooperatif === "non" ? "Non" : null}
                       />
                       <div className="flex items-center justify-between">
-                        <span className="text-slate-500">Plan de p&eacute;ril</span>
+                        <span className="text-slate-500">Plan de péril</span>
                         {copro.coproDansPdp != null && copro.coproDansPdp > 0 ? (
                           <Badge variant="destructive" className="text-xs">Oui</Badge>
                         ) : (
@@ -1271,7 +1271,7 @@ export default async function CoproprietePage({
                       nearby={nearby.map((n) => ({
                         id: n.id,
                         slug: n.slug,
-                        label: formatCoproName(n.nom_usage || n.adresse_reference || "Copropri\u00e9t\u00e9"),
+                        label: formatCoproName(n.nom_usage || n.adresse_reference || "Copropriété"),
                         scoreGlobal: n.score_global,
                         latitude: Number(n.latitude),
                         longitude: Number(n.longitude),
@@ -1286,7 +1286,7 @@ export default async function CoproprietePage({
                 <Card className="border-slate-200 bg-white">
                   <CardHeader className="pb-3">
                     <CardTitle className="text-base font-semibold text-slate-900">
-                      {nearby.length} copropri&eacute;t&eacute;{nearby.length > 1 ? "s" : ""} &agrave; proximit&eacute;
+                      {nearby.length} copropriété{nearby.length > 1 ? "s" : ""} à proximité
                     </CardTitle>
                     <p className="text-xs text-slate-400">Dans un rayon de 500m</p>
                   </CardHeader>
@@ -1314,7 +1314,7 @@ export default async function CoproprietePage({
                         href={villeSlug}
                         className="mt-1 block rounded-lg border border-dashed border-slate-200 p-2.5 text-center text-xs font-medium text-teal-700 transition-colors hover:border-teal-300 hover:bg-teal-50"
                       >
-                        Voir toutes les copropri&eacute;t&eacute;s &agrave; {communeLabel}
+                        Voir toutes les copropriétés à {communeLabel}
                       </Link>
                     )}
                   </CardContent>
@@ -1331,12 +1331,12 @@ export default async function CoproprietePage({
                 <CardContent className="py-6 text-center">
                   <h3 className="mb-1 text-lg font-semibold text-slate-900">Rapport complet</h3>
                   <p className="mb-4 text-sm text-slate-500">
-                    Analyse d&eacute;taill&eacute;e, historique et comparatif du quartier.
+                    Analyse détaillée, historique et comparatif du quartier.
                   </p>
                   <DownloadButton slug={slug} accessLevel={accessLevel} hasPurchased={hasPurchased} className="w-full bg-teal-500 py-5 text-base font-semibold text-white hover:bg-teal-800">
-                    T&eacute;l&eacute;charger le rapport &mdash; 4,90&euro;
+                    Télécharger le rapport — 4,90€
                   </DownloadButton>
-                  <p className="mt-2 text-[11px] text-slate-400">PDF disponible imm&eacute;diatement</p>
+                  <p className="mt-2 text-[11px] text-slate-400">PDF disponible immédiatement</p>
                 </CardContent>
               </Card>
             </div>
@@ -1349,7 +1349,7 @@ export default async function CoproprietePage({
       {/* Sticky CTA bar — mobile only */}
       <div className="fixed inset-x-0 bottom-0 z-30 border-t border-teal-200 bg-teal-600 px-4 py-3 pb-[max(12px,var(--sab))] lg:hidden">
         <DownloadButton slug={slug} accessLevel={accessLevel} hasPurchased={hasPurchased} className="w-full bg-white py-5 text-base font-semibold text-teal-700 shadow-sm hover:bg-teal-50">
-          T&eacute;l&eacute;charger le rapport &mdash; 4,90&euro;
+          Télécharger le rapport — 4,90€
         </DownloadButton>
       </div>
       {/* Bottom spacer for sticky CTA */}
@@ -1381,7 +1381,7 @@ function NearbyItem({ n }: { n: NearbyRow }) {
       </div>
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-medium text-slate-900">
-          {formatCoproName(n.nom_usage || n.adresse_reference || "Copropri\u00e9t\u00e9")}
+          {formatCoproName(n.nom_usage || n.adresse_reference || "Copropriété")}
         </p>
         <p className="flex items-center gap-2 text-xs text-slate-400">
           {n.nb_lots_habitation != null && <span>{n.nb_lots_habitation} lots</span>}
@@ -1397,7 +1397,7 @@ function InfoRow({ label, value }: { label: string; value: string | number | nul
   return (
     <div className="flex items-center justify-between gap-2">
       <span className="shrink-0 text-slate-500">{label}</span>
-      <span className="min-w-0 truncate font-medium text-slate-900">{value ?? "\u2014"}</span>
+      <span className="min-w-0 truncate font-medium text-slate-900">{value ?? "—"}</span>
     </div>
   );
 }

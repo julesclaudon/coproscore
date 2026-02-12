@@ -57,14 +57,14 @@ export async function GET(
   ];
 
   const rows = copros.map((c) => [
-    formatCoproName(c.nom_usage || c.adresse_reference || "\u2014"),
-    c.adresse_reference || "\u2014",
-    c.code_postal || "\u2014",
-    c.score_global != null ? String(c.score_global) : "\u2014",
-    c.nb_lots_habitation != null ? String(c.nb_lots_habitation) : "\u2014",
-    c.type_syndic || "\u2014",
-    formatPeriod(c.periode_construction) || "\u2014",
-    c.dpe_classe_mediane || "\u2014",
+    formatCoproName(c.nom_usage || c.adresse_reference || "—"),
+    c.adresse_reference || "—",
+    c.code_postal || "—",
+    c.score_global != null ? String(c.score_global) : "—",
+    c.nb_lots_habitation != null ? String(c.nb_lots_habitation) : "—",
+    c.type_syndic || "—",
+    formatPeriod(c.periode_construction) || "—",
+    c.dpe_classe_mediane || "—",
   ]);
 
   const csv = generateCsv(headers, rows);

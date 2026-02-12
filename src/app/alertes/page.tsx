@@ -138,19 +138,19 @@ function AlertesContent() {
           {showBanner && (
             <div className="mb-6 flex items-center gap-2 rounded-lg border border-teal-200 bg-teal-50 px-4 py-3 text-sm text-teal-800">
               <CheckCircle2 className="h-4 w-4 shrink-0" />
-              Alerte confirm&eacute;e avec succ&egrave;s !
+              Alerte confirmée avec succès !
             </div>
           )}
 
           {confirmed === "already" && (
             <div className="mb-6 flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-              Cette alerte est d&eacute;j&agrave; confirm&eacute;e.
+              Cette alerte est déjà confirmée.
             </div>
           )}
 
           {confirmed === "invalid" && (
             <div className="mb-6 flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
-              Lien de confirmation invalide ou expir&eacute;.
+              Lien de confirmation invalide ou expiré.
             </div>
           )}
 
@@ -158,7 +158,7 @@ function AlertesContent() {
             Mes alertes
           </h1>
           <p className="mt-2 text-sm text-slate-500">
-            Retrouvez et g&eacute;rez vos alertes de changement de score.
+            Retrouvez et gérez vos alertes de changement de score.
           </p>
 
           {/* Search form */}
@@ -264,7 +264,7 @@ function AlertesContent() {
                       className="flex items-center gap-1.5 rounded-full bg-white px-5 py-2.5 text-sm font-medium text-teal-700 shadow-sm transition-colors hover:text-teal-900"
                     >
                       <Lock className="h-3.5 w-3.5" />
-                      Passez Pro &mdash; 29&euro;/mois
+                      Passez Pro — 29€/mois
                     </Link>
                   </div>
                 </div>
@@ -279,16 +279,16 @@ function AlertesContent() {
                 <Bell className="h-7 w-7 text-slate-400" />
               </div>
               <p className="text-lg font-semibold text-slate-700">
-                Aucune alerte trouv&eacute;e
+                Aucune alerte trouvée
               </p>
               <p className="mt-2 max-w-sm text-sm text-slate-400">
-                Aucune alerte n&rsquo;est associ&eacute;e &agrave; cette adresse email.
-                Cr&eacute;ez une alerte depuis la fiche d&rsquo;une copropri&eacute;t&eacute;.
+                Aucune alerte n’est associée à cette adresse email.
+                Créez une alerte depuis la fiche d’une copropriété.
               </p>
               <Link href="/" className="mt-6">
                 <Button className="gap-2 bg-teal-700 text-white hover:bg-teal-800">
                   <Search className="h-4 w-4" />
-                  Rechercher une copropri&eacute;t&eacute;
+                  Rechercher une copropriété
                 </Button>
               </Link>
             </div>

@@ -95,7 +95,7 @@ export function FavoriteButton({
           className={`h-4 w-4 ${saved ? "fill-amber-400" : ""}`}
         />
         <span className="hidden sm:inline">
-          {saved ? "Sauvegard\u00e9" : "Sauvegarder"}
+          {saved ? "Sauvegardé" : "Sauvegarder"}
         </span>
       </Button>
 
@@ -109,7 +109,7 @@ export function FavoriteButton({
             href="/tarifs"
             className="mt-1 inline-block text-xs font-medium text-teal-700 underline underline-offset-2 hover:text-teal-900"
           >
-            Passez Pro pour sauvegarder jusqu&apos;&agrave; 50 copropri&eacute;t&eacute;s.
+            Passez Pro pour sauvegarder jusqu'à 50 copropriétés.
           </Link>
         </div>
       )}

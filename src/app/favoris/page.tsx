@@ -28,7 +28,7 @@ import { Button } from "@/components/ui/button";
 function timeAgo(iso: string): string {
   const diff = Date.now() - new Date(iso).getTime();
   const minutes = Math.floor(diff / 60000);
-  if (minutes < 1) return "\u00e0 l\u2019instant";
+  if (minutes < 1) return "à l’instant";
   if (minutes < 60) return `il y a ${minutes} min`;
   const hours = Math.floor(minutes / 60);
   if (hours < 24) return `il y a ${hours}h`;
@@ -96,8 +96,8 @@ export default function FavorisPage() {
           </h1>
           {mounted && favorites.length > 0 && (
             <p className="mt-2 text-sm text-slate-500">
-              {favorites.length} copropri&eacute;t&eacute;
-              {favorites.length > 1 ? "s" : ""} sauvegard&eacute;e
+              {favorites.length} copropriété
+              {favorites.length > 1 ? "s" : ""} sauvegardée
               {favorites.length > 1 ? "s" : ""}
             </p>
           )}
@@ -112,7 +112,7 @@ export default function FavorisPage() {
                   href="/tarifs"
                   className="font-medium text-teal-700 underline underline-offset-2 hover:text-teal-900"
                 >
-                  Passez Pro pour en sauvegarder jusqu&apos;&agrave; 50.
+                  Passez Pro pour en sauvegarder jusqu'à 50.
                 </Link>
               </span>
             </div>
@@ -200,12 +200,12 @@ export default function FavorisPage() {
                 Aucun favori
               </p>
               <p className="mt-2 max-w-sm text-sm text-slate-400">
-                Ajoutez des copropri&eacute;t&eacute;s en cliquant sur &star; depuis leur fiche.
+                Ajoutez des copropriétés en cliquant sur &star; depuis leur fiche.
               </p>
               <Link href="/" className="mt-6">
                 <Button className="gap-2 bg-teal-700 text-white hover:bg-teal-800">
                   <Search className="h-4 w-4" />
-                  Rechercher une copropri&eacute;t&eacute;
+                  Rechercher une copropriété
                 </Button>
               </Link>
             </div>

@@ -55,7 +55,7 @@ export function AlertModal({ slug, coproName, accessLevel }: AlertModalProps) {
         setSuccess(true);
       }
     } catch {
-      setError("Erreur r\u00e9seau. R\u00e9essayez.");
+      setError("Erreur réseau. Réessayez.");
     } finally {
       setLoading(false);
     }
@@ -98,10 +98,10 @@ export function AlertModal({ slug, coproName, accessLevel }: AlertModalProps) {
           <div className="flex flex-col items-center gap-3 py-4 text-center">
             <CheckCircle2 className="h-10 w-10 text-teal-600" />
             <p className="text-sm font-medium text-slate-700">
-              Un email de confirmation vous a &eacute;t&eacute; envoy&eacute;.
+              Un email de confirmation vous a été envoyé.
             </p>
             <p className="text-xs text-slate-400">
-              V&eacute;rifiez votre bo&icirc;te de r&eacute;ception (et vos spams).
+              Vérifiez votre boîte de réception (et vos spams).
             </p>
           </div>
         ) : (
@@ -148,7 +148,7 @@ export function AlertModal({ slug, coproName, accessLevel }: AlertModalProps) {
               ) : (
                 <>
                   <Bell className="h-4 w-4" />
-                  Activer l&apos;alerte
+                  Activer l'alerte
                 </>
               )}
             </Button>

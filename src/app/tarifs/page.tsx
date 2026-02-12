@@ -26,17 +26,17 @@ const TIERS = [
   {
     id: "gratuit",
     name: "Fiche Copro",
-    audience: "Pour les curieux et copropri\u00e9taires",
+    audience: "Pour les curieux et copropriétaires",
     icon: Search,
     features: [
-      "Score global 0\u2013100 avec jauge visuelle",
-      "5 dimensions : Technique, Risques, Gouvernance, \u00c9nergie, March\u00e9",
+      "Score global 0–100 avec jauge visuelle",
+      "5 dimensions : Technique, Risques, Gouvernance, Énergie, Marché",
       "Carte Leaflet avec localisation",
-      "Prix moyen au m\u00b2 du secteur (DVF)",
-      "Infos cl\u00e9s RNIC : syndic, lots, construction",
-      "2 copropri\u00e9t\u00e9s voisines",
+      "Prix moyen au m² du secteur (DVF)",
+      "Infos clés RNIC : syndic, lots, construction",
+      "2 copropriétés voisines",
     ],
-    cta: "Rechercher une copropri\u00e9t\u00e9",
+    cta: "Rechercher une copropriété",
     ctaHref: "/recherche",
     highlighted: false,
   },
@@ -47,34 +47,34 @@ const TIERS = [
     icon: FileDown,
     includes: "Tout le contenu gratuit, plus :",
     features: [
-      "30 derni\u00e8res transactions DVF d\u00e9taill\u00e9es (500m)",
-      "Comparatif \u00e9largi : 15\u201320 copros voisines avec scores",
+      "30 dernières transactions DVF détaillées (500m)",
+      "Comparatif élargi : 15–20 copros voisines avec scores",
       "Analyse IA : points forts, vigilances, recommandations",
-      "D\u00e9tail complet de chaque sous-score avec explication",
-      "\u00c9volution prix/m\u00b2 sur 3 ans (graphique)",
-      "PDF pro horodat\u00e9 avec branding CoproScore",
+      "Détail complet de chaque sous-score avec explication",
+      "Évolution prix/m² sur 3 ans (graphique)",
+      "PDF pro horodaté avec branding CoproScore",
     ],
-    cta: "T\u00e9l\u00e9charger le rapport \u2014 4,90\u00a0\u20ac",
+    cta: "Télécharger le rapport — 4,90 €",
     ctaHref: "/recherche",
     highlighted: true,
-    badge: "Recommand\u00e9",
+    badge: "Recommandé",
   },
   {
     id: "pro",
-    name: "Acc\u00e8s Pro",
-    audience: "Pour les professionnels de l\u2019immobilier",
+    name: "Accès Pro",
+    audience: "Pour les professionnels de l’immobilier",
     icon: Crown,
     includes: "Tout le rapport, plus :",
     features: [
-      "Rapports PDF illimit\u00e9s",
-      "Comparateur multi-copros (2\u20135 side-by-side)",
-      "Export CSV / Excel des donn\u00e9es DVF",
-      "Badge \u00ab Rapport v\u00e9rifi\u00e9 CoproScore \u00bb",
-      "Historique de recherches sauvegard\u00e9",
+      "Rapports PDF illimités",
+      "Comparateur multi-copros (2–5 side-by-side)",
+      "Export CSV / Excel des données DVF",
+      "Badge « Rapport vérifié CoproScore »",
+      "Historique de recherches sauvegardé",
       "Alertes email : changement de score, DPE, syndic",
       "Support prioritaire",
     ],
-    cta: "S\u2019abonner \u2014 29\u00a0\u20ac/mois",
+    cta: "S’abonner — 29 €/mois",
     ctaHref: "#",
     highlighted: false,
   },
@@ -84,24 +84,24 @@ const TIERS = [
 
 const FAQ = [
   {
-    q: "Quelles donn\u00e9es utilisez-vous pour calculer le score\u00a0?",
-    a: "CoproScore croise quatre bases de donn\u00e9es publiques ouvertes\u00a0: le Registre National des Copropri\u00e9t\u00e9s (RNIC, 619\u00a0402 copros), les Demandes de Valeurs Fonci\u00e8res (DVF, 1\u00a0M de transactions), les Diagnostics \u00c9nerg\u00e9tiques de l\u2019ADEME (13,5\u00a0M de DPE) et la Base Adresse Nationale (BAN). Aucune donn\u00e9e priv\u00e9e n\u2019est utilis\u00e9e.",
+    q: "Quelles données utilisez-vous pour calculer le score ?",
+    a: "CoproScore croise quatre bases de données publiques ouvertes : le Registre National des Copropriétés (RNIC, 619 402 copros), les Demandes de Valeurs Foncières (DVF, 1 M de transactions), les Diagnostics Énergétiques de l’ADEME (13,5 M de DPE) et la Base Adresse Nationale (BAN). Aucune donnée privée n’est utilisée.",
   },
   {
-    q: "Le score est-il fiable\u00a0?",
-    a: "Le score est un indicateur synth\u00e9tique bas\u00e9 sur des donn\u00e9es d\u00e9claratives. Il ne remplace pas un audit technique ou un DTG. Chaque fiche affiche un indice de confiance refl\u00e9tant la compl\u00e9tude des donn\u00e9es. Consultez notre page M\u00e9thodologie pour le d\u00e9tail des calculs.",
+    q: "Le score est-il fiable ?",
+    a: "Le score est un indicateur synthétique basé sur des données déclaratives. Il ne remplace pas un audit technique ou un DTG. Chaque fiche affiche un indice de confiance reflétant la complétude des données. Consultez notre page Méthodologie pour le détail des calculs.",
   },
   {
-    q: "Puis-je annuler mon abonnement Pro\u00a0?",
-    a: "Oui, \u00e0 tout moment depuis votre espace client. L\u2019annulation prend effet \u00e0 la fin de la p\u00e9riode en cours. L\u2019essai gratuit de 14 jours n\u2019est pas factur\u00e9 si vous annulez avant la fin.",
+    q: "Puis-je annuler mon abonnement Pro ?",
+    a: "Oui, à tout moment depuis votre espace client. L’annulation prend effet à la fin de la période en cours. L’essai gratuit de 14 jours n’est pas facturé si vous annulez avant la fin.",
   },
   {
-    q: "Le rapport PDF est-il utilisable pour une transaction\u00a0?",
-    a: "Le rapport est un document d\u2019information. Il peut \u00eatre partag\u00e9 avec votre notaire, banquier ou agent immobilier comme support d\u2019aide \u00e0 la d\u00e9cision, mais il ne constitue pas un diagnostic officiel au sens r\u00e9glementaire.",
+    q: "Le rapport PDF est-il utilisable pour une transaction ?",
+    a: "Le rapport est un document d’information. Il peut être partagé avec votre notaire, banquier ou agent immobilier comme support d’aide à la décision, mais il ne constitue pas un diagnostic officiel au sens réglementaire.",
   },
   {
-    q: "Les donn\u00e9es sont-elles \u00e0 jour\u00a0?",
-    a: "Le RNIC est mis \u00e0 jour trimestriellement, le DVF semestriellement, et les DPE ADEME en continu. Nous int\u00e9grons chaque nouvelle version d\u00e8s sa publication. La date de derni\u00e8re mise \u00e0 jour est affich\u00e9e sur chaque fiche.",
+    q: "Les données sont-elles à jour ?",
+    a: "Le RNIC est mis à jour trimestriellement, le DVF semestriellement, et les DPE ADEME en continu. Nous intégrons chaque nouvelle version dès sa publication. La date de dernière mise à jour est affichée sur chaque fiche.",
   },
 ];
 
@@ -170,7 +170,7 @@ function TarifsContent() {
       }
       throw new Error(data.error || "Erreur");
     } catch {
-      toast.error("Erreur lors de l\u2019accès au portail de facturation.");
+      toast.error("Erreur lors de l’accès au portail de facturation.");
       setPortalLoading(false);
     }
   }
@@ -210,8 +210,8 @@ function TarifsContent() {
             Des tarifs simples et transparents
           </h1>
           <p className="mx-auto max-w-xl text-lg leading-relaxed text-slate-500">
-            Consultez gratuitement le score de n&apos;importe quelle copropri&eacute;t&eacute;.
-            Besoin de plus de d&eacute;tails&nbsp;? T&eacute;l&eacute;chargez un rapport ou
+            Consultez gratuitement le score de n'importe quelle copropriété.
+            Besoin de plus de détails ? Téléchargez un rapport ou
             passez au Pro.
           </p>
 
@@ -239,7 +239,7 @@ function TarifsContent() {
             >
               Annuel
               <span className="ml-1.5 rounded-full bg-teal-100 px-2 py-0.5 text-[11px] font-semibold text-teal-700">
-                Bient\u00f4t
+                Bientôt
               </span>
             </button>
           </div>
@@ -302,7 +302,7 @@ function TarifsContent() {
                     )}
                     {isRapport && (
                       <p className="text-3xl font-bold text-slate-900 sm:text-4xl">
-                        4,90&nbsp;&euro;
+                        4,90 €
                         <span className="text-base font-normal text-slate-400">
                           {" "}/ rapport
                         </span>
@@ -310,7 +310,7 @@ function TarifsContent() {
                     )}
                     {isProTier && (
                       <p className="text-3xl font-bold text-white sm:text-4xl">
-                        {proPrice}&nbsp;&euro;
+                        {proPrice} €
                         <span className="text-base font-normal text-slate-400">
                           {" "}{proPeriod}
                         </span>
@@ -347,7 +347,7 @@ function TarifsContent() {
                       ) : (
                         <>
                           <Settings className="mr-2 h-4 w-4" />
-                          G\u00e9rer mon abonnement
+                          Gérer mon abonnement
                         </>
                       )}
                     </Button>
@@ -397,14 +397,14 @@ function TarifsContent() {
           {/* Annual savings callout */}
           {annual && (
             <div className="mx-auto mt-8 max-w-md rounded-lg border border-slate-200 bg-slate-50/50 px-5 py-3 text-center text-sm text-slate-500">
-              L&apos;abonnement annuel sera bient\u00f4t disponible.
+              L'abonnement annuel sera bientôt disponible.
             </div>
           )}
 
           {/* ─── FAQ ─── */}
           <section className="mx-auto mt-20 max-w-3xl">
             <h2 className="mb-8 text-center text-2xl font-bold text-slate-900 sm:text-3xl">
-              Questions fr&eacute;quentes
+              Questions fréquentes
             </h2>
 
             <div className="divide-y divide-slate-200 rounded-xl border border-slate-200">

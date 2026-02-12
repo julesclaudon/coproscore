@@ -83,7 +83,7 @@ export function estimerBudgetTravaux(copro: CoproInput): EstimationTravaux {
     // DPE E, F, G — passoire énergétique
     postes.push({
       nom: "Isolation thermique",
-      description: `DPE ${dpe} \u2014 Passoire \u00e9nerg\u00e9tique, isolation prioritaire`,
+      description: `DPE ${dpe} — Passoire énergétique, isolation prioritaire`,
       min: 8_000 * lots,
       max: 15_000 * lots,
     });
@@ -103,7 +103,7 @@ export function estimerBudgetTravaux(copro: CoproInput): EstimationTravaux {
     if (dpe && dpeRank(dpe) >= dpeRank("C") && dpeRank(dpe) <= dpeRank("D")) {
       postes.push({
         nom: "Isolation thermique",
-        description: `DPE ${dpe} \u2014 Am\u00e9liorations \u00e9nerg\u00e9tiques recommand\u00e9es`,
+        description: `DPE ${dpe} — Améliorations énergétiques recommandées`,
         min: 3_000 * lots,
         max: 8_000 * lots,
       });
@@ -114,22 +114,22 @@ export function estimerBudgetTravaux(copro: CoproInput): EstimationTravaux {
   if (period) {
     if (isBeforeOrEqual(period, "1949_1960")) {
       postes.push({
-        nom: "Ravalement de fa\u00e7ade",
-        description: "B\u00e2timent ancien, ravalement probablement n\u00e9cessaire",
+        nom: "Ravalement de façade",
+        description: "Bâtiment ancien, ravalement probablement nécessaire",
         min: 4_000 * lots,
         max: 8_000 * lots,
       });
     } else if (isBeforeOrEqual(period, "1975_1993")) {
       postes.push({
-        nom: "Ravalement de fa\u00e7ade",
-        description: "Construction 1960-1990, ravalement \u00e0 pr\u00e9voir",
+        nom: "Ravalement de façade",
+        description: "Construction 1960-1990, ravalement à prévoir",
         min: 2_500 * lots,
         max: 5_000 * lots,
       });
     } else {
       postes.push({
-        nom: "Ravalement de fa\u00e7ade",
-        description: "Construction r\u00e9cente, entretien courant",
+        nom: "Ravalement de façade",
+        description: "Construction récente, entretien courant",
         min: 1_000 * lots,
         max: 3_000 * lots,
       });
@@ -140,15 +140,15 @@ export function estimerBudgetTravaux(copro: CoproInput): EstimationTravaux {
   if (period) {
     if (isBefore(period, "1961_1974")) {
       postes.push({
-        nom: "Mise aux normes \u00e9lectricit\u00e9/plomberie",
+        nom: "Mise aux normes électricité/plomberie",
         description: "Installation avant 1970, mise aux normes probable",
         min: 3_000 * lots,
         max: 7_000 * lots,
       });
     } else if (isBeforeOrEqual(period, "1975_1993")) {
       postes.push({
-        nom: "Mise aux normes \u00e9lectricit\u00e9/plomberie",
-        description: "Installation 1970-1990, v\u00e9rification recommand\u00e9e",
+        nom: "Mise aux normes électricité/plomberie",
+        description: "Installation 1970-1990, vérification recommandée",
         min: 1_500 * lots,
         max: 4_000 * lots,
       });
@@ -159,7 +159,7 @@ export function estimerBudgetTravaux(copro: CoproInput): EstimationTravaux {
   if (lots >= 15 && period && isBefore(period, "1994_2000")) {
     postes.push({
       nom: "Remplacement ascenseur",
-      description: "Copropri\u00e9t\u00e9 de 15+ lots, ascenseur potentiellement v\u00e9tuste",
+      description: "Copropriété de 15+ lots, ascenseur potentiellement vétuste",
       min: 30_000,
       max: 60_000,
     });
@@ -170,15 +170,15 @@ export function estimerBudgetTravaux(copro: CoproInput): EstimationTravaux {
     const surfaceToiture = lots * 60; // estimation m²
     if (isBefore(period, "1961_1974")) {
       postes.push({
-        nom: "R\u00e9fection toiture",
-        description: `Construction ancienne, toiture estim\u00e9e \u00e0 ${surfaceToiture}\u00a0m\u00b2`,
+        nom: "Réfection toiture",
+        description: `Construction ancienne, toiture estimée à ${surfaceToiture} m²`,
         min: 150 * surfaceToiture,
         max: 300 * surfaceToiture,
       });
     } else if (isBefore(period, "2001_2010")) {
       postes.push({
-        nom: "R\u00e9fection toiture",
-        description: `Toiture 1970-2000, surface estim\u00e9e ${surfaceToiture}\u00a0m\u00b2`,
+        nom: "Réfection toiture",
+        description: `Toiture 1970-2000, surface estimée ${surfaceToiture} m²`,
         min: 80 * surfaceToiture,
         max: 150 * surfaceToiture,
       });
@@ -188,8 +188,8 @@ export function estimerBudgetTravaux(copro: CoproInput): EstimationTravaux {
   // 6. Mise en conformité sécurité incendie (plan de péril)
   if (enPeril) {
     postes.push({
-      nom: "Mise en conformit\u00e9 s\u00e9curit\u00e9 incendie",
-      description: "Plan de p\u00e9ril — Travaux de s\u00e9curit\u00e9 obligatoires",
+      nom: "Mise en conformité sécurité incendie",
+      description: "Plan de péril — Travaux de sécurité obligatoires",
       min: 5_000 * lots,
       max: 15_000 * lots,
     });

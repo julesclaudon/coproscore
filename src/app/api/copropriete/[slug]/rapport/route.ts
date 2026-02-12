@@ -184,7 +184,7 @@ export async function GET(
     ]);
 
   const displayName = formatCoproName(
-    copro.nomUsage || copro.adresseReference || "Copropri\u00e9t\u00e9"
+    copro.nomUsage || copro.adresseReference || "Copropriété"
   );
 
   const dimensions = [
@@ -207,13 +207,13 @@ export async function GET(
       detailedExplanation: detailedGouvernance(copro),
     },
     {
-      label: "\u00c9nergie",
+      label: "Énergie",
       score: copro.scoreEnergie,
       max: 20,
       detailedExplanation: detailedEnergie(copro),
     },
     {
-      label: "March\u00e9",
+      label: "Marché",
       score: copro.scoreMarche,
       max: 20,
       detailedExplanation: detailedMarche(copro),
@@ -268,7 +268,7 @@ export async function GET(
 
     transactions: transactions.map((t) => ({
       date: new Date(t.date_mutation).toLocaleDateString("fr-FR"),
-      adresse: t.adresse ?? "\u2014",
+      adresse: t.adresse ?? "—",
       surface: Number(t.surface),
       prix: Number(t.prix),
       prixM2: Number(t.prix_m2),
@@ -276,7 +276,7 @@ export async function GET(
 
     nearby: nearby.map((n) => ({
       name: formatCoproName(
-        n.nom_usage || n.adresse_reference || "Copropri\u00e9t\u00e9"
+        n.nom_usage || n.adresse_reference || "Copropriété"
       ),
       commune: n.commune_adresse,
       score: n.score_global,

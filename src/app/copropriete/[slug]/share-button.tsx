@@ -122,7 +122,7 @@ export function ShareButton({ title, text }: ShareButtonProps) {
                 <span className="flex h-6 w-6 items-center justify-center rounded bg-teal-50 text-teal-600">
                   <Check className="h-3.5 w-3.5" />
                 </span>
-                Lien copi&eacute; !
+                Lien copié !
               </>
             ) : (
               <>

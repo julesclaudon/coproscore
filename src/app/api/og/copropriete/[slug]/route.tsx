@@ -23,8 +23,8 @@ const dimensions: { key: string; label: string; max: number }[] = [
   { key: "scoreTechnique", label: "Technique", max: 25 },
   { key: "scoreRisques", label: "Risques", max: 30 },
   { key: "scoreGouvernance", label: "Gouvernance", max: 25 },
-  { key: "scoreEnergie", label: "\u00C9nergie", max: 20 },
-  { key: "scoreMarche", label: "March\u00e9", max: 20 },
+  { key: "scoreEnergie", label: "Énergie", max: 20 },
+  { key: "scoreMarche", label: "Marché", max: 20 },
 ];
 
 export async function GET(
@@ -54,7 +54,7 @@ export async function GET(
     return new Response("Not found", { status: 404 });
   }
 
-  const displayName = formatCoproName(copro.adresseReference || "Copropri\u00e9t\u00e9");
+  const displayName = formatCoproName(copro.adresseReference || "Copropriété");
   const ville = [copro.codePostal, copro.communeAdresse].filter(Boolean).join(" ");
   const score = copro.scoreGlobal;
   const color = scoreHex(score);
@@ -178,10 +178,10 @@ export async function GET(
             <span style={{ fontSize: 20, color: "#64748b" }}>
               {ville}
               {copro.nbLotsHabitation
-                ? ` \u2022 ${copro.nbLotsHabitation} lots`
+                ? ` • ${copro.nbLotsHabitation} lots`
                 : ""}
               {copro.typeSyndic
-                ? ` \u2022 Syndic ${copro.typeSyndic.toLowerCase()}`
+                ? ` • Syndic ${copro.typeSyndic.toLowerCase()}`
                 : ""}
             </span>
 
@@ -265,7 +265,7 @@ export async function GET(
           }}
         >
           <span>coproscore.fr</span>
-          <span>Donn\u00e9es publiques RNIC \u2022 DVF \u2022 ADEME</span>
+          <span>Données publiques RNIC • DVF • ADEME</span>
         </div>
       </div>
     ),

@@ -166,12 +166,12 @@ export function TimelineSection({
     <section>
       <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold text-slate-900">
         <Calendar className="h-5 w-5 text-blue-500" />
-        Chronologie de la copropri&eacute;t&eacute;
+        Chronologie de la copropriété
       </h2>
 
       {totalCount <= 2 && (
         <p className="mb-4 text-sm text-slate-400">
-          Peu de donn&eacute;es historiques disponibles pour cette copropri&eacute;t&eacute;.
+          Peu de données historiques disponibles pour cette copropriété.
         </p>
       )}
 
@@ -198,10 +198,10 @@ export function TimelineSection({
                   </div>
                   <div className="min-w-0 flex-1 overflow-hidden rounded-lg border border-slate-100 bg-white px-4 py-3">
                     <p className="text-sm font-medium text-slate-900">
-                      &Eacute;v&eacute;nement masqu&eacute;
+                      Événement masqué
                     </p>
                     <p className="mt-0.5 text-sm text-slate-500">
-                      D&eacute;tail disponible avec un acc&egrave;s sup&eacute;rieur
+                      Détail disponible avec un accès supérieur
                     </p>
                   </div>
                 </div>

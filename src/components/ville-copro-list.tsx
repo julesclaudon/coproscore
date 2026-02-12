@@ -143,14 +143,14 @@ export function VilleCoproList({
         <div className="mb-4 flex items-center gap-3 rounded-lg border border-teal-200 bg-teal-50/60 px-4 py-2.5">
           <Crown className="h-4 w-4 shrink-0 text-teal-600" />
           <p className="min-w-0 flex-1 text-xs text-slate-600 sm:text-sm">
-            D&eacute;bloquez les filtres avanc&eacute;s et l&apos;export CSV avec
-            l&apos;acc&egrave;s Pro &mdash; 29&nbsp;&euro;/mois
+            Débloquez les filtres avancés et l'export CSV avec
+            l'accès Pro — 29 €/mois
           </p>
           {villeSlug ? (
             <a
               href={`/api/ville/${villeSlug}/export?format=csv${cp ? `&cp=${cp}` : ""}`}
               className="inline-flex shrink-0 items-center gap-1.5 rounded-md border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-400 opacity-60 pointer-events-none"
-              title="R&eacute;serv&eacute; aux abonn&eacute;s Pro"
+              title="Réservé aux abonnés Pro"
             >
               <Lock className="h-3 w-3" />
               Exporter CSV
@@ -185,7 +185,7 @@ export function VilleCoproList({
         <div className="relative min-w-0 flex-1 sm:min-w-[200px]">
           <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
           <Input
-            placeholder="Rechercher une adresse\u2026"
+            placeholder="Rechercher une adresse…"
             value={query}
             onChange={(e) => {
               setQuery(e.target.value);
@@ -218,7 +218,7 @@ export function VilleCoproList({
           }}
           className="h-9 rounded-md border border-slate-200 bg-white px-2 text-sm text-slate-700"
         >
-          <option value="">P&eacute;riode : toutes</option>
+          <option value="">Période : toutes</option>
           {periodeOptions.map((p) => (
             <option key={p} value={p}>
               {formatPeriod(p)}
@@ -234,7 +234,7 @@ export function VilleCoproList({
           className="h-9 rounded-md border border-slate-200 bg-white px-2 text-sm text-slate-700"
         >
           <option value="">Score : tous</option>
-          <option value=">=70">Bon (&ge; 70)</option>
+          <option value=">=70">Bon (≥ 70)</option>
           <option value="40-69">Moyen (40-69)</option>
           <option value="<40">Attention (&lt; 40)</option>
         </select>
@@ -245,8 +245,8 @@ export function VilleCoproList({
       <div className="mb-4 flex flex-wrap gap-2">
         {(
           [
-            ["score-desc", "Score \u2193"],
-            ["score-asc", "Score \u2191"],
+            ["score-desc", "Score ↓"],
+            ["score-asc", "Score ↑"],
             ["lots", "Lots"],
             ["adresse", "Adresse A-Z"],
           ] as [SortKey, string][]
@@ -267,7 +267,7 @@ export function VilleCoproList({
           </button>
         ))}
         <span className="ml-auto self-center text-xs text-slate-400">
-          {filtered.length.toLocaleString("fr-FR")} r&eacute;sultat
+          {filtered.length.toLocaleString("fr-FR")} résultat
           {filtered.length !== 1 ? "s" : ""}
         </span>
       </div>
@@ -288,7 +288,7 @@ export function VilleCoproList({
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-medium text-slate-900">
                 {formatCoproName(
-                  c.nomUsage || c.adresseReference || "Copropri\u00e9t\u00e9"
+                  c.nomUsage || c.adresseReference || "Copropriété"
                 )}
               </p>
               <div className="flex items-center gap-2 text-xs text-slate-400 sm:gap-3">
@@ -304,7 +304,7 @@ export function VilleCoproList({
             </div>
             <FavoriteToggle
               slug={c.slug ?? String(c.id)}
-              nom={formatCoproName(c.nomUsage || c.adresseReference || "Copropri\u00e9t\u00e9")}
+              nom={formatCoproName(c.nomUsage || c.adresseReference || "Copropriété")}
               adresse={c.adresseReference || ""}
               commune={c.codePostal || ""}
               score={c.scoreGlobal}
@@ -315,7 +315,7 @@ export function VilleCoproList({
         ))}
         {paginated.length === 0 && (
           <p className="py-8 text-center text-sm text-slate-400">
-            Aucune copropri&eacute;t&eacute; trouv&eacute;e avec ces crit&egrave;res.
+            Aucune copropriété trouvée avec ces critères.
           </p>
         )}
       </div>
@@ -329,7 +329,7 @@ export function VilleCoproList({
             disabled={safePage <= 1}
             onClick={() => setPage((p) => Math.max(1, p - 1))}
           >
-            Pr&eacute;c&eacute;dent
+            Précédent
           </Button>
           <span className="text-sm text-slate-500">
             Page {safePage} sur {totalPages}
@@ -349,7 +349,7 @@ export function VilleCoproList({
       {totalCount > filtered.length && (
         <p className="mt-4 text-center text-xs text-slate-400">
           Connectez-vous avec un compte Pro pour voir les{" "}
-          {totalCount.toLocaleString("fr-FR")} r&eacute;sultats
+          {totalCount.toLocaleString("fr-FR")} résultats
         </p>
       )}
     </div>

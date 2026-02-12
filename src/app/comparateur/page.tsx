@@ -79,13 +79,13 @@ function scoreBg(score: number | null): string {
 }
 
 function fmtPrix(n: number | null): string {
-  if (n === null) return "\u2014";
-  return Math.round(n).toLocaleString("fr-FR") + "\u00a0\u20ac";
+  if (n === null) return "—";
+  return Math.round(n).toLocaleString("fr-FR") + " €";
 }
 
 function fmtEvo(n: number | null): string {
-  if (n === null) return "\u2014";
-  return (n >= 0 ? "+" : "") + n.toFixed(1) + "\u00a0%";
+  if (n === null) return "—";
+  return (n >= 0 ? "+" : "") + n.toFixed(1) + " %";
 }
 
 const DPE_ORDER: Record<string, number> = { A: 1, B: 2, C: 3, D: 4, E: 5, F: 6, G: 7 };
@@ -148,31 +148,31 @@ interface RowDef {
 
 const ROW_DEFS: RowDef[] = [
   // Identité
-  { label: "Nom", group: "Identit\u00e9", getValue: (c) => formatCoproName(c.nomUsage || c.adresseReference || "\u2014"), highlight: "none" },
-  { label: "Adresse", group: "Identit\u00e9", getValue: (c) => c.adresseReference || "\u2014", highlight: "none" },
-  { label: "Commune", group: "Identit\u00e9", getValue: (c) => [c.codePostal, c.communeAdresse].filter(Boolean).join(" ") || "\u2014", highlight: "none" },
-  { label: "Lots habitation", group: "Identit\u00e9", getValue: (c) => c.nbLotsHabitation != null ? String(c.nbLotsHabitation) : "\u2014", highlight: "none" },
-  { label: "Lots total", group: "Identit\u00e9", getValue: (c) => c.nbTotalLots != null ? String(c.nbTotalLots) : "\u2014", highlight: "none" },
-  { label: "Construction", group: "Identit\u00e9", getValue: (c) => formatPeriod(c.periodeConstruction) || "\u2014", highlight: "none" },
+  { label: "Nom", group: "Identité", getValue: (c) => formatCoproName(c.nomUsage || c.adresseReference || "—"), highlight: "none" },
+  { label: "Adresse", group: "Identité", getValue: (c) => c.adresseReference || "—", highlight: "none" },
+  { label: "Commune", group: "Identité", getValue: (c) => [c.codePostal, c.communeAdresse].filter(Boolean).join(" ") || "—", highlight: "none" },
+  { label: "Lots habitation", group: "Identité", getValue: (c) => c.nbLotsHabitation != null ? String(c.nbLotsHabitation) : "—", highlight: "none" },
+  { label: "Lots total", group: "Identité", getValue: (c) => c.nbTotalLots != null ? String(c.nbTotalLots) : "—", highlight: "none" },
+  { label: "Construction", group: "Identité", getValue: (c) => formatPeriod(c.periodeConstruction) || "—", highlight: "none" },
   // Scores
-  { label: "Score global", group: "Scores", getValue: (c) => c.scoreGlobal != null ? `${c.scoreGlobal}/100` : "\u2014", getNum: (c) => c.scoreGlobal, highlight: "high", isScore: true },
-  { label: "Technique", group: "Scores", getValue: (c) => c.scoreTechnique != null ? `${c.scoreTechnique}/25` : "\u2014", getNum: (c) => c.scoreTechnique, highlight: "high", isScore: true },
-  { label: "Risques", group: "Scores", getValue: (c) => c.scoreRisques != null ? `${c.scoreRisques}/30` : "\u2014", getNum: (c) => c.scoreRisques, highlight: "high", isScore: true },
-  { label: "Gouvernance", group: "Scores", getValue: (c) => c.scoreGouvernance != null ? `${c.scoreGouvernance}/25` : "\u2014", getNum: (c) => c.scoreGouvernance, highlight: "high", isScore: true },
-  { label: "\u00c9nergie", group: "Scores", getValue: (c) => c.scoreEnergie != null ? `${c.scoreEnergie}/20` : "\u2014", getNum: (c) => c.scoreEnergie, highlight: "high", isScore: true },
-  { label: "March\u00e9", group: "Scores", getValue: (c) => c.scoreMarche != null ? `${c.scoreMarche}/20` : "\u2014", getNum: (c) => c.scoreMarche, highlight: "high", isScore: true },
-  { label: "Confiance", group: "Scores", getValue: (c) => c.indiceConfiance != null ? `${Math.round(c.indiceConfiance)}%` : "\u2014", getNum: (c) => c.indiceConfiance, highlight: "high", isScore: true },
+  { label: "Score global", group: "Scores", getValue: (c) => c.scoreGlobal != null ? `${c.scoreGlobal}/100` : "—", getNum: (c) => c.scoreGlobal, highlight: "high", isScore: true },
+  { label: "Technique", group: "Scores", getValue: (c) => c.scoreTechnique != null ? `${c.scoreTechnique}/25` : "—", getNum: (c) => c.scoreTechnique, highlight: "high", isScore: true },
+  { label: "Risques", group: "Scores", getValue: (c) => c.scoreRisques != null ? `${c.scoreRisques}/30` : "—", getNum: (c) => c.scoreRisques, highlight: "high", isScore: true },
+  { label: "Gouvernance", group: "Scores", getValue: (c) => c.scoreGouvernance != null ? `${c.scoreGouvernance}/25` : "—", getNum: (c) => c.scoreGouvernance, highlight: "high", isScore: true },
+  { label: "Énergie", group: "Scores", getValue: (c) => c.scoreEnergie != null ? `${c.scoreEnergie}/20` : "—", getNum: (c) => c.scoreEnergie, highlight: "high", isScore: true },
+  { label: "Marché", group: "Scores", getValue: (c) => c.scoreMarche != null ? `${c.scoreMarche}/20` : "—", getNum: (c) => c.scoreMarche, highlight: "high", isScore: true },
+  { label: "Confiance", group: "Scores", getValue: (c) => c.indiceConfiance != null ? `${Math.round(c.indiceConfiance)}%` : "—", getNum: (c) => c.indiceConfiance, highlight: "high", isScore: true },
   // Gouvernance
-  { label: "Type syndic", group: "Gouvernance", getValue: (c) => c.typeSyndic || "\u2014", highlight: "none" },
-  { label: "Coop\u00e9ratif", group: "Gouvernance", getValue: (c) => c.syndicatCooperatif === "oui" ? "Oui" : c.syndicatCooperatif === "non" ? "Non" : "\u2014", highlight: "none" },
-  { label: "Plan de p\u00e9ril", group: "Gouvernance", getValue: (c) => c.coproDansPdp != null && c.coproDansPdp > 0 ? "Oui" : "Non", highlight: "none" },
-  { label: "R\u00e9sidence service", group: "Gouvernance", getValue: (c) => c.residenceService === "oui" ? "Oui" : c.residenceService === "non" ? "Non" : "\u2014", highlight: "none" },
+  { label: "Type syndic", group: "Gouvernance", getValue: (c) => c.typeSyndic || "—", highlight: "none" },
+  { label: "Coopératif", group: "Gouvernance", getValue: (c) => c.syndicatCooperatif === "oui" ? "Oui" : c.syndicatCooperatif === "non" ? "Non" : "—", highlight: "none" },
+  { label: "Plan de péril", group: "Gouvernance", getValue: (c) => c.coproDansPdp != null && c.coproDansPdp > 0 ? "Oui" : "Non", highlight: "none" },
+  { label: "Résidence service", group: "Gouvernance", getValue: (c) => c.residenceService === "oui" ? "Oui" : c.residenceService === "non" ? "Non" : "—", highlight: "none" },
   // Énergie
-  { label: "Classe DPE", group: "\u00c9nergie", getValue: (c) => c.dpeClasseMediane || "\u2014", highlight: "dpe" },
+  { label: "Classe DPE", group: "Énergie", getValue: (c) => c.dpeClasseMediane || "—", highlight: "dpe" },
   // Marché
-  { label: "Prix moyen/m\u00b2", group: "March\u00e9", getValue: (c) => c.marchePrixM2 != null ? `${fmtPrix(c.marchePrixM2)}/m\u00b2` : "\u2014", getNum: (c) => c.marchePrixM2, highlight: "none" },
-  { label: "\u00c9volution annuelle", group: "March\u00e9", getValue: (c) => fmtEvo(c.marcheEvolution), getNum: (c) => c.marcheEvolution, highlight: "high" },
-  { label: "Transactions secteur", group: "March\u00e9", getValue: (c) => c.marcheNbTransactions != null ? String(c.marcheNbTransactions) : "\u2014", getNum: (c) => c.marcheNbTransactions, highlight: "high" },
+  { label: "Prix moyen/m²", group: "Marché", getValue: (c) => c.marchePrixM2 != null ? `${fmtPrix(c.marchePrixM2)}/m²` : "—", getNum: (c) => c.marchePrixM2, highlight: "none" },
+  { label: "Évolution annuelle", group: "Marché", getValue: (c) => fmtEvo(c.marcheEvolution), getNum: (c) => c.marcheEvolution, highlight: "high" },
+  { label: "Transactions secteur", group: "Marché", getValue: (c) => c.marcheNbTransactions != null ? String(c.marcheNbTransactions) : "—", getNum: (c) => c.marcheNbTransactions, highlight: "high" },
 ];
 
 // ─── Export helpers ──────────────────────────────────────────────────────────
@@ -232,12 +232,12 @@ function CoproSearch({
         key={searchKey}
         onSelect={handleSelect}
         onSubmit={handleSubmit}
-        placeholder="Rechercher une copropri\u00e9t\u00e9 \u00e0 ajouter..."
+        placeholder="Rechercher une copropriété à ajouter..."
       />
       {showResults && results.length > 0 && (
         <div className="absolute z-50 mt-2 w-full rounded-xl border border-slate-200 bg-white shadow-lg">
           <p className="px-4 py-2 text-xs text-slate-400">
-            S\u00e9lectionnez une copropri\u00e9t\u00e9
+            Sélectionnez une copropriété
           </p>
           {results.map((r) => {
             const disabled = !r.slug || existingSlugs.has(r.slug);
@@ -260,15 +260,15 @@ function CoproSearch({
                 </span>
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-medium">
-                    {formatCoproName(r.nomUsage || r.adresse || "Copropri\u00e9t\u00e9")}
+                    {formatCoproName(r.nomUsage || r.adresse || "Copropriété")}
                   </p>
                   <p className="text-xs text-slate-400">
                     {r.codePostal} {r.commune}
-                    {r.nbLots != null && ` \u2022 ${r.nbLots} lots`}
+                    {r.nbLots != null && ` • ${r.nbLots} lots`}
                   </p>
                 </div>
                 {disabled && r.slug && existingSlugs.has(r.slug) && (
-                  <span className="text-xs text-slate-400">D\u00e9j\u00e0 ajout\u00e9</span>
+                  <span className="text-xs text-slate-400">Déjà ajouté</span>
                 )}
               </button>
             );
@@ -396,10 +396,10 @@ function ComparateurPage() {
           </nav>
 
           <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">
-            Comparer des copropri&eacute;t&eacute;s
+            Comparer des copropriétés
           </h1>
           <p className="mt-2 text-sm text-slate-500">
-            S&eacute;lectionnez {isFree ? "2" : "2 \u00e0 5"} copropri&eacute;t&eacute;s pour les comparer c&ocirc;te &agrave; c&ocirc;te.
+            Sélectionnez {isFree ? "2" : "2 à 5"} copropriétés pour les comparer côte à côte.
           </p>
 
           {/* Selected copros chips + search */}
@@ -433,7 +433,7 @@ function ComparateurPage() {
               ))}
               {copros.length === 0 && !loading && (
                 <p className="text-sm text-slate-400">
-                  Aucune copropri&eacute;t&eacute; s&eacute;lectionn&eacute;e
+                  Aucune copropriété sélectionnée
                 </p>
               )}
             </div>
@@ -450,9 +450,9 @@ function ComparateurPage() {
               <div className="flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-4 py-2.5 text-sm text-amber-800">
                 <Lock className="h-4 w-4 shrink-0" />
                 <span>
-                  Passez Pro pour comparer jusqu&apos;&agrave; 5 copropri&eacute;t&eacute;s &mdash;{" "}
+                  Passez Pro pour comparer jusqu'à 5 copropriétés —{" "}
                   <Link href="/tarifs" className="font-semibold underline hover:text-amber-900">
-                    29&euro;/mois
+                    29€/mois
                   </Link>
                 </span>
               </div>
@@ -528,7 +528,7 @@ function ComparateurPage() {
                   <thead>
                     <tr className="border-b border-slate-100">
                       <th className="sticky left-0 z-10 bg-white px-4 py-3 text-left text-xs font-medium text-slate-400">
-                        Crit&egrave;re
+                        Critère
                       </th>
                       {copros.map((c) => (
                         <th key={c.id} className="px-3 py-3 text-center">
@@ -545,7 +545,7 @@ function ComparateurPage() {
                   <tbody>
                     {groups.map(([groupName, rows], gi) => {
                       const isScoreGroup = groupName === "Scores";
-                      const isBlurred = isFree && !isScoreGroup && groupName !== "Identit\u00e9";
+                      const isBlurred = isFree && !isScoreGroup && groupName !== "Identité";
 
                       return (
                         <GroupRows
@@ -564,7 +564,7 @@ function ComparateurPage() {
 
               {/* Disclaimer */}
               <p className="mt-3 text-[11px] text-slate-400">
-                Donn&eacute;es issues du RNIC, DVF, DPE ADEME. Les meilleurs scores sont surlign&eacute;s en vert, les moins bons en rouge.
+                Données issues du RNIC, DVF, DPE ADEME. Les meilleurs scores sont surlignés en vert, les moins bons en rouge.
               </p>
             </>
           )}
@@ -574,7 +574,7 @@ function ComparateurPage() {
             <div className="mt-8 rounded-xl border border-dashed border-slate-300 bg-white px-6 py-12 text-center">
               <Plus className="mx-auto mb-3 h-8 w-8 text-slate-300" />
               <p className="text-sm text-slate-500">
-                Ajoutez au moins une autre copropri&eacute;t&eacute; pour lancer la comparaison.
+                Ajoutez au moins une autre copropriété pour lancer la comparaison.
               </p>
             </div>
           )}
@@ -583,10 +583,10 @@ function ComparateurPage() {
             <div className="mt-8 rounded-xl border border-dashed border-slate-300 bg-white px-6 py-12 text-center">
               <Plus className="mx-auto mb-3 h-8 w-8 text-slate-300" />
               <p className="font-medium text-slate-600">
-                Commencez par rechercher une copropri&eacute;t&eacute;
+                Commencez par rechercher une copropriété
               </p>
               <p className="mt-1 text-sm text-slate-400">
-                Utilisez la barre de recherche ci-dessus pour ajouter des copropri&eacute;t&eacute;s au comparateur.
+                Utilisez la barre de recherche ci-dessus pour ajouter des copropriétés au comparateur.
               </p>
             </div>
           )}
@@ -644,7 +644,7 @@ function GroupRows({
                 className="flex items-center gap-1.5 rounded-full bg-white px-4 py-2 text-sm font-medium text-teal-700 shadow-sm transition-colors hover:text-teal-900"
               >
                 <Lock className="h-3.5 w-3.5" />
-                Passez Pro &mdash; 29&euro;/mois
+                Passez Pro — 29€/mois
               </Link>
             </div>
           </td>
@@ -660,8 +660,8 @@ const DIMENSION_MAX: Record<string, number> = {
   Technique: 25,
   Risques: 30,
   Gouvernance: 25,
-  "\u00c9nergie": 20,
-  "March\u00e9": 20,
+  "Énergie": 20,
+  "Marché": 20,
 };
 
 function dimensionScoreColor(label: string, score: number | null): string {

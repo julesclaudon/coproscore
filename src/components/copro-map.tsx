@@ -50,7 +50,7 @@ export default function CoproMap({
       style={{ height: "100%", minHeight: 300 }}
     >
       <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        attribution='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
       <Marker position={[latitude, longitude]} icon={mainIcon}>
@@ -84,7 +84,7 @@ export default function CoproMap({
                 href={`/copropriete/${n.slug ?? n.id}`}
                 style={{ color: "#0D9488", textDecoration: "underline", fontSize: 12 }}
               >
-                Voir la fiche &rarr;
+                Voir la fiche →
               </a>
             </div>
           </Popup>

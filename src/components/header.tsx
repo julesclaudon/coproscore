@@ -140,7 +140,7 @@ export function Header({ variant = "default", rightSlot }: HeaderProps) {
                   <button
                     onClick={() => signOut({ callbackUrl: "/" })}
                     className="flex items-center gap-1 text-slate-500 transition-colors hover:text-red-600"
-                    title="Se d&eacute;connecter"
+                    title="Se déconnecter"
                   >
                     <LogOut className="h-4 w-4" />
                   </button>
@@ -242,7 +242,7 @@ export function Header({ variant = "default", rightSlot }: HeaderProps) {
                         className="flex min-h-[44px] w-full items-center gap-3 px-5 text-sm font-medium text-red-600 transition-colors hover:bg-red-50"
                       >
                         <LogOut className="h-4 w-4 shrink-0" />
-                        Se d&eacute;connecter
+                        Se déconnecter
                       </button>
                     </>
                   ) : (
@@ -261,7 +261,7 @@ export function Header({ variant = "default", rightSlot }: HeaderProps) {
                         className="flex min-h-[44px] items-center gap-3 px-5 text-sm font-medium text-teal-700 transition-colors hover:bg-teal-50"
                       >
                         <User className="h-4 w-4 shrink-0" />
-                        Cr&eacute;er un compte
+                        Créer un compte
                       </Link>
                     </>
                   )

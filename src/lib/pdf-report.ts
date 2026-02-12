@@ -32,8 +32,8 @@ const DIM_COLORS: Record<string, string> = {
   Technique: "#0ea5e9",
   Risques: "#8b5cf6",
   Gouvernance: "#6366f1",
-  "\u00c9nergie": "#f59e0b",
-  "March\u00e9": TEAL,
+  "Énergie": "#f59e0b",
+  "Marché": TEAL,
 };
 
 const EVENT_COLORS: Record<string, string> = {
@@ -58,7 +58,7 @@ const DPE_COLORS: Record<string, string> = {
 const EVENT_LABELS: Record<string, string> = {
   construction: "Construction",
   administratif: "Administratif",
-  energie: "\u00c9nergie",
+  energie: "Énergie",
   transaction: "Transaction",
   risque: "Risque",
   gouvernance: "Gouvernance",
@@ -134,7 +134,7 @@ type Doc = any;
 
 /** Replace U+202F (narrow no-break space) and U+00A0 (no-break space) that fr-FR locale inserts — Helvetica lacks U+202F glyph */
 function sanitize(s: string): string {
-  return s.replace(/[\u202F\u00A0]/g, " ");
+  return s.replace(/[  ]/g, " ");
 }
 
 function sc(score: number): string {
@@ -150,7 +150,7 @@ function sl(score: number): string {
 }
 
 function fmtPrix(n: number): string {
-  return sanitize(Math.round(n).toLocaleString("fr-FR")) + " \u20ac";
+  return sanitize(Math.round(n).toLocaleString("fr-FR")) + " €";
 }
 
 function fmtNum(n: number): string {
@@ -397,7 +397,7 @@ function drawTable(
     doc.font("Helvetica").fontSize(FS).fillColor(TEXT);
     let x = M;
     for (let j = 0; j < columns.length; j++) {
-      doc.text(rows[i][j] || "\u2014", x + PAD, y + 4, {
+      doc.text(rows[i][j] || "—", x + PAD, y + 4, {
         width: columns[j].width - 2 * PAD,
         align: columns[j].align || "left",
         lineBreak: false,
@@ -644,22 +644,22 @@ function renderCover(doc: Doc, data: ReportInput) {
   const stats: { label: string; value: string; accent?: string }[] = [
     {
       label: "Lots",
-      value: data.nbTotalLots != null ? fmtNum(data.nbTotalLots) : "\u2014",
+      value: data.nbTotalLots != null ? fmtNum(data.nbTotalLots) : "—",
     },
     {
       label: "Syndic",
       value: data.typeSyndic
         ? data.typeSyndic.charAt(0).toUpperCase() +
           data.typeSyndic.slice(1).toLowerCase()
-        : "\u2014",
+        : "—",
     },
     {
       label: "Construction",
-      value: formatPeriod(data.periodeConstruction) || "\u2014",
+      value: formatPeriod(data.periodeConstruction) || "—",
     },
     {
       label: "DPE",
-      value: data.dpeClasseMediane || "\u2014",
+      value: data.dpeClasseMediane || "—",
       accent: data.dpeClasseMediane
         ? DPE_COLORS[data.dpeClasseMediane]
         : undefined,
@@ -712,9 +712,9 @@ function renderCover(doc: Doc, data: ReportInput) {
     const shortLabel =
       dim.label === "Gouvernance"
         ? "Gouv."
-        : dim.label === "\u00c9nergie"
-          ? "\u00c9ner."
-          : dim.label === "March\u00e9"
+        : dim.label === "Énergie"
+          ? "Éner."
+          : dim.label === "Marché"
             ? "March."
             : dim.label;
     doc.font("Helvetica").fontSize(7).fillColor(TEXT_SEC);
@@ -730,7 +730,7 @@ function renderCover(doc: Doc, data: ReportInput) {
 
     // Score
     const scoreText =
-      dim.score != null ? `${dim.score}/${dim.max}` : "\u2014";
+      dim.score != null ? `${dim.score}/${dim.max}` : "—";
     doc.font("Helvetica-Bold").fontSize(7).fillColor(TEXT);
     doc.text(scoreText, dx, dimStripY + 22, {
       width: dimSlotW,
@@ -744,7 +744,7 @@ function renderCover(doc: Doc, data: ReportInput) {
     .font("Helvetica")
     .fontSize(9)
     .fillColor(TEXT_MUTED)
-    .text(`Rapport g\u00e9n\u00e9r\u00e9 le ${fmtDate()}`, 0, 720, {
+    .text(`Rapport généré le ${fmtDate()}`, 0, 720, {
       width: PW,
       align: "center",
     });
@@ -753,7 +753,7 @@ function renderCover(doc: Doc, data: ReportInput) {
     .fontSize(8)
     .fillColor(TEXT_MUTED)
     .text(
-      "coproscore.fr \u2014 Donn\u00e9es issues du RNIC, DVF, DPE ADEME",
+      "coproscore.fr — Données issues du RNIC, DVF, DPE ADEME",
       0,
       738,
       { width: PW, align: "center" }
@@ -763,7 +763,7 @@ function renderCover(doc: Doc, data: ReportInput) {
 // ─── Score détaillé ─────────────────────────────────────────────────────────
 
 function renderScoreDetail(doc: Doc, data: ReportInput, startY: number): number {
-  let y = sectionTitle(doc, "Score d\u00e9taill\u00e9", startY);
+  let y = sectionTitle(doc, "Score détaillé", startY);
 
   for (const dim of data.dimensions) {
     if (y + 60 > CB) {
@@ -780,7 +780,7 @@ function renderScoreDetail(doc: Doc, data: ReportInput, startY: number): number 
     doc.text(dim.label, M, y, { lineBreak: false });
 
     const scoreText =
-      dim.score != null ? `${dim.score} / ${dim.max}` : "\u2014";
+      dim.score != null ? `${dim.score} / ${dim.max}` : "—";
     doc
       .font("Helvetica-Bold")
       .fontSize(10)
@@ -812,7 +812,7 @@ function renderAnalyse(doc: Doc, data: ReportInput, startY: number): number {
 
   doc.font("Helvetica").fontSize(7.5).fillColor(TEXT_MUTED);
   doc.text(
-    "G\u00e9n\u00e9r\u00e9e par intelligence artificielle \u00e0 partir des donn\u00e9es publiques",
+    "Générée par intelligence artificielle à partir des données publiques",
     M,
     y,
     { width: CW }
@@ -870,7 +870,7 @@ function renderAnalyse(doc: Doc, data: ReportInput, startY: number): number {
   // Date
   y = ensureSpace(doc, y, 16);
   doc.font("Helvetica").fontSize(7).fillColor(TEXT_MUTED);
-  doc.text(`Analyse g\u00e9n\u00e9r\u00e9e le ${fmtDate()}`, M, y, {
+  doc.text(`Analyse générée le ${fmtDate()}`, M, y, {
     width: CW,
   });
   y += 12;
@@ -920,7 +920,7 @@ function renderEstimation(
 
   doc.font("Helvetica").fontSize(7.5).fillColor(TEXT_MUTED);
   doc.text(
-    "Fourchettes bas\u00e9es sur les moyennes nationales ANAH/ADEME. Ne remplace pas un devis professionnel.",
+    "Fourchettes basées sur les moyennes nationales ANAH/ADEME. Ne remplace pas un devis professionnel.",
     M,
     y,
     { width: CW }
@@ -955,11 +955,11 @@ function renderEstimation(
   doc.roundedRect(M, y, CW, 44, 5).fillAndStroke(TEAL_50, TEAL);
 
   doc.font("Helvetica-Bold").fontSize(10).fillColor(TEXT);
-  doc.text("Total estim\u00e9", M + 12, y + 8, { lineBreak: false });
+  doc.text("Total estimé", M + 12, y + 8, { lineBreak: false });
 
   doc.font("Helvetica-Bold").fontSize(12).fillColor(TEAL);
   doc.text(
-    `${fmtPrix(est.totalMin)} \u2014 ${fmtPrix(est.totalMax)}`,
+    `${fmtPrix(est.totalMin)} — ${fmtPrix(est.totalMax)}`,
     M + 12,
     y + 8,
     { width: CW - 24, align: "right" }
@@ -971,7 +971,7 @@ function renderEstimation(
     const perMax = Math.round(est.totalMax / data.nbLotsHabitation);
     doc.font("Helvetica").fontSize(7.5).fillColor(TEXT_SEC);
     doc.text(
-      `soit ${fmtPrix(perMin)} \u2014 ${fmtPrix(perMax)} par lot`,
+      `soit ${fmtPrix(perMin)} — ${fmtPrix(perMax)} par lot`,
       M + 12,
       y + 26,
       { width: CW - 24, align: "right" }
@@ -981,10 +981,10 @@ function renderEstimation(
   // Fiabilité
   const fiabLabel =
     est.fiabilite === "haute"
-      ? "Fiabilit\u00e9 haute (DPE + p\u00e9riode)"
+      ? "Fiabilité haute (DPE + période)"
       : est.fiabilite === "moyenne"
-        ? "Fiabilit\u00e9 moyenne (p\u00e9riode seule)"
-        : "Donn\u00e9es insuffisantes";
+        ? "Fiabilité moyenne (période seule)"
+        : "Données insuffisantes";
   const fiabColor =
     est.fiabilite === "haute"
       ? GREEN
@@ -1001,7 +1001,7 @@ function renderEstimation(
   y = ensureSpace(doc, y, 14);
   doc.font("Helvetica").fontSize(7).fillColor(TEXT_MUTED);
   doc.text(
-    "Ces estimations sont indicatives et bas\u00e9es sur des moyennes nationales.",
+    "Ces estimations sont indicatives et basées sur des moyennes nationales.",
     M,
     y,
     { width: CW }
@@ -1037,14 +1037,14 @@ function renderTimeline(
     const yearRange =
       eDate.getFullYear() === lDate.getFullYear()
         ? lDate.getFullYear().toString()
-        : `${eDate.getFullYear()}\u2013${lDate.getFullYear()}`;
+        : `${eDate.getFullYear()}–${lDate.getFullYear()}`;
 
     const summaryEvent: TimelineEvent = {
       date: latest.date,
       sortDate: latest.sortDate,
       type: "transaction",
-      titre: `${txEvents.length} transactions immobili\u00e8res`,
-      description: `Ventes enregistr\u00e9es dans un rayon de 100 m (${yearRange})`,
+      titre: `${txEvents.length} transactions immobilières`,
+      description: `Ventes enregistrées dans un rayon de 100 m (${yearRange})`,
       dateLabel: yearRange,
     };
     displayEvents = [...otherEvents, summaryEvent].sort(
@@ -1148,7 +1148,7 @@ function renderMarket(
   data: ReportInput,
   startY: number
 ): number {
-  let y = sectionTitle(doc, "March\u00e9 immobilier", startY);
+  let y = sectionTitle(doc, "Marché immobilier", startY);
 
   // Stat cards
   if (data.marchePrixM2 != null) {
@@ -1162,7 +1162,7 @@ function renderMarket(
       y,
       cardW,
       cardH,
-      "Prix moyen / m\u00b2",
+      "Prix moyen / m²",
       `${fmtPrix(data.marchePrixM2)}`,
       TEAL
     );
@@ -1175,7 +1175,7 @@ function renderMarket(
         y,
         cardW,
         cardH,
-        "\u00c9volution annuelle",
+        "Évolution annuelle",
         fmtEvo(data.marcheEvolution),
         evoColor
       );
@@ -1203,8 +1203,8 @@ function renderMarket(
       );
       const compText =
         diff >= 0
-          ? `+${diff} % par rapport \u00e0 la moyenne de ${data.communeLabel} (${fmtPrix(data.communeAvgPrix)}/m\u00b2)`
-          : `${diff} % par rapport \u00e0 la moyenne de ${data.communeLabel} (${fmtPrix(data.communeAvgPrix)}/m\u00b2)`;
+          ? `+${diff} % par rapport à la moyenne de ${data.communeLabel} (${fmtPrix(data.communeAvgPrix)}/m²)`
+          : `${diff} % par rapport à la moyenne de ${data.communeLabel} (${fmtPrix(data.communeAvgPrix)}/m²)`;
       doc.font("Helvetica").fontSize(8).fillColor(TEXT_SEC);
       doc.text(compText, M, y, { width: CW });
       y += 14;
@@ -1216,7 +1216,7 @@ function renderMarket(
     y += 4;
     y = ensureSpace(doc, y, 120);
     doc.font("Helvetica-Bold").fontSize(9.5).fillColor(TEXT);
-    doc.text("\u00c9volution trimestrielle du prix / m\u00b2", M, y, {
+    doc.text("Évolution trimestrielle du prix / m²", M, y, {
       width: CW,
     });
     y += 14;
@@ -1230,7 +1230,7 @@ function renderMarket(
     y = ensureSpace(doc, y, 60);
     doc.font("Helvetica-Bold").fontSize(10).fillColor(TEXT);
     doc.text(
-      `Derni\u00e8res transactions (${data.transactions.length})`,
+      `Dernières transactions (${data.transactions.length})`,
       M,
       y,
       { width: CW }
@@ -1243,7 +1243,7 @@ function renderMarket(
       { label: "Surface", width: 55, align: "right" },
       { label: "Prix", width: 90, align: "right" },
       {
-        label: "Prix/m\u00b2",
+        label: "Prix/m²",
         width: CW - 60 - 185 - 55 - 90,
         align: "right",
       },
@@ -1251,10 +1251,10 @@ function renderMarket(
 
     const rows = data.transactions.map((t) => [
       t.date,
-      t.adresse || "\u2014",
-      `${Math.round(t.surface)} m\u00b2`,
+      t.adresse || "—",
+      `${Math.round(t.surface)} m²`,
       fmtPrix(t.prix),
-      `${fmtPrix(t.prixM2)}/m\u00b2`,
+      `${fmtPrix(t.prixM2)}/m²`,
     ]);
 
     y = drawTable(doc, cols, rows, y);
@@ -1264,7 +1264,7 @@ function renderMarket(
   y = ensureSpace(doc, y, 16);
   doc.font("Helvetica").fontSize(7).fillColor(TEXT_MUTED);
   doc.text(
-    "Source : DVF (demandes de valeurs fonci\u00e8res), rayon 500 m, 3 derni\u00e8res ann\u00e9es",
+    "Source : DVF (demandes de valeurs foncières), rayon 500 m, 3 dernières années",
     M,
     y + 6,
     { width: CW }
@@ -1285,12 +1285,12 @@ function renderNearby(
 
   let y = sectionTitle(
     doc,
-    `Copropri\u00e9t\u00e9s \u00e0 proximit\u00e9 (${data.nearby.length})`,
+    `Copropriétés à proximité (${data.nearby.length})`,
     startY
   );
 
   doc.font("Helvetica").fontSize(8).fillColor(TEXT_SEC);
-  doc.text("Dans un rayon de 500 m, tri\u00e9es par distance", M, y, {
+  doc.text("Dans un rayon de 500 m, triées par distance", M, y, {
     width: CW,
   });
   y += 14;
@@ -1319,7 +1319,7 @@ function renderNearby(
         drawScoreBadge(doc, cx + 6, y + 6, n.score);
       } else {
         doc.font("Helvetica").fontSize(7).fillColor(TEXT_MUTED);
-        doc.text("\u2014", cx + 6, y + 9, { width: 34, align: "center" });
+        doc.text("—", cx + 6, y + 9, { width: 34, align: "center" });
       }
 
       // Name
@@ -1336,7 +1336,7 @@ function renderNearby(
       if (n.nbLots != null) infoParts.push(`${n.nbLots} lots`);
       infoParts.push(`${Math.round(n.distance)} m`);
       doc.font("Helvetica").fontSize(6.5).fillColor(TEXT_SEC);
-      doc.text(infoParts.join(" \u00b7 "), nameX, y + 16, {
+      doc.text(infoParts.join(" · "), nameX, y + 16, {
         width: nameW,
         lineBreak: false,
       });
@@ -1360,19 +1360,19 @@ function renderDisclaimer(
   // Keep the entire block together: title (30) + 8 text lines × 13 + 2 gaps × 8 + link (18) ≈ 150px
   let y = ensureSpace(doc, startY, 155);
 
-  y = sectionTitle(doc, "Mentions l\u00e9gales", y);
+  y = sectionTitle(doc, "Mentions légales", y);
 
   const lines = [
-    "Ce rapport est g\u00e9n\u00e9r\u00e9 automatiquement \u00e0 partir de donn\u00e9es publiques ouvertes.",
+    "Ce rapport est généré automatiquement à partir de données publiques ouvertes.",
     "Il ne constitue pas un diagnostic technique global (DTG) ni un avis professionnel.",
     "",
     "Sources :",
-    "\u2014  RNIC \u2014 Registre National d'Immatriculation des Copropri\u00e9t\u00e9s",
-    "\u2014  DVF \u2014 Demandes de Valeurs Fonci\u00e8res (data.gouv.fr)",
-    "\u2014  DPE ADEME \u2014 Diagnostics de Performance \u00c9nerg\u00e9tique",
-    "\u2014  BAN \u2014 Base Adresse Nationale",
+    "—  RNIC — Registre National d'Immatriculation des Copropriétés",
+    "—  DVF — Demandes de Valeurs Foncières (data.gouv.fr)",
+    "—  DPE ADEME — Diagnostics de Performance Énergétique",
+    "—  BAN — Base Adresse Nationale",
     "",
-    `\u00a9 CoproScore ${new Date().getFullYear()} \u2014 coproscore.fr`,
+    `© CoproScore ${new Date().getFullYear()} — coproscore.fr`,
   ];
 
   doc.font("Helvetica").fontSize(8.5).fillColor(TEXT_SEC);
@@ -1410,7 +1410,7 @@ export async function generatePdfReport(
       bufferPages: true,
       margins: { top: M, bottom: 0, left: M, right: M },
       info: {
-        Title: `Rapport CoproScore \u2014 ${input.displayName}`,
+        Title: `Rapport CoproScore — ${input.displayName}`,
         Author: "CoproScore",
         Creator: "coproscore.fr",
       },

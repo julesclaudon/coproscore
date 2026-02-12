@@ -79,10 +79,10 @@ export default function InscriptionPage() {
       <main className="flex flex-1 items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
           <h1 className="text-center text-2xl font-bold text-slate-900">
-            Cr&eacute;er un compte
+            Créer un compte
           </h1>
           <p className="mt-2 text-center text-sm text-slate-500">
-            Acc&eacute;dez gratuitement aux scores d&eacute;taill&eacute;s
+            Accédez gratuitement aux scores détaillés
           </p>
 
           <form onSubmit={handleSubmit} className="mt-8 space-y-4">
@@ -125,7 +125,7 @@ export default function InscriptionPage() {
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
-              <p className="mt-1 text-xs text-slate-400">Minimum 8 caract&egrave;res</p>
+              <p className="mt-1 text-xs text-slate-400">Minimum 8 caractères</p>
             </div>
             <div>
               <label htmlFor="confirm" className="text-sm font-medium text-slate-700">
@@ -169,12 +169,12 @@ export default function InscriptionPage() {
               ) : (
                 <UserPlus className="h-4 w-4" />
               )}
-              Cr&eacute;er mon compte
+              Créer mon compte
             </Button>
           </form>
 
           <p className="mt-6 text-center text-sm text-slate-500">
-            D&eacute;j&agrave; un compte ?{" "}
+            Déjà un compte ?{" "}
             <Link
               href="/connexion"
               className="font-medium text-teal-700 hover:text-teal-900"

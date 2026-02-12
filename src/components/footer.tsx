@@ -11,20 +11,20 @@ export function Footer() {
               Copro<span className="text-teal-400">Score</span>
             </Link>
             <p className="mt-3 text-sm leading-relaxed text-slate-400">
-              Score de sant&eacute; pour les 619 402 copropri&eacute;t&eacute;s
-              en France, enti&egrave;rement bas&eacute; sur les donn&eacute;es
+              Score de santé pour les 619 402 copropriétés
+              en France, entièrement basé sur les données
               publiques ouvertes.
             </p>
           </div>
 
           {/* Sources */}
           <div>
-            <h4 className="mb-3 text-sm font-semibold text-white">Sources de donn&eacute;es</h4>
+            <h4 className="mb-3 text-sm font-semibold text-white">Sources de données</h4>
             <ul className="space-y-2 text-sm text-slate-400">
-              <li>RNIC &mdash; Registre National des Copropri&eacute;t&eacute;s</li>
-              <li>DVF &mdash; Demandes de Valeurs Fonci&egrave;res</li>
-              <li>ADEME &mdash; Diagnostics &Eacute;nerg&eacute;tiques</li>
-              <li>BAN &mdash; Base Adresse Nationale</li>
+              <li>RNIC — Registre National des Copropriétés</li>
+              <li>DVF — Demandes de Valeurs Foncières</li>
+              <li>ADEME — Diagnostics Énergétiques</li>
+              <li>BAN — Base Adresse Nationale</li>
             </ul>
           </div>
 
@@ -34,7 +34,7 @@ export function Footer() {
             <ul className="space-y-2 text-sm text-slate-400">
               <li>
                 <Link href="/" className="transition-colors hover:text-teal-400 hover:underline">
-                  Rechercher une copropri&eacute;t&eacute;
+                  Rechercher une copropriété
                 </Link>
               </li>
               <li>
@@ -69,7 +69,7 @@ export function Footer() {
               </li>
               <li>
                 <Link href="/methodologie" className="transition-colors hover:text-teal-400 hover:underline">
-                  M&eacute;thodologie
+                  Méthodologie
                 </Link>
               </li>
               <li>
@@ -82,11 +82,11 @@ export function Footer() {
 
           {/* Légal */}
           <div>
-            <h4 className="mb-3 text-sm font-semibold text-white">L&eacute;gal</h4>
+            <h4 className="mb-3 text-sm font-semibold text-white">Légal</h4>
             <ul className="space-y-2 text-sm text-slate-400">
               <li>
                 <Link href="/mentions-legales" className="transition-colors hover:text-teal-400 hover:underline">
-                  Mentions l&eacute;gales
+                  Mentions légales
                 </Link>
               </li>
               <li>
@@ -96,18 +96,18 @@ export function Footer() {
               </li>
               <li>
                 <Link href="/confidentialite" className="transition-colors hover:text-teal-400 hover:underline">
-                  Confidentialit&eacute;
+                  Confidentialité
                 </Link>
               </li>
-              <li>Les scores sont calcul&eacute;s &agrave; titre indicatif</li>
+              <li>Les scores sont calculés à titre indicatif</li>
               <li>Pas de conseil financier ou juridique</li>
             </ul>
           </div>
         </div>
 
         <div className="mt-10 border-t border-slate-800 pt-6 text-center text-xs text-slate-500">
-          &copy; {new Date().getFullYear()} CoproScore. Tous droits r&eacute;serv&eacute;s.
-          Donn&eacute;es publiques issues du RNIC, DVF et ADEME.
+          © {new Date().getFullYear()} CoproScore. Tous droits réservés.
+          Données publiques issues du RNIC, DVF et ADEME.
         </div>
       </div>
     </footer>

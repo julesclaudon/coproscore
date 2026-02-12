@@ -29,10 +29,10 @@ export default function CgvPage() {
             <span className="text-slate-600">CGV</span>
           </nav>
           <h1 className="text-3xl font-bold text-slate-900 sm:text-4xl">
-            Conditions G&eacute;n&eacute;rales de Vente
+            Conditions Générales de Vente
           </h1>
           <p className="mt-3 text-base text-slate-500">
-            Derni&egrave;re mise &agrave; jour : f&eacute;vrier 2026
+            Dernière mise à jour : février 2026
           </p>
         </div>
       </section>
@@ -43,37 +43,37 @@ export default function CgvPage() {
             {/* Article 1 — Objet */}
             <section>
               <h2 className="mb-4 text-xl font-bold text-slate-900">
-                Article 1 &mdash; Objet
+                Article 1 — Objet
               </h2>
               <div className="space-y-3 text-base leading-relaxed text-slate-600">
                 <p>
-                  Les pr&eacute;sentes Conditions G&eacute;n&eacute;rales de
-                  Vente (CGV) r&eacute;gissent les ventes de services
-                  propos&eacute;s par CoproScore, &eacute;dit&eacute; par Jules
-                  Claudon &mdash; ComKeys, entrepreneur individuel, &agrave;
+                  Les présentes Conditions Générales de
+                  Vente (CGV) régissent les ventes de services
+                  proposés par CoproScore, édité par Jules
+                  Claudon — ComKeys, entrepreneur individuel, à
                   tout utilisateur du site{" "}
-                  <strong>coproscore.fr</strong> (ci-apr&egrave;s
-                  &laquo;&nbsp;le Client&nbsp;&raquo;).
+                  <strong>coproscore.fr</strong> (ci-après
+                  « le Client »).
                 </p>
-                <p>Les services propos&eacute;s sont :</p>
+                <p>Les services proposés sont :</p>
                 <ul className="list-disc space-y-1 pl-6">
                   <li>
-                    <strong>Rapport PDF unitaire</strong> &mdash; analyse
-                    d&eacute;taill&eacute;e d&apos;une copropri&eacute;t&eacute;
+                    <strong>Rapport PDF unitaire</strong> — analyse
+                    détaillée d'une copropriété
                     au format PDF, au prix de{" "}
-                    <strong>4,90&nbsp;&euro; TTC</strong> l&apos;unit&eacute;.
+                    <strong>4,90 € TTC</strong> l'unité.
                   </li>
                   <li>
-                    <strong>Abonnement Pro</strong> &mdash; acc&egrave;s
-                    illimit&eacute; aux fonctionnalit&eacute;s avanc&eacute;es
-                    (rapports PDF, export de donn&eacute;es, comparateur
-                    &eacute;tendu, alertes), au prix de{" "}
-                    <strong>29&nbsp;&euro;/mois TTC</strong>.
+                    <strong>Abonnement Pro</strong> — accès
+                    illimité aux fonctionnalités avancées
+                    (rapports PDF, export de données, comparateur
+                    étendu, alertes), au prix de{" "}
+                    <strong>29 €/mois TTC</strong>.
                   </li>
                 </ul>
                 <p>
-                  Toute commande implique l&apos;acceptation sans r&eacute;serve
-                  des pr&eacute;sentes CGV.
+                  Toute commande implique l'acceptation sans réserve
+                  des présentes CGV.
                 </p>
               </div>
             </section>
@@ -81,13 +81,13 @@ export default function CgvPage() {
             {/* Article 2 — Prix */}
             <section>
               <h2 className="mb-4 text-xl font-bold text-slate-900">
-                Article 2 &mdash; Prix
+                Article 2 — Prix
               </h2>
               <div className="space-y-3 text-base leading-relaxed text-slate-600">
                 <p>
-                  Les prix sont indiqu&eacute;s en euros, toutes taxes comprises
-                  (TTC). CoproScore se r&eacute;serve le droit de modifier ses
-                  tarifs &agrave; tout moment. Les services sont factur&eacute;s
+                  Les prix sont indiqués en euros, toutes taxes comprises
+                  (TTC). CoproScore se réserve le droit de modifier ses
+                  tarifs à tout moment. Les services sont facturés
                   au prix en vigueur au moment de la validation de la commande.
                 </p>
               </div>
@@ -96,18 +96,18 @@ export default function CgvPage() {
             {/* Article 3 — Paiement */}
             <section>
               <h2 className="mb-4 text-xl font-bold text-slate-900">
-                Article 3 &mdash; Paiement
+                Article 3 — Paiement
               </h2>
               <div className="space-y-3 text-base leading-relaxed text-slate-600">
                 <p>
-                  Le paiement s&apos;effectue par carte bancaire de
-                  mani&egrave;re s&eacute;curis&eacute;e via la plateforme{" "}
+                  Le paiement s'effectue par carte bancaire de
+                  manière sécurisée via la plateforme{" "}
                   <strong>Stripe</strong>. CoproScore ne stocke aucune
-                  donn&eacute;e bancaire.
+                  donnée bancaire.
                 </p>
                 <p>
-                  Pour l&apos;abonnement Pro, le pr&eacute;l&egrave;vement est
-                  r&eacute;current et intervient chaque mois &agrave; la date
+                  Pour l'abonnement Pro, le prélèvement est
+                  récurrent et intervient chaque mois à la date
                   anniversaire de la souscription.
                 </p>
               </div>
@@ -116,22 +116,22 @@ export default function CgvPage() {
             {/* Article 4 — Livraison */}
             <section>
               <h2 className="mb-4 text-xl font-bold text-slate-900">
-                Article 4 &mdash; Livraison
+                Article 4 — Livraison
               </h2>
               <div className="space-y-3 text-base leading-relaxed text-slate-600">
                 <p>
                   La livraison des services est{" "}
-                  <strong>imm&eacute;diate</strong> :
+                  <strong>immédiate</strong> :
                 </p>
                 <ul className="list-disc space-y-1 pl-6">
                   <li>
-                    <strong>Rapport PDF</strong> : t&eacute;l&eacute;chargement
-                    disponible instantan&eacute;ment apr&egrave;s paiement.
+                    <strong>Rapport PDF</strong> : téléchargement
+                    disponible instantanément après paiement.
                   </li>
                   <li>
-                    <strong>Abonnement Pro</strong> : acc&egrave;s imm&eacute;diat
-                    &agrave; l&apos;ensemble des fonctionnalit&eacute;s Pro
-                    d&egrave;s la confirmation du paiement.
+                    <strong>Abonnement Pro</strong> : accès immédiat
+                    à l'ensemble des fonctionnalités Pro
+                    dès la confirmation du paiement.
                   </li>
                 </ul>
               </div>
@@ -140,17 +140,17 @@ export default function CgvPage() {
             {/* Article 5 — Droit de rétractation */}
             <section>
               <h2 className="mb-4 text-xl font-bold text-slate-900">
-                Article 5 &mdash; Droit de r&eacute;tractation
+                Article 5 — Droit de rétractation
               </h2>
               <div className="space-y-3 text-base leading-relaxed text-slate-600">
                 <p>
-                  <strong>Abonnement Pro</strong> : conform&eacute;ment aux
+                  <strong>Abonnement Pro</strong> : conformément aux
                   articles L221-18 et suivants du Code de la consommation, le
-                  Client dispose d&apos;un d&eacute;lai de{" "}
-                  <strong>14 jours</strong> &agrave; compter de la souscription
-                  pour exercer son droit de r&eacute;tractation, sans avoir
-                  &agrave; motiver sa d&eacute;cision. La demande doit
-                  &ecirc;tre adress&eacute;e &agrave;{" "}
+                  Client dispose d'un délai de{" "}
+                  <strong>14 jours</strong> à compter de la souscription
+                  pour exercer son droit de rétractation, sans avoir
+                  à motiver sa décision. La demande doit
+                  être adressée à{" "}
                   <a
                     href="mailto:contact@coproscore.fr"
                     className="text-teal-700 hover:underline"
@@ -160,19 +160,19 @@ export default function CgvPage() {
                   .
                 </p>
                 <p>
-                  <strong>Rapport PDF (contenu num&eacute;rique)</strong> :
-                  conform&eacute;ment &agrave; l&apos;article L221-28 du Code de
-                  la consommation, le droit de r&eacute;tractation ne peut
-                  &ecirc;tre exerc&eacute; pour les contenus num&eacute;riques
-                  fournis imm&eacute;diatement avec le{" "}
-                  <strong>consentement expr&egrave;s</strong> du Client et son
-                  renoncement expr&egrave;s au droit de r&eacute;tractation.
+                  <strong>Rapport PDF (contenu numérique)</strong> :
+                  conformément à l'article L221-28 du Code de
+                  la consommation, le droit de rétractation ne peut
+                  être exercé pour les contenus numériques
+                  fournis immédiatement avec le{" "}
+                  <strong>consentement exprès</strong> du Client et son
+                  renoncement exprès au droit de rétractation.
                 </p>
                 <p>
-                  Lors de l&apos;achat d&apos;un rapport PDF, le Client
-                  reconna&icirc;t express&eacute;ment consentir &agrave;
-                  l&apos;ex&eacute;cution imm&eacute;diate du service et
-                  renoncer &agrave; son droit de r&eacute;tractation.
+                  Lors de l'achat d'un rapport PDF, le Client
+                  reconnaît expressément consentir à
+                  l'exécution immédiate du service et
+                  renoncer à son droit de rétractation.
                 </p>
               </div>
             </section>
@@ -180,12 +180,12 @@ export default function CgvPage() {
             {/* Article 6 — Résiliation */}
             <section>
               <h2 className="mb-4 text-xl font-bold text-slate-900">
-                Article 6 &mdash; R&eacute;siliation de l&apos;abonnement Pro
+                Article 6 — Résiliation de l'abonnement Pro
               </h2>
               <div className="space-y-3 text-base leading-relaxed text-slate-600">
                 <p>
-                  Le Client peut r&eacute;silier son abonnement Pro{" "}
-                  <strong>&agrave; tout moment</strong> depuis son espace
+                  Le Client peut résilier son abonnement Pro{" "}
+                  <strong>à tout moment</strong> depuis son espace
                   personnel ou en contactant{" "}
                   <a
                     href="mailto:contact@coproscore.fr"
@@ -196,10 +196,10 @@ export default function CgvPage() {
                   .
                 </p>
                 <p>
-                  La r&eacute;siliation prend effet &agrave; la fin de la
-                  p&eacute;riode de facturation en cours. Le Client conserve
-                  l&apos;acc&egrave;s aux fonctionnalit&eacute;s Pro
-                  jusqu&apos;&agrave; cette date.
+                  La résiliation prend effet à la fin de la
+                  période de facturation en cours. Le Client conserve
+                  l'accès aux fonctionnalités Pro
+                  jusqu'à cette date.
                 </p>
               </div>
             </section>
@@ -207,25 +207,25 @@ export default function CgvPage() {
             {/* Article 7 — Responsabilité */}
             <section>
               <h2 className="mb-4 text-xl font-bold text-slate-900">
-                Article 7 &mdash; Responsabilit&eacute;
+                Article 7 — Responsabilité
               </h2>
               <div className="space-y-3 text-base leading-relaxed text-slate-600">
                 <p>
-                  Les donn&eacute;es pr&eacute;sent&eacute;es sur CoproScore
+                  Les données présentées sur CoproScore
                   proviennent de sources publiques (RNIC, DVF, ADEME).
                   CoproScore{" "}
-                  <strong>ne garantit pas l&apos;exactitude</strong>,
-                  l&apos;exhaustivit&eacute; ni l&apos;actualit&eacute; de ces
-                  donn&eacute;es.
+                  <strong>ne garantit pas l'exactitude</strong>,
+                  l'exhaustivité ni l'actualité de ces
+                  données.
                 </p>
                 <p>
-                  Les scores sont calcul&eacute;s algorithmiquement &agrave;
+                  Les scores sont calculés algorithmiquement à
                   titre indicatif et ne constituent ni un diagnostic immobilier,
                   ni un conseil financier ou juridique.
                 </p>
                 <p>
-                  CoproScore ne saurait &ecirc;tre tenu responsable des
-                  d&eacute;cisions prises par le Client sur la base des
+                  CoproScore ne saurait être tenu responsable des
+                  décisions prises par le Client sur la base des
                   informations fournies.
                 </p>
               </div>
@@ -234,17 +234,17 @@ export default function CgvPage() {
             {/* Article 8 — Données personnelles */}
             <section>
               <h2 className="mb-4 text-xl font-bold text-slate-900">
-                Article 8 &mdash; Donn&eacute;es personnelles
+                Article 8 — Données personnelles
               </h2>
               <div className="space-y-3 text-base leading-relaxed text-slate-600">
                 <p>
-                  Le traitement des donn&eacute;es personnelles est
-                  d&eacute;taill&eacute; dans notre{" "}
+                  Le traitement des données personnelles est
+                  détaillé dans notre{" "}
                   <Link
                     href="/confidentialite"
                     className="text-teal-700 hover:underline"
                   >
-                    Politique de Confidentialit&eacute;
+                    Politique de Confidentialité
                   </Link>
                   .
                 </p>
@@ -254,20 +254,20 @@ export default function CgvPage() {
             {/* Article 9 — Droit applicable */}
             <section>
               <h2 className="mb-4 text-xl font-bold text-slate-900">
-                Article 9 &mdash; Droit applicable et litiges
+                Article 9 — Droit applicable et litiges
               </h2>
               <div className="space-y-3 text-base leading-relaxed text-slate-600">
                 <p>
-                  Les pr&eacute;sentes CGV sont soumises au droit
-                  fran&ccedil;ais. En cas de litige, les parties
-                  s&apos;engagent &agrave; rechercher une solution amiable avant
+                  Les présentes CGV sont soumises au droit
+                  français. En cas de litige, les parties
+                  s'engagent à rechercher une solution amiable avant
                   toute action judiciaire.
                 </p>
                 <p>
-                  Conform&eacute;ment &agrave; l&apos;article L612-1 du Code de
-                  la consommation, le Client peut recourir gratuitement &agrave;
-                  un m&eacute;diateur de la consommation en cas de litige non
-                  r&eacute;solu.
+                  Conformément à l'article L612-1 du Code de
+                  la consommation, le Client peut recourir gratuitement à
+                  un médiateur de la consommation en cas de litige non
+                  résolu.
                 </p>
               </div>
             </section>
@@ -278,7 +278,7 @@ export default function CgvPage() {
                 Contact
               </h2>
               <p className="text-base leading-relaxed text-slate-600">
-                Pour toute question relative aux pr&eacute;sentes CGV :{" "}
+                Pour toute question relative aux présentes CGV :{" "}
                 <a
                   href="mailto:contact@coproscore.fr"
                   className="text-teal-700 hover:underline"

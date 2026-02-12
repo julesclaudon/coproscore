@@ -49,7 +49,7 @@ export default function ConnexionPage() {
             Connexion
           </h1>
           <p className="mt-2 text-center text-sm text-slate-500">
-            Connectez-vous pour acc&eacute;der &agrave; vos donn&eacute;es
+            Connectez-vous pour accéder à vos données
           </p>
 
           <form onSubmit={handleSubmit} className="mt-8 space-y-4">
@@ -80,7 +80,7 @@ export default function ConnexionPage() {
                   }}
                   className="text-xs text-teal-600 hover:text-teal-800"
                 >
-                  Mot de passe oubli&eacute;&nbsp;?
+                  Mot de passe oublié ?
                 </Link>
               </div>
               <div className="relative mt-1.5">
@@ -131,7 +131,7 @@ export default function ConnexionPage() {
               href="/inscription"
               className="font-medium text-teal-700 hover:text-teal-900"
             >
-              Cr&eacute;er un compte gratuit
+              Créer un compte gratuit
             </Link>
           </p>
         </div>

@@ -4,12 +4,12 @@ import { formatPeriod, PERIOD_LABELS } from "./format";
 type CoproData = any;
 
 function formatPrix(n: number): string {
-  return n.toLocaleString("fr-FR") + "\u00A0\u20AC";
+  return n.toLocaleString("fr-FR") + " €";
 }
 
 function formatEvolution(n: number): string {
   const sign = n >= 0 ? "+" : "";
-  return sign + n.toFixed(1) + "\u00A0%";
+  return sign + n.toFixed(1) + " %";
 }
 
 /**
