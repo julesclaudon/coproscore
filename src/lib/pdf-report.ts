@@ -1357,7 +1357,10 @@ function renderDisclaimer(
   data: ReportInput,
   startY: number
 ): number {
-  let y = sectionTitle(doc, "Mentions l\u00e9gales", startY);
+  // Keep the entire block together: title (30) + 8 text lines × 13 + 2 gaps × 8 + link (18) ≈ 150px
+  let y = ensureSpace(doc, startY, 155);
+
+  y = sectionTitle(doc, "Mentions l\u00e9gales", y);
 
   const lines = [
     "Ce rapport est g\u00e9n\u00e9r\u00e9 automatiquement \u00e0 partir de donn\u00e9es publiques ouvertes.",
@@ -1377,7 +1380,6 @@ function renderDisclaimer(
     if (line === "") {
       y += 8;
     } else {
-      if (y + 13 > CB) { doc.addPage(); y = CT; }
       doc.text(line, M, y, { width: CW });
       y += 13;
     }
@@ -1385,7 +1387,6 @@ function renderDisclaimer(
 
   // Clickable report link (tight after copyright)
   y += 4;
-  if (y + 14 > CB) { doc.addPage(); y = CT; }
   const reportUrl = `https://coproscore.fr/copropriete/${data.slug}`;
   doc.font("Helvetica").fontSize(8.5).fillColor(TEAL);
   doc.text(`Rapport : ${reportUrl}`, M, y, {
