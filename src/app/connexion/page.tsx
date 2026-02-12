@@ -8,8 +8,6 @@ import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { Button } from "@/components/ui/button";
 import { Loader2, LogIn, Eye, EyeOff } from "lucide-react";
-import { toast } from "sonner";
-
 export default function ConnexionPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -73,11 +71,7 @@ export default function ConnexionPage() {
                   Mot de passe
                 </label>
                 <Link
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    toast.info("La réinitialisation du mot de passe sera bientôt disponible.");
-                  }}
+                  href="/mot-de-passe-oublie"
                   className="text-xs text-teal-600 hover:text-teal-800"
                 >
                   Mot de passe oublié ?

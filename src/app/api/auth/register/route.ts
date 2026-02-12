@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
+import { sendEmail, welcomeEmail } from "@/lib/mail";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -46,6 +47,15 @@ export async function POST(request: NextRequest) {
       password: hashedPassword,
       role: "FREE",
     },
+  });
+
+  // Fire-and-forget welcome email
+  sendEmail({
+    to: normalizedEmail,
+    subject: "Bienvenue sur CoproScore",
+    html: welcomeEmail(),
+  }).catch((err) => {
+    console.error("Failed to send welcome email:", err);
   });
 
   return NextResponse.json({ ok: true }, { status: 201 });

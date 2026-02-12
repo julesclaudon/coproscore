@@ -33,9 +33,10 @@ model User {
   stripePriceId          String?   @map("stripe_price_id")
   stripeCurrentPeriodEnd DateTime? @map("stripe_current_period_end")
 
-  accounts      Account[]
-  sessions      Session[]
-  pdfPurchases  PdfPurchase[]
+  accounts            Account[]
+  sessions            Session[]
+  pdfPurchases        PdfPurchase[]
+  passwordResetTokens PasswordResetToken[]
   @@map("users")
 }
 
@@ -74,6 +75,17 @@ model VerificationToken {
 
   @@unique([identifier, token])
   @@map("verification_tokens")
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  token     String   @unique
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("password_reset_tokens")
 }
 
 model Copropriete {
