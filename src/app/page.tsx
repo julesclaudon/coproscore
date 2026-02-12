@@ -22,10 +22,10 @@ import {
 import { Header } from "@/components/header";
 
 /* ─── Count-up animation ─── */
-const COUNT_DURATION = 3500;
+const COUNT_DURATION = 3000;
 
-function easeOutExpo(t: number): number {
-  return t >= 1 ? 1 : 1 - Math.pow(2, -12 * t);
+function easeOut(t: number): number {
+  return 1 - Math.pow(1 - t, 8);
 }
 
 const SOURCES = [
@@ -100,7 +100,7 @@ export default function Home() {
           function tick(now: number) {
             const elapsed = now - start;
             const t = Math.min(elapsed / COUNT_DURATION, 1);
-            const eased = easeOutExpo(t);
+            const eased = easeOut(t);
 
             SOURCES.forEach((src, i) => {
               const span = statRefs.current[i];
