@@ -182,7 +182,7 @@ export default function Home() {
       <Header variant="homepage" />
 
       {/* ─── Hero ─── */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-slate-50 via-teal-50/30 to-white pt-24 pb-14 sm:pt-32 sm:pb-20">
+      <section className="relative flex min-h-svh flex-col justify-center overflow-hidden bg-gradient-to-br from-slate-50 via-teal-50/30 to-white pt-16 pb-10 md:min-h-0 md:block md:pt-32 md:pb-20">
         <div className="pointer-events-none absolute inset-0">
           <div className="absolute -top-24 right-0 h-96 w-96 rounded-full bg-teal-100/40 blur-3xl" />
           <div className="absolute top-32 -left-24 h-64 w-64 rounded-full bg-teal-50/60 blur-3xl" />
