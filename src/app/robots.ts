@@ -7,6 +7,9 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       disallow: ["/api/", "/recherche", "/favoris", "/historique", "/alertes"],
     },
-    sitemap: "https://coproscore.fr/sitemap.xml",
+    sitemap: Array.from(
+      { length: 14 },
+      (_, i) => `https://coproscore.fr/sitemap/${i}.xml`
+    ),
   };
 }
