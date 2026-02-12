@@ -1460,9 +1460,8 @@ export async function generatePdfReport(
       y = renderNearby(doc, input, y);
     }
 
-    // Disclaimer (flows with previous content — no forced page break)
-    y += 24;
-    if (y + 30 > CB) { doc.addPage(); y = CT; }
+    // Disclaimer (flows inline after previous content)
+    y += 12;
     renderDisclaimer(doc, input, y);
 
     // ── Final pass: add page chrome with Page X/N ──
