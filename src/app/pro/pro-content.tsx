@@ -372,6 +372,9 @@ export function ProContent() {
       <section className="bg-white pb-20 pt-12 sm:pb-28 sm:pt-16">
         <div className="mx-auto max-w-4xl px-4">
           <h2 className="text-center text-2xl font-bold text-slate-900 sm:text-3xl">Une offre simple et transparente</h2>
+          <p className="mx-auto mt-3 max-w-2xl text-center text-base text-slate-500">
+            Comparez votre workflow actuel avec CoproScore Pro.
+          </p>
 
           <div className="mt-12 grid items-start gap-8 lg:grid-cols-[1fr_340px]">
             {/* Comparison table */}
@@ -435,7 +438,7 @@ export function ProContent() {
       <section className="bg-slate-900 pb-20 pt-12 sm:pb-28 sm:pt-16">
         <div className="mx-auto max-w-5xl px-4">
           <h2 className="text-center text-2xl font-bold text-white sm:text-3xl">Ils utilisent CoproScore Pro</h2>
-          <p className="mx-auto mt-3 max-w-xl text-center text-sm text-slate-500">
+          <p className="mx-auto mt-3 max-w-2xl text-center text-base text-slate-400">
             Témoignages à titre illustratif
           </p>
 
@@ -463,45 +466,29 @@ export function ProContent() {
         </div>
       </section>
 
-      <Wave from="fill-slate-900" to="bg-gradient-to-r" />
-
-      {/* ═══════ ROI ═══════ */}
-      <section className="bg-gradient-to-r from-teal-700 to-teal-600 pb-20 pt-12 sm:pb-24 sm:pt-16">
-        <SlideInLeft className="mx-auto max-w-3xl px-4 text-center">
-          <Zap className="mx-auto mb-4 h-8 w-8 text-teal-200" />
-          <p className="text-2xl font-bold text-white sm:text-3xl">29 €/mois, c'est moins de 1 € par jour.</p>
-          <p className="mt-4 text-lg leading-relaxed text-teal-100">
-            Une seule vente facilitée rembourse 5 ans d'abonnement.
-            Intégrez CoproScore dans votre workflow et gagnez un avantage concurrentiel durable.
-          </p>
-        </SlideInLeft>
-      </section>
-
-      {/* Diagonal → dark CTA */}
-      <div className="relative bg-slate-900">
-        <svg viewBox="0 0 1440 48" preserveAspectRatio="none" className="absolute -top-px left-0 block w-full" style={{ height: "clamp(24px, 3.5vw, 48px)" }}>
-          <path d="M0,0 L1440,48 L0,48 Z" className="fill-teal-600" />
-        </svg>
-      </div>
+      <Wave from="fill-slate-900" to="bg-teal-700" />
 
       {/* ═══════ CTA FINAL ═══════ */}
-      <section className="pro-hero relative overflow-hidden py-20 sm:py-28">
-        <div className="pro-dots pointer-events-none absolute inset-0" />
-        <div className="pointer-events-none absolute left-1/2 top-1/2 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-teal-500/[0.05] blur-[80px]" />
-        <div className="relative mx-auto max-w-2xl px-4 text-center">
+      <section className="bg-gradient-to-br from-teal-700 via-teal-600 to-teal-700 pb-20 pt-12 sm:pb-28 sm:pt-16">
+        <ScaleIn className="mx-auto max-w-3xl px-4 text-center">
+          <Crown className="mx-auto mb-5 h-10 w-10 text-teal-200" />
           <h2 className="text-2xl font-bold text-white sm:text-3xl">Prêt à passer Pro ?</h2>
-          <p className="mt-3 text-base text-slate-400">
-            Rejoignez les professionnels qui utilisent CoproScore pour fiabiliser leurs dossiers et gagner du temps.
+          <p className="mx-auto mt-4 max-w-2xl text-lg leading-relaxed text-teal-100">
+            29 €/mois, c'est moins de 1 € par jour.
+            Une seule vente facilitée rembourse 5 ans d'abonnement.
+          </p>
+          <p className="mx-auto mt-3 max-w-2xl text-base text-teal-200/70">
+            Rejoignez les professionnels qui fiabilisent leurs dossiers et gagnent du temps avec CoproScore.
           </p>
           <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Link href="/tarifs" className="pro-cta-glow inline-flex items-center gap-2 rounded-xl bg-teal-500 px-8 py-4 text-base font-semibold text-white shadow-lg shadow-teal-500/25 transition-all duration-200 hover:scale-[1.03] hover:bg-teal-400 hover:shadow-teal-500/40 active:scale-[0.98]">
+            <Link href="/tarifs" className="inline-flex items-center gap-2 rounded-xl bg-white px-8 py-4 text-base font-semibold text-teal-700 shadow-lg shadow-black/10 transition-all duration-200 hover:scale-[1.03] hover:bg-teal-50 hover:shadow-xl active:scale-[0.98]">
               <Crown className="h-4 w-4" /> Voir les tarifs et s'abonner
             </Link>
-            <Link href="mailto:contact@coproscore.fr" className="inline-flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-800/60 px-8 py-4 text-base font-medium text-slate-300 backdrop-blur-sm transition-all duration-200 hover:scale-[1.02] hover:border-slate-600 hover:bg-slate-700 hover:text-white active:scale-[0.98]">
+            <Link href="mailto:contact@coproscore.fr" className="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-8 py-4 text-base font-medium text-white backdrop-blur-sm transition-all duration-200 hover:scale-[1.02] hover:bg-white/20 active:scale-[0.98]">
               Une question ? Contactez-nous
             </Link>
           </div>
-        </div>
+        </ScaleIn>
       </section>
 
       <Footer />
