@@ -19,7 +19,6 @@ import {
   Zap,
   X as XIcon,
   Check,
-  Quote,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -160,16 +159,19 @@ const PRO_FEATURES = [
   "Support prioritaire",
 ];
 
-const COMPARISON = [
-  { label: "Analyse d'une copropriété", without: "2h de recherches manuelles", with: "30 secondes, score + rapport" },
-  { label: "Données fiables et croisées", without: "Données dispersées, incomplètes", with: "4 sources publiques croisées" },
-  { label: "Rapport client professionnel", without: "Pas de livrable structuré", with: "PDF horodaté immédiat" },
+const FREE_FEATURES = [
+  "Score global consultable",
+  "Fiche copropriété basique",
+  "Recherche par adresse",
 ];
 
-const TESTIMONIALS: { initials: string; name: string; role: string; quote: string; bg: string }[] = [
-  { initials: "SL", name: "Sophie L.", role: "Agent immobilier, Paris", quote: "CoproScore me permet de rassurer mes acquéreurs en 30 secondes. Le score de santé est devenu un argument de vente incontournable dans mes mandats.", bg: "bg-teal-500" },
-  { initials: "MR", name: "Marc R.", role: "Chasseur immobilier, Lyon", quote: "J'analyse 15 copropriétés par semaine pour mes clients. Avant, ça me prenait une journée. Maintenant, c'est fait en une heure.", bg: "bg-sky-500" },
-  { initials: "AD", name: "Anne D.", role: "Directrice de syndic, Bordeaux", quote: "Le benchmarking de notre parc nous a permis d'identifier 3 copropriétés en difficulté avant que la situation ne se dégrade.", bg: "bg-violet-500" },
+const FREE_MISSING = [
+  "Rapports PDF",
+  "Comparateur multi-copros",
+  "Export CSV / Excel",
+  "Analyse IA",
+  "Alertes email",
+  "Support prioritaire",
 ];
 
 const HERO_STATS = [
@@ -370,103 +372,84 @@ export function ProContent() {
 
       {/* ═══════ PRICING ═══════ */}
       <section className="bg-white pb-20 pt-12 sm:pb-28 sm:pt-16">
-        <div className="mx-auto max-w-4xl px-4">
+        <div className="mx-auto max-w-3xl px-4">
           <h2 className="text-center text-2xl font-bold text-slate-900 sm:text-3xl">Une offre simple et transparente</h2>
           <p className="mx-auto mt-3 max-w-2xl text-center text-base text-slate-500">
-            Comparez votre workflow actuel avec CoproScore Pro.
+            Comparez les deux formules et choisissez celle qui vous convient.
           </p>
 
-          <div className="mt-12 grid items-center gap-8 lg:grid-cols-[1fr_280px]">
-            {/* Comparison table */}
-            <ScaleIn>
-              <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-                <div className="grid grid-cols-3 border-b text-xs font-semibold">
-                  <div className="bg-slate-50 px-4 py-3 text-slate-500" />
-                  <div className="flex items-center gap-1.5 border-l bg-slate-50 px-4 py-3 text-slate-500">
-                    <XIcon className="h-3.5 w-3.5 text-red-400" /> Sans CoproScore
-                  </div>
-                  <div className="flex items-center gap-1.5 border-l bg-teal-50 px-4 py-3 text-teal-700">
-                    <Check className="h-3.5 w-3.5 text-teal-500" /> Avec CoproScore
-                  </div>
+          <div className="mt-12 grid items-stretch gap-6 sm:grid-cols-2">
+            {/* Free card */}
+            <FadeInStagger index={0}>
+              <div className="flex h-full flex-col rounded-2xl border border-slate-200 bg-white p-6">
+                <p className="text-center text-lg font-semibold text-slate-900">Accès Gratuit</p>
+                <div className="mt-4 flex items-baseline justify-center gap-1">
+                  <span className="text-3xl font-bold text-slate-900">0 €</span>
                 </div>
-                {COMPARISON.map((row, i) => (
-                  <div key={i} className={`grid grid-cols-3 text-sm ${i < COMPARISON.length - 1 ? "border-b" : ""}`}>
-                    <div className="px-4 py-3.5 font-medium text-slate-700">{row.label}</div>
-                    <div className="border-l px-4 py-3.5 text-slate-400">{row.without}</div>
-                    <div className="border-l bg-teal-50/60 px-4 py-3.5 font-medium text-teal-700">{row.with}</div>
-                  </div>
-                ))}
-              </div>
-            </ScaleIn>
+                <p className="mt-1 text-center text-xs text-slate-400">Pour découvrir CoproScore</p>
 
-            {/* Pricing card with shine */}
-            <ScaleIn>
-              <div className="pro-shine relative overflow-hidden rounded-2xl border-2 border-teal-500 bg-white shadow-xl shadow-teal-500/10">
-                <div className="bg-gradient-to-r from-teal-600 to-teal-500 px-5 py-3 text-center">
-                  <p className="flex items-center justify-center gap-2 text-base font-bold text-white">
-                    <Crown className="h-4 w-4" /> Accès Pro
-                  </p>
-                </div>
-                <div className="p-5">
-                  <div className="flex items-baseline justify-center gap-2">
-                    <span className="text-3xl font-bold text-slate-900">29 €</span>
-                    <span className="text-sm text-slate-500">/mois TTC</span>
-                  </div>
-                  <p className="mt-1 text-center text-xs text-slate-400">ou 290 €/an (2 mois offerts)</p>
-                  <ul className="mt-4 space-y-2">
-                    {PRO_FEATURES.map((f) => (
-                      <li key={f} className="flex items-start gap-2">
-                        <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-teal-500" />
-                        <span className="text-xs text-slate-700">{f}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <Link href="/tarifs" className="mt-5 flex items-center justify-center gap-2 rounded-xl bg-teal-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:scale-[1.02] hover:bg-teal-700 hover:shadow-md active:scale-[0.98]">
-                    <Crown className="h-4 w-4" /> S'abonner
-                  </Link>
-                  <p className="mt-2.5 text-center text-[11px] text-slate-400">14 jours d'essai gratuit · Résiliation à tout moment</p>
-                </div>
+                <ul className="mt-6 flex-1 space-y-2.5">
+                  {FREE_FEATURES.map((f) => (
+                    <li key={f} className="flex items-start gap-2">
+                      <Check className="mt-0.5 h-4 w-4 shrink-0 text-slate-400" />
+                      <span className="text-sm text-slate-600">{f}</span>
+                    </li>
+                  ))}
+                  {FREE_MISSING.map((f) => (
+                    <li key={f} className="flex items-start gap-2 opacity-50">
+                      <XIcon className="mt-0.5 h-4 w-4 shrink-0 text-slate-300" />
+                      <span className="text-sm text-slate-400 line-through">{f}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <Link href="/inscription" className="mt-6 flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-5 py-3 text-sm font-semibold text-slate-700 transition-all duration-200 hover:bg-slate-100 active:scale-[0.98]">
+                  Créer un compte
+                </Link>
               </div>
-            </ScaleIn>
+            </FadeInStagger>
+
+            {/* Pro card */}
+            <FadeInStagger index={1}>
+              <div className="pro-shine relative flex h-full flex-col overflow-hidden rounded-2xl border-2 border-teal-500 bg-white p-6 shadow-xl shadow-teal-500/10">
+                {/* Recommended badge */}
+                <div className="absolute -top-px left-1/2 -translate-x-1/2">
+                  <span className="rounded-b-lg bg-teal-500 px-4 py-1 text-xs font-bold text-white shadow-sm">Recommandé</span>
+                </div>
+
+                <p className="mt-3 flex items-center justify-center gap-2 text-center text-lg font-semibold text-slate-900">
+                  <Crown className="h-5 w-5 text-teal-600" /> Accès Pro
+                </p>
+                <div className="mt-4 flex items-baseline justify-center gap-1">
+                  <span className="text-3xl font-bold text-slate-900">29 €</span>
+                  <span className="text-sm text-slate-500">/mois TTC</span>
+                </div>
+                <p className="mt-1 text-center text-xs text-slate-400">ou 290 €/an (2 mois offerts)</p>
+
+                <ul className="mt-6 flex-1 space-y-2.5">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-teal-500" />
+                    <span className="text-sm font-medium text-slate-700">Tout l'accès gratuit inclus</span>
+                  </li>
+                  {PRO_FEATURES.map((f) => (
+                    <li key={f} className="flex items-start gap-2">
+                      <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-teal-500" />
+                      <span className="text-sm text-slate-700">{f}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <Link href="/tarifs" className="mt-6 flex items-center justify-center gap-2 rounded-xl bg-teal-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:scale-[1.02] hover:bg-teal-700 hover:shadow-md active:scale-[0.98]">
+                  <Crown className="h-4 w-4" /> S'abonner
+                </Link>
+                <p className="mt-2.5 text-center text-[11px] text-slate-400">14 jours d'essai gratuit · Résiliation à tout moment</p>
+              </div>
+            </FadeInStagger>
           </div>
         </div>
       </section>
 
-      <Wave from="fill-white" to="bg-slate-900" />
-
-      {/* ═══════ TESTIMONIALS ═══════ */}
-      <section className="bg-slate-900 pb-20 pt-12 sm:pb-28 sm:pt-16">
-        <div className="mx-auto max-w-5xl px-4">
-          <h2 className="text-center text-2xl font-bold text-white sm:text-3xl">Ils utilisent CoproScore Pro</h2>
-          <p className="mx-auto mt-3 max-w-2xl text-center text-base text-slate-400">
-            Témoignages à titre illustratif
-          </p>
-
-          <div className="mt-12 grid gap-6 sm:grid-cols-3">
-            {TESTIMONIALS.map((t, i) => (
-              <FadeInStagger key={t.name} index={i}>
-                <div className="rounded-2xl border border-slate-800 bg-slate-800/50 p-6 backdrop-blur-sm">
-                  <Quote className="mb-4 h-6 w-6 text-teal-500/40" />
-                  <p className="text-sm italic leading-relaxed text-slate-300">
-                    &ldquo;{t.quote}&rdquo;
-                  </p>
-                  <div className="mt-5 flex items-center gap-3">
-                    <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white ${t.bg}`}>
-                      {t.initials}
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-white">{t.name}</p>
-                      <p className="text-xs text-slate-500">{t.role}</p>
-                    </div>
-                  </div>
-                </div>
-              </FadeInStagger>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <Wave from="fill-slate-900" to="bg-teal-700" />
+      <Wave from="fill-white" to="bg-teal-700" />
 
       {/* ═══════ CTA FINAL ═══════ */}
       <section className="bg-gradient-to-br from-teal-700 via-teal-600 to-teal-700 pb-20 pt-12 sm:pb-28 sm:pt-16">
