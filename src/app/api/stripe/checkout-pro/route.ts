@@ -1,14 +1,14 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
 import { getOrCreateStripeCustomer } from "@/lib/stripe-helpers";
 
-export async function POST() {
+export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
-    return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
+    return NextResponse.json({ error: "Non authentifi\u00e9" }, { status: 401 });
   }
 
   // Check if already PRO
@@ -17,8 +17,16 @@ export async function POST() {
     select: { role: true },
   });
   if (user.role === "PRO" || user.role === "ADMIN") {
-    return NextResponse.json({ error: "Déjà abonné Pro" }, { status: 409 });
+    return NextResponse.json({ error: "D\u00e9j\u00e0 abonn\u00e9 Pro" }, { status: 409 });
   }
+
+  const body = await req.json().catch(() => ({}));
+  const billing = body.billing === "annual" ? "annual" : "monthly";
+
+  const priceId =
+    billing === "annual"
+      ? process.env.STRIPE_PRICE_PRO_YEARLY!
+      : process.env.STRIPE_PRICE_PRO!;
 
   const customerId = await getOrCreateStripeCustomer(session.user.id);
 
@@ -27,7 +35,7 @@ export async function POST() {
     mode: "subscription",
     line_items: [
       {
-        price: process.env.STRIPE_PRICE_PRO!,
+        price: priceId,
         quantity: 1,
       },
     ],
