@@ -82,6 +82,11 @@ export function Footer() {
                   Tarifs
                 </Link>
               </li>
+              <li>
+                <Link href="/pro" className="transition-colors hover:text-teal-400 hover:underline">
+                  Professionnels
+                </Link>
+              </li>
             </ul>
           </div>
 
