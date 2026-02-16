@@ -50,6 +50,7 @@ export default async function sitemap({
       { url: `${BASE_URL}/tarifs`, changeFrequency: "monthly", priority: 0.6 },
       { url: `${BASE_URL}/comparateur`, changeFrequency: "monthly", priority: 0.5 },
       { url: `${BASE_URL}/methodologie`, changeFrequency: "monthly", priority: 0.6 },
+      { url: `${BASE_URL}/villes`, changeFrequency: "monthly", priority: 0.8 },
     ];
 
     return [

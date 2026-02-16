@@ -207,7 +207,7 @@ export async function generateMetadata({
 
   return {
     title: titleText,
-    description: `${Number(info.total)} copropriétés analysées à ${displayName} (${info.nom_dept}). ${scoreText}${prixPart}${dpePart}. Consultez scores et détails.`,
+    description: `Découvrez les scores de santé des ${Number(info.total)} copropriétés à ${displayName}. Analyse technique, risques, énergie et marché pour chaque copropriété.`,
     openGraph: {
       title: ogTitle,
       description: `${Number(info.total)} copropriétés analysées à ${displayName}. ${scoreText}.`,
@@ -461,7 +461,7 @@ export default async function VillePage({
               )}
               <div className="min-w-0 flex-1">
                 <h1 className="text-lg font-bold text-slate-900 sm:text-2xl">
-                  Copropriétés à {displayName}
+                  Copropriétés à {displayName} — Scores et analyses
                 </h1>
                 <p className="mt-0.5 text-sm text-slate-500">
                   {total.toLocaleString("fr-FR")} copropriété
@@ -504,7 +504,22 @@ export default async function VillePage({
                   DPE <strong>{dpeMedian}</strong>
                 </span>
               )}
+              <Link
+                href="/carte"
+                className="inline-flex items-center gap-1.5 rounded-full border border-teal-200 bg-teal-50 px-3 py-1 text-xs font-medium text-teal-700 transition-colors hover:bg-teal-100"
+              >
+                <MapPin className="h-3 w-3" />
+                Voir sur la carte
+              </Link>
             </div>
+
+            <p className="mt-4 text-sm leading-relaxed text-slate-600">
+              {displayName} compte {total.toLocaleString("fr-FR")} copropriétés analysées par CoproScore,
+              avec un score de santé moyen de {avgScore !== null ? avgScore : "N/A"}/100.
+              {avgPrixM2 ? ` Le prix moyen au m² est de ${avgPrixM2.toLocaleString("fr-FR")} €.` : ""}
+              {" "}Consultez les scores détaillés — technique, risques, gouvernance, énergie et marché — pour
+              chaque copropriété de la commune.
+            </p>
           </div>
         </section>
 

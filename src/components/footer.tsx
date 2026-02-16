@@ -43,6 +43,11 @@ export function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/villes" className="transition-colors hover:text-teal-400 hover:underline">
+                  Toutes les villes
+                </Link>
+              </li>
+              <li>
                 <Link href="/carte" className="transition-colors hover:text-teal-400 hover:underline">
                   Carte heatmap
                 </Link>
