@@ -1,62 +1,43 @@
 import { prisma } from "@/lib/prisma";
-import { makeVilleSlug } from "@/lib/slug";
+import { makeDeptSlug } from "@/lib/slug";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
-import { Building2, MapPin, Home, ChevronRight } from "lucide-react";
+import { MapPin, Home, ChevronRight, Building2, ArrowRight } from "lucide-react";
 import { scoreColor, scoreBg } from "@/lib/format";
 
 export const metadata: Metadata = {
-  title: "Toutes les villes — CoproScore",
+  title: "Copropriétés par département en France — CoproScore",
   description:
-    "Explorez les scores de santé des copropriétés dans les 12 900+ communes de France. Classement par département avec score moyen et nombre de copropriétés.",
+    "Explorez les scores de santé des copropriétés dans les 101 départements français. Nombre de copropriétés, score moyen et classement par département.",
 };
 
-interface VilleRow {
-  code: string;
-  nom: string;
+interface DeptRow {
   code_dept: string;
   nom_dept: string;
+  nb_communes: bigint;
   total: bigint;
   avg_score: number | null;
 }
 
 export default async function VillesPage() {
-  const villes = await prisma.$queryRawUnsafe<VilleRow[]>(
+  const depts = await prisma.$queryRawUnsafe<DeptRow[]>(
     `SELECT
-       code_officiel_commune as code,
-       INITCAP(MODE() WITHIN GROUP (ORDER BY nom_officiel_commune)) as nom,
-       MODE() WITHIN GROUP (ORDER BY code_officiel_departement) as code_dept,
+       code_officiel_departement as code_dept,
        MODE() WITHIN GROUP (ORDER BY nom_officiel_departement) as nom_dept,
+       COUNT(DISTINCT code_officiel_commune) as nb_communes,
        COUNT(*) as total,
        ROUND(AVG(score_global)) as avg_score
      FROM coproprietes
-     WHERE code_officiel_commune IS NOT NULL
-       AND nom_officiel_commune IS NOT NULL
-     GROUP BY code_officiel_commune
-     ORDER BY code_dept, nom`
+     WHERE code_officiel_departement IS NOT NULL
+       AND nom_officiel_departement IS NOT NULL
+     GROUP BY code_officiel_departement
+     ORDER BY code_officiel_departement`
   );
 
-  // Group by département
-  const deptMap = new Map<
-    string,
-    { code: string; nom: string; villes: VilleRow[] }
-  >();
-  for (const v of villes) {
-    if (!deptMap.has(v.code_dept)) {
-      deptMap.set(v.code_dept, {
-        code: v.code_dept,
-        nom: v.nom_dept,
-        villes: [],
-      });
-    }
-    deptMap.get(v.code_dept)!.villes.push(v);
-  }
-  const departements = Array.from(deptMap.values());
-
-  const totalVilles = villes.length;
-  const totalCopros = villes.reduce((s, v) => s + Number(v.total), 0);
+  const totalCopros = depts.reduce((s, d) => s + Number(d.total), 0);
+  const totalCommunes = depts.reduce((s, d) => s + Number(d.nb_communes), 0);
 
   return (
     <div className="flex min-h-screen flex-col bg-[#fafbfc]">
@@ -75,77 +56,62 @@ export default async function VillesPage() {
                 <span className="hidden sm:inline">Accueil</span>
               </Link>
               <ChevronRight className="h-3.5 w-3.5" />
-              <span className="text-slate-600">Toutes les villes</span>
+              <span className="text-slate-600">Départements</span>
             </nav>
 
             <h1 className="text-xl font-bold text-slate-900 sm:text-2xl">
-              Copropriétés par ville en France
+              Copropriétés par département en France
             </h1>
             <p className="mt-2 text-sm leading-relaxed text-slate-600">
-              {totalVilles.toLocaleString("fr-FR")} communes et{" "}
-              {totalCopros.toLocaleString("fr-FR")} copropriétés analysées,
-              réparties dans {departements.length} départements. Sélectionnez
-              une ville pour consulter les scores détaillés de ses copropriétés.
+              {totalCopros.toLocaleString("fr-FR")} copropriétés analysées dans{" "}
+              {totalCommunes.toLocaleString("fr-FR")} communes, réparties dans{" "}
+              {depts.length} départements. Sélectionnez un département pour
+              découvrir les communes et leurs scores.
             </p>
-
-            {/* Quick navigation */}
-            <div className="mt-4 flex flex-wrap gap-1.5">
-              {departements.map((d) => (
-                <a
-                  key={d.code}
-                  href={`#dept-${d.code}`}
-                  className="rounded-md border border-slate-200 bg-white px-2 py-1 text-xs text-slate-600 transition-colors hover:border-teal-300 hover:bg-teal-50 hover:text-teal-700"
-                >
-                  {d.code}
-                </a>
-              ))}
-            </div>
           </div>
         </section>
 
-        {/* Départements listing */}
+        {/* Départements grid */}
         <div className="mx-auto max-w-6xl px-4 py-6 sm:py-8">
-          {departements.map((dept) => (
-            <section key={dept.code} id={`dept-${dept.code}`} className="mb-8">
-              <div className="sticky top-0 z-10 -mx-4 mb-3 border-b border-slate-200 bg-[#fafbfc]/95 px-4 py-2 backdrop-blur-sm">
-                <h2 className="flex items-center gap-2 text-base font-semibold text-slate-900">
-                  <MapPin className="h-4 w-4 text-teal-600" />
-                  {dept.nom}
-                  <span className="text-sm font-normal text-slate-400">
-                    ({dept.code}) — {dept.villes.length} commune
-                    {dept.villes.length > 1 ? "s" : ""}
-                  </span>
-                </h2>
-              </div>
-
-              <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                {dept.villes.map((v) => (
-                  <Link
-                    key={v.code}
-                    href={`/ville/${makeVilleSlug(v.nom, v.code)}`}
-                    className="group flex items-center justify-between rounded-lg border border-slate-200 bg-white px-3 py-2.5 transition-colors hover:border-teal-300 hover:bg-teal-50/30"
-                  >
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium text-slate-900 group-hover:text-teal-700">
-                        {v.nom}
-                      </p>
-                      <p className="text-xs text-slate-400">
-                        {Number(v.total).toLocaleString("fr-FR")} copro
-                        {Number(v.total) > 1 ? "s" : ""}
-                      </p>
-                    </div>
-                    {v.avg_score != null && (
-                      <span
-                        className={`ml-2 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs font-bold ${scoreBg(Number(v.avg_score))} ${scoreColor(Number(v.avg_score))}`}
-                      >
-                        {Number(v.avg_score)}
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {depts.map((d) => {
+              const avg = d.avg_score != null ? Number(d.avg_score) : null;
+              return (
+                <Link
+                  key={d.code_dept}
+                  href={`/villes/${makeDeptSlug(d.nom_dept, d.code_dept)}`}
+                  className="group flex items-center gap-4 rounded-xl border border-slate-200 bg-white px-4 py-4 transition-colors hover:border-teal-300 hover:bg-teal-50/30"
+                >
+                  {avg !== null ? (
+                    <span
+                      className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-sm font-bold ${scoreBg(avg)} ${scoreColor(avg)}`}
+                    >
+                      {avg}
+                    </span>
+                  ) : (
+                    <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-sm font-bold text-slate-400">
+                      —
+                    </span>
+                  )}
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-semibold text-slate-900 group-hover:text-teal-700">
+                      {d.nom_dept}
+                      <span className="ml-1.5 font-normal text-slate-400">
+                        ({d.code_dept})
                       </span>
-                    )}
-                  </Link>
-                ))}
-              </div>
-            </section>
-          ))}
+                    </p>
+                    <p className="mt-0.5 text-xs text-slate-400">
+                      {Number(d.total).toLocaleString("fr-FR")} copro
+                      {Number(d.total) > 1 ? "s" : ""} ·{" "}
+                      {Number(d.nb_communes).toLocaleString("fr-FR")} commune
+                      {Number(d.nb_communes) > 1 ? "s" : ""}
+                    </p>
+                  </div>
+                  <ArrowRight className="h-4 w-4 shrink-0 text-slate-300 transition-colors group-hover:text-teal-600" />
+                </Link>
+              );
+            })}
+          </div>
         </div>
       </main>
 

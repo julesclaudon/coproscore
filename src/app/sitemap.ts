@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { prisma } from "@/lib/prisma";
-import { makeVilleSlug } from "@/lib/slug";
+import { makeVilleSlug, makeDeptSlug } from "@/lib/slug";
 
 const BATCH_SIZE = 50000;
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "https://coproscore.fr";
@@ -45,6 +45,23 @@ export default async function sitemap({
       priority: 0.8,
     }));
 
+    const depts = await prisma.$queryRawUnsafe<
+      { code: string; nom: string }[]
+    >(
+      `SELECT DISTINCT code_officiel_departement as code,
+              MODE() WITHIN GROUP (ORDER BY nom_officiel_departement) as nom
+       FROM coproprietes
+       WHERE code_officiel_departement IS NOT NULL
+         AND nom_officiel_departement IS NOT NULL
+       GROUP BY code_officiel_departement`
+    );
+
+    const deptUrls: MetadataRoute.Sitemap = depts.map((d) => ({
+      url: `${BASE_URL}/villes/${makeDeptSlug(d.nom, d.code)}`,
+      changeFrequency: "monthly",
+      priority: 0.8,
+    }));
+
     const staticPages: MetadataRoute.Sitemap = [
       { url: `${BASE_URL}/carte`, changeFrequency: "weekly", priority: 0.7 },
       { url: `${BASE_URL}/tarifs`, changeFrequency: "monthly", priority: 0.6 },
@@ -60,6 +77,7 @@ export default async function sitemap({
         priority: 1.0,
       },
       ...staticPages,
+      ...deptUrls,
       ...villeUrls,
     ];
   }

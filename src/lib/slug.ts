@@ -33,3 +33,15 @@ export function parseVilleSlug(slug: string): string | null {
   const match = slug.match(/-(\d{5})$/);
   return match ? match[1] : null;
 }
+
+export function makeDeptSlug(
+  nomDept: string,
+  codeDept: string
+): string {
+  return `${slugify(nomDept)}-${codeDept}`;
+}
+
+export function parseDeptSlug(slug: string): string | null {
+  const match = slug.match(/-(\d{2,3})$/);
+  return match ? match[1] : null;
+}
