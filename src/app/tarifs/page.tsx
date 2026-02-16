@@ -37,7 +37,7 @@ const TIERS = [
       "2 copropriétés voisines",
     ],
     cta: "Rechercher une copropriété",
-    ctaHref: "/recherche",
+    ctaHref: "/",
     highlighted: false,
   },
   {
@@ -55,7 +55,7 @@ const TIERS = [
       "PDF pro horodaté avec branding CoproScore",
     ],
     cta: "Télécharger le rapport — 4,90 €",
-    ctaHref: "/recherche",
+    ctaHref: "/",
     highlighted: true,
     badge: "Recommandé",
   },
