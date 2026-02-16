@@ -136,18 +136,13 @@ export function Header({ variant = "default", rightSlot }: HeaderProps) {
             <Link
               href="/pro"
               aria-current={pathname === "/pro" ? "page" : undefined}
-              className={
+              className={`rounded px-2 py-0.5 text-[10px] font-bold leading-none transition-colors ${
                 pathname === "/pro"
-                  ? "text-teal-600 font-semibold underline underline-offset-4 decoration-2 decoration-teal-500"
-                  : "transition-colors hover:text-teal-700"
-              }
+                  ? "bg-teal-600 text-white"
+                  : "bg-teal-100 text-teal-700 hover:bg-teal-200"
+              }`}
             >
-              <span className="inline-flex items-center gap-1">
-                Pro
-                <span className="rounded bg-teal-100 px-1.5 py-0.5 text-[10px] font-bold leading-none text-teal-700">
-                  PRO
-                </span>
-              </span>
+              PRO
             </Link>
             {!isLoading && (
               isLoggedIn ? (
