@@ -18,6 +18,7 @@ import {
   ChevronDown,
   Loader2,
   Settings,
+  ArrowRight,
 } from "lucide-react";
 
 /* ---------- Tier data ---------- */
@@ -250,6 +251,23 @@ function TarifsContent() {
           </div>
         </div>
       </section>
+
+      {/* Pro banner */}
+      <div className="border-b border-teal-100 bg-teal-50/60">
+        <div className="mx-auto flex max-w-6xl items-center justify-center gap-2 px-4 py-3 text-center text-sm">
+          <Crown className="h-4 w-4 shrink-0 text-teal-600" />
+          <span className="text-slate-600">
+            Vous êtes professionnel de l'immobilier ?
+          </span>
+          <Link
+            href="/pro"
+            className="inline-flex items-center gap-1 font-semibold text-teal-700 transition-colors hover:text-teal-900"
+          >
+            Découvrez notre offre dédiée
+            <ArrowRight className="h-3.5 w-3.5" />
+          </Link>
+        </div>
+      </div>
 
       {/* Pricing cards */}
       <main className="flex-1">

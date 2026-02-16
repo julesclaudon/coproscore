@@ -10,6 +10,7 @@ import {
   Map,
   BarChart3,
   CreditCard,
+  Crown,
   Star,
   Clock,
   Search,
@@ -32,6 +33,7 @@ const navLinks = [
   { href: "/carte", label: "Carte", icon: Map },
   { href: "/comparateur", label: "Comparateur", icon: BarChart3 },
   { href: "/tarifs", label: "Tarifs", icon: CreditCard },
+  { href: "/pro", label: "Pro", icon: Crown },
   { href: "/favoris", label: "Favoris", icon: Star },
   { href: "/historique", label: "Historique", icon: Clock },
   { href: "/methodologie", label: "Méthodologie", icon: BookOpen },
@@ -42,6 +44,7 @@ const desktopLinks = [
   { href: "/carte", label: "Carte" },
   { href: "/comparateur", label: "Comparateur" },
   { href: "/tarifs", label: "Tarifs" },
+  { href: "/pro", label: "Pro", badge: true },
 ] as const;
 
 export function Header({ variant = "default", rightSlot }: HeaderProps) {
@@ -126,7 +129,16 @@ export function Header({ variant = "default", rightSlot }: HeaderProps) {
                     : "transition-colors hover:text-teal-700"
                 }
               >
-                {l.label}
+                {"badge" in l && l.badge ? (
+                  <span className="inline-flex items-center gap-1">
+                    {l.label}
+                    <span className="rounded bg-teal-100 px-1.5 py-0.5 text-[10px] font-bold leading-none text-teal-700">
+                      PRO
+                    </span>
+                  </span>
+                ) : (
+                  l.label
+                )}
               </Link>
             ))}
             <FavoritesNavLink />

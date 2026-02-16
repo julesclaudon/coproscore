@@ -105,31 +105,31 @@ export default function ProPage() {
     <div className="flex min-h-screen flex-col bg-white">
       <Header />
 
-      {/* ─── Hero ─── */}
-      <section className="border-b bg-gradient-to-b from-teal-50/60 to-white">
-        <div className="mx-auto max-w-5xl px-4 py-16 text-center sm:py-24">
-          <span className="mb-4 inline-flex items-center gap-1.5 rounded-full border border-teal-200 bg-teal-50 px-3 py-1 text-xs font-semibold text-teal-700">
+      {/* ─── Hero — dark premium ─── */}
+      <section className="bg-slate-900">
+        <div className="mx-auto max-w-5xl px-4 py-20 text-center sm:py-28">
+          <span className="mb-5 inline-flex items-center gap-1.5 rounded-full border border-teal-400/30 bg-teal-500/10 px-3 py-1 text-xs font-semibold text-teal-400">
             <Crown className="h-3.5 w-3.5" />
             Offre Professionnels
           </span>
-          <h1 className="mx-auto max-w-3xl text-3xl font-bold tracking-tight text-slate-900 sm:text-5xl">
+          <h1 className="mx-auto max-w-3xl text-3xl font-bold tracking-tight text-white sm:text-5xl">
             CoproScore pour les professionnels
           </h1>
-          <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-slate-600">
+          <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-slate-400">
             Rassurez vos clients, fiabilisez vos dossiers, gagnez du temps.
             Accédez à l'analyse complète de toutes les copropriétés de France.
           </p>
-          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+          <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Link
               href="/tarifs"
-              className="inline-flex items-center gap-2 rounded-xl bg-teal-600 px-6 py-3.5 text-base font-semibold text-white shadow-sm transition-colors hover:bg-teal-700"
+              className="inline-flex items-center gap-2 rounded-xl bg-teal-500 px-6 py-3.5 text-base font-semibold text-white shadow-lg shadow-teal-500/25 transition-colors hover:bg-teal-400"
             >
               <Crown className="h-4 w-4" />
               Découvrir l'offre Pro
             </Link>
             <Link
               href="/copropriete/score-copropriete-45-bd-saint-marcel-75013-paris"
-              className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-6 py-3.5 text-base font-medium text-slate-700 transition-colors hover:border-teal-300 hover:bg-teal-50"
+              className="inline-flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-800 px-6 py-3.5 text-base font-medium text-slate-300 transition-colors hover:border-slate-600 hover:bg-slate-700 hover:text-white"
             >
               Voir un exemple de fiche
               <ArrowRight className="h-4 w-4" />
@@ -138,7 +138,7 @@ export default function ProPage() {
         </div>
       </section>
 
-      {/* ─── Pour qui ? ─── */}
+      {/* ─── Pour qui ? — white ─── */}
       <section className="border-b bg-white py-16 sm:py-20">
         <div className="mx-auto max-w-5xl px-4">
           <h2 className="text-center text-2xl font-bold text-slate-900 sm:text-3xl">
@@ -179,7 +179,7 @@ export default function ProPage() {
         </div>
       </section>
 
-      {/* ─── Pourquoi CoproScore ? ─── */}
+      {/* ─── Pourquoi CoproScore ? — slate-50 ─── */}
       <section className="border-b bg-slate-50 py-16 sm:py-20">
         <div className="mx-auto max-w-5xl px-4">
           <h2 className="text-center text-2xl font-bold text-slate-900 sm:text-3xl">
@@ -214,7 +214,7 @@ export default function ProPage() {
         </div>
       </section>
 
-      {/* ─── Pricing ─── */}
+      {/* ─── Pricing — white ─── */}
       <section className="border-b bg-white py-16 sm:py-20">
         <div className="mx-auto max-w-2xl px-4">
           <h2 className="text-center text-2xl font-bold text-slate-900 sm:text-3xl">
@@ -262,8 +262,8 @@ export default function ProPage() {
         </div>
       </section>
 
-      {/* ─── ROI ─── */}
-      <section className="border-b bg-gradient-to-r from-teal-700 to-teal-600 py-14 sm:py-16">
+      {/* ─── ROI — teal ─── */}
+      <section className="bg-gradient-to-r from-teal-700 to-teal-600 py-14 sm:py-16">
         <div className="mx-auto max-w-3xl px-4 text-center">
           <Zap className="mx-auto mb-4 h-8 w-8 text-teal-200" />
           <p className="text-2xl font-bold text-white sm:text-3xl">
@@ -277,27 +277,27 @@ export default function ProPage() {
         </div>
       </section>
 
-      {/* ─── CTA final ─── */}
-      <section className="bg-white py-16 sm:py-20">
+      {/* ─── CTA final — dark premium ─── */}
+      <section className="bg-slate-900 py-16 sm:py-20">
         <div className="mx-auto max-w-2xl px-4 text-center">
-          <h2 className="text-2xl font-bold text-slate-900 sm:text-3xl">
+          <h2 className="text-2xl font-bold text-white sm:text-3xl">
             Prêt à passer Pro ?
           </h2>
-          <p className="mt-3 text-base text-slate-500">
+          <p className="mt-3 text-base text-slate-400">
             Rejoignez les professionnels qui utilisent CoproScore pour
             fiabiliser leurs dossiers et gagner du temps.
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Link
               href="/tarifs"
-              className="inline-flex items-center gap-2 rounded-xl bg-teal-600 px-8 py-4 text-base font-semibold text-white shadow-sm transition-colors hover:bg-teal-700"
+              className="inline-flex items-center gap-2 rounded-xl bg-teal-500 px-8 py-4 text-base font-semibold text-white shadow-lg shadow-teal-500/25 transition-colors hover:bg-teal-400"
             >
               <Crown className="h-4 w-4" />
               Voir les tarifs et s'abonner
             </Link>
             <Link
               href="mailto:contact@coproscore.fr"
-              className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-8 py-4 text-base font-medium text-slate-700 transition-colors hover:border-teal-300 hover:bg-teal-50"
+              className="inline-flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-800 px-8 py-4 text-base font-medium text-slate-300 transition-colors hover:border-slate-600 hover:bg-slate-700 hover:text-white"
             >
               Une question ? Contactez-nous
             </Link>
