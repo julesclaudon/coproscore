@@ -53,9 +53,10 @@ export default function ConfidentialitePage() {
                   est :
                 </p>
                 <p>
-                  <strong>Jules Claudon</strong> — ComKeys, entrepreneur
-                  individuel
+                  <strong>ComKeys</strong> — SIRET 940 509 474 00018
                 </p>
+                <p>60 rue François Ier, 75008 Paris</p>
+                <p>Responsable : Jules Claudon</p>
                 <p>
                   Email :{" "}
                   <a

@@ -49,9 +49,9 @@ export default function CgvPage() {
                 <p>
                   Les présentes Conditions Générales de
                   Vente (CGV) régissent les ventes de services
-                  proposés par CoproScore, édité par Jules
-                  Claudon — ComKeys, entrepreneur individuel, à
-                  tout utilisateur du site{" "}
+                  proposés par CoproScore, édité par
+                  ComKeys (SIRET 940 509 474 00018, 60 rue François
+                  Ier, 75008 Paris), à tout utilisateur du site{" "}
                   <strong>coproscore.fr</strong> (ci-après
                   « le Client »).
                 </p>

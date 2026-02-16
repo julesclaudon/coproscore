@@ -48,11 +48,10 @@ export default function MentionsLegalesPage() {
                   <strong>coproscore.fr</strong> est édité par :
                 </p>
                 <p>
-                  <strong>Jules Claudon</strong> — ComKeys, entrepreneur
-                  individuel
+                  <strong>ComKeys</strong> — SIRET 940 509 474 00018
                 </p>
-                <p>Adresse : [adresse à compléter]</p>
-                <p>SIRET : [à compléter]</p>
+                <p>60 rue François Ier, 75008 Paris</p>
+                <p>Directeur de la publication : Jules Claudon</p>
                 <p>
                   Email :{" "}
                   <a
@@ -63,16 +62,6 @@ export default function MentionsLegalesPage() {
                   </a>
                 </p>
               </div>
-            </section>
-
-            {/* Directeur de la publication */}
-            <section>
-              <h2 className="mb-4 text-xl font-bold text-slate-900">
-                Directeur de la publication
-              </h2>
-              <p className="text-base leading-relaxed text-slate-600">
-                Jules Claudon
-              </p>
             </section>
 
             {/* Hébergement */}
