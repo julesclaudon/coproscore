@@ -46,6 +46,13 @@ export async function POST(request: NextRequest) {
             update: {},
           });
         }
+        // Save stripeCustomerId so the billing portal works
+        if (session.customer) {
+          await prisma.user.update({
+            where: { id: userId },
+            data: { stripeCustomerId: session.customer as string },
+          });
+        }
       }
 
       if (type === "pro" && userId) {
@@ -56,6 +63,7 @@ export async function POST(request: NextRequest) {
           where: { id: userId },
           data: {
             role: "PRO",
+            stripeCustomerId: session.customer as string,
             stripeSubscriptionId: subscription.id,
             stripePriceId: subscription.items.data[0]?.price.id,
             stripeCurrentPeriodEnd: getPeriodEnd(subscription),
