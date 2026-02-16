@@ -376,16 +376,16 @@ export function ProContent() {
             Comparez votre workflow actuel avec CoproScore Pro.
           </p>
 
-          <div className="mt-12 grid items-start gap-8 lg:grid-cols-[1fr_340px]">
+          <div className="mt-12 grid items-center gap-8 lg:grid-cols-[1fr_280px]">
             {/* Comparison table */}
             <ScaleIn>
-              <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
-                <div className="grid grid-cols-3 border-b bg-slate-50 text-xs font-semibold">
-                  <div className="px-4 py-3 text-slate-500" />
-                  <div className="flex items-center gap-1.5 border-l px-4 py-3 text-slate-500">
+              <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+                <div className="grid grid-cols-3 border-b text-xs font-semibold">
+                  <div className="bg-slate-50 px-4 py-3 text-slate-500" />
+                  <div className="flex items-center gap-1.5 border-l bg-slate-50 px-4 py-3 text-slate-500">
                     <XIcon className="h-3.5 w-3.5 text-red-400" /> Sans CoproScore
                   </div>
-                  <div className="flex items-center gap-1.5 border-l px-4 py-3 text-teal-700">
+                  <div className="flex items-center gap-1.5 border-l bg-teal-50 px-4 py-3 text-teal-700">
                     <Check className="h-3.5 w-3.5 text-teal-500" /> Avec CoproScore
                   </div>
                 </div>
@@ -393,7 +393,7 @@ export function ProContent() {
                   <div key={i} className={`grid grid-cols-3 text-sm ${i < COMPARISON.length - 1 ? "border-b" : ""}`}>
                     <div className="px-4 py-3.5 font-medium text-slate-700">{row.label}</div>
                     <div className="border-l px-4 py-3.5 text-slate-400">{row.without}</div>
-                    <div className="border-l px-4 py-3.5 font-medium text-teal-700">{row.with}</div>
+                    <div className="border-l bg-teal-50/60 px-4 py-3.5 font-medium text-teal-700">{row.with}</div>
                   </div>
                 ))}
               </div>
@@ -402,29 +402,29 @@ export function ProContent() {
             {/* Pricing card with shine */}
             <ScaleIn>
               <div className="pro-shine relative overflow-hidden rounded-2xl border-2 border-teal-500 bg-white shadow-xl shadow-teal-500/10">
-                <div className="bg-gradient-to-r from-teal-600 to-teal-500 px-6 py-4 text-center">
-                  <p className="flex items-center justify-center gap-2 text-lg font-bold text-white">
-                    <Crown className="h-5 w-5" /> Accès Pro
+                <div className="bg-gradient-to-r from-teal-600 to-teal-500 px-5 py-3 text-center">
+                  <p className="flex items-center justify-center gap-2 text-base font-bold text-white">
+                    <Crown className="h-4 w-4" /> Accès Pro
                   </p>
                 </div>
-                <div className="p-6">
+                <div className="p-5">
                   <div className="flex items-baseline justify-center gap-2">
-                    <span className="text-4xl font-bold text-slate-900">29 €</span>
-                    <span className="text-base text-slate-500">/mois TTC</span>
+                    <span className="text-3xl font-bold text-slate-900">29 €</span>
+                    <span className="text-sm text-slate-500">/mois TTC</span>
                   </div>
-                  <p className="mt-1 text-center text-sm text-slate-400">ou 290 €/an (2 mois offerts)</p>
-                  <ul className="mt-5 space-y-2.5">
+                  <p className="mt-1 text-center text-xs text-slate-400">ou 290 €/an (2 mois offerts)</p>
+                  <ul className="mt-4 space-y-2">
                     {PRO_FEATURES.map((f) => (
                       <li key={f} className="flex items-start gap-2">
-                        <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-teal-500" />
-                        <span className="text-sm text-slate-700">{f}</span>
+                        <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-teal-500" />
+                        <span className="text-xs text-slate-700">{f}</span>
                       </li>
                     ))}
                   </ul>
-                  <Link href="/tarifs" className="mt-6 flex items-center justify-center gap-2 rounded-xl bg-teal-600 px-6 py-3.5 text-base font-semibold text-white shadow-sm transition-all duration-200 hover:scale-[1.02] hover:bg-teal-700 hover:shadow-md active:scale-[0.98]">
+                  <Link href="/tarifs" className="mt-5 flex items-center justify-center gap-2 rounded-xl bg-teal-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:scale-[1.02] hover:bg-teal-700 hover:shadow-md active:scale-[0.98]">
                     <Crown className="h-4 w-4" /> S'abonner
                   </Link>
-                  <p className="mt-3 text-center text-xs text-slate-400">14 jours d'essai gratuit · Résiliation à tout moment</p>
+                  <p className="mt-2.5 text-center text-[11px] text-slate-400">14 jours d'essai gratuit · Résiliation à tout moment</p>
                 </div>
               </div>
             </ScaleIn>

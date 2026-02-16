@@ -33,9 +33,9 @@ const navLinks = [
   { href: "/carte", label: "Carte", icon: Map },
   { href: "/comparateur", label: "Comparateur", icon: BarChart3 },
   { href: "/tarifs", label: "Tarifs", icon: CreditCard },
-  { href: "/pro", label: "Pro", icon: Crown },
   { href: "/favoris", label: "Favoris", icon: Star },
   { href: "/historique", label: "Historique", icon: Clock },
+  { href: "/pro", label: "Pro", icon: Crown },
   { href: "/methodologie", label: "Méthodologie", icon: BookOpen },
   { href: "/mentions-legales", label: "Mentions légales", icon: Scale },
 ] as const;
@@ -44,7 +44,6 @@ const desktopLinks = [
   { href: "/carte", label: "Carte" },
   { href: "/comparateur", label: "Comparateur" },
   { href: "/tarifs", label: "Tarifs" },
-  { href: "/pro", label: "Pro", badge: true },
 ] as const;
 
 export function Header({ variant = "default", rightSlot }: HeaderProps) {
@@ -129,20 +128,27 @@ export function Header({ variant = "default", rightSlot }: HeaderProps) {
                     : "transition-colors hover:text-teal-700"
                 }
               >
-                {"badge" in l && l.badge ? (
-                  <span className="inline-flex items-center gap-1">
-                    {l.label}
-                    <span className="rounded bg-teal-100 px-1.5 py-0.5 text-[10px] font-bold leading-none text-teal-700">
-                      PRO
-                    </span>
-                  </span>
-                ) : (
-                  l.label
-                )}
+                {l.label}
               </Link>
             ))}
             <FavoritesNavLink />
             <HistoryNavLink />
+            <Link
+              href="/pro"
+              aria-current={pathname === "/pro" ? "page" : undefined}
+              className={
+                pathname === "/pro"
+                  ? "text-teal-600 font-semibold underline underline-offset-4 decoration-2 decoration-teal-500"
+                  : "transition-colors hover:text-teal-700"
+              }
+            >
+              <span className="inline-flex items-center gap-1">
+                Pro
+                <span className="rounded bg-teal-100 px-1.5 py-0.5 text-[10px] font-bold leading-none text-teal-700">
+                  PRO
+                </span>
+              </span>
+            </Link>
             {!isLoading && (
               isLoggedIn ? (
                 <div className="flex items-center gap-2 border-l border-slate-200 pl-4">
