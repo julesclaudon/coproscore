@@ -19,10 +19,11 @@ export async function generateSitemaps() {
 }
 
 export default async function sitemap({
-  id,
+  id: idParam,
 }: {
-  id: number;
+  id: number | Promise<number>;
 }): Promise<MetadataRoute.Sitemap> {
+  const id = Number(await idParam);
   const [{ count }] = await prisma.$queryRawUnsafe<[{ count: bigint }]>(
     `SELECT COUNT(*) as count FROM coproprietes WHERE slug IS NOT NULL`
   );
@@ -92,9 +93,7 @@ export default async function sitemap({
      FROM coproprietes
      WHERE slug IS NOT NULL
      ORDER BY id
-     LIMIT $1 OFFSET $2`,
-    BATCH_SIZE,
-    offset
+     LIMIT ${BATCH_SIZE} OFFSET ${offset}`
   );
 
   return rows.map((r) => ({
