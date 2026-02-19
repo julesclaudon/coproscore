@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { prisma } from "@/lib/prisma";
 import { makeVilleSlug, makeDeptSlug } from "@/lib/slug";
 
-const BATCH_SIZE = 50000;
+const BATCH_SIZE = 10000;
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "https://coproscore.fr";
 
 export async function generateSitemaps() {
@@ -11,7 +11,7 @@ export async function generateSitemaps() {
   );
   const total = Number(count);
 
-  // Copro sitemaps (batches of 50K)
+  // Copro sitemaps (batches of 10K)
   const coproBatches = Math.ceil(total / BATCH_SIZE);
 
   // +1 extra sitemap for ville pages + homepage
