@@ -592,16 +592,6 @@ export default async function CoproprietePage({
         ? [{ "@type": "PropertyValue", name: "Type de syndic", value: copro.typeSyndic }]
         : []),
     ],
-    ...(copro.scoreGlobal != null && {
-      aggregateRating: {
-        "@type": "AggregateRating",
-        ratingValue: +(copro.scoreGlobal / 20).toFixed(1),
-        bestRating: 5,
-        worstRating: 0,
-        ratingCount: [copro.scoreTechnique, copro.scoreRisques, copro.scoreGouvernance, copro.scoreEnergie, copro.scoreMarche]
-          .filter((v) => v != null).length,
-      },
-    }),
   };
 
   const jsonLdBreadcrumb = {
