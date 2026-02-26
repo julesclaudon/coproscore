@@ -42,6 +42,6 @@ export function makeDeptSlug(
 }
 
 export function parseDeptSlug(slug: string): string | null {
-  const match = slug.match(/-(\d{2,3})$/);
+  const match = slug.match(/-((?:2[AB])?\d{1,3})$/);
   return match ? match[1] : null;
 }
