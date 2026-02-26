@@ -4,6 +4,9 @@ export const metadata: Metadata = {
   title: "Comparateur de copropriétés",
   description:
     "Comparez jusqu'à 4 copropriétés côte à côte : scores, DPE, prix au m², gouvernance. Identifiez les forces et faiblesses de chaque copropriété.",
+  alternates: {
+    canonical: "https://coproscore.fr/comparateur",
+  },
 };
 
 export default function ComparateurLayout({

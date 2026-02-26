@@ -30,7 +30,7 @@ export function makeVilleSlug(
 }
 
 export function parseVilleSlug(slug: string): string | null {
-  const match = slug.match(/-(\d{5})$/);
+  const match = slug.match(/-((?:2[AB])?\d{2,5})$/);
   return match ? match[1] : null;
 }
 

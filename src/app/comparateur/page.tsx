@@ -378,8 +378,13 @@ function ComparateurPage() {
     return Array.from(map.entries());
   }, []);
 
+  const hasIds = searchParams.has("ids");
+
   return (
     <div className="flex min-h-screen flex-col bg-slate-50/50">
+      {hasIds && (
+        <meta name="robots" content="noindex, follow" />
+      )}
       {/* Header */}
       <Header />
 

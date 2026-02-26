@@ -5,7 +5,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/api/", "/recherche", "/favoris", "/historique", "/alertes"],
+      disallow: ["/api/", "/recherche", "/favoris", "/historique", "/alertes", "/comparateur"],
     },
     sitemap: "https://coproscore.fr/sitemap.xml",
   };
