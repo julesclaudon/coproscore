@@ -571,33 +571,87 @@ function addPageFooter(doc: Doc) {
 function renderCover(doc: Doc, data: ReportInput) {
   const cx = PW / 2;
 
-  // ── Teal banner ──
-  doc.rect(0, 0, PW, 160).fill(TEAL);
+  // ── Hero header with teal gradient (0 → 340px) ──
+  const headerH = 340;
+  const grad = doc.linearGradient(0, 0, 0, headerH);
+  grad.stop(0, "#0a7568").stop(1, "#0d9488");
+  doc.rect(0, 0, PW, headerH).fill(grad);
 
-  doc.font("Helvetica-Bold").fontSize(32).fillColor(WHITE);
-  doc.text("CoproScore", 0, 48, { width: PW, align: "center" });
+  // Subtle decorative horizontal lines for texture
+  doc.save();
+  doc.lineWidth(0.3).strokeColor(WHITE).strokeOpacity(0.07);
+  for (let ly = 30; ly < headerH; ly += 20) {
+    doc.moveTo(0, ly).lineTo(PW, ly).stroke();
+  }
+  doc.restore();
 
-  doc.font("Helvetica").fontSize(13).fillColor(TEAL_100);
-  doc.text("Rapport d'analyse complet", 0, 88, {
-    width: PW,
+  // "COPROSCORE" top left
+  doc.save();
+  doc.font("Helvetica-Bold").fontSize(14).fillColor(WHITE, 0.9);
+  doc.text("COPROSCORE", M, 24, { lineBreak: false });
+  doc.restore();
+
+  // "Rapport d'analyse" top right
+  doc.save();
+  doc.font("Helvetica").fontSize(10).fillColor(WHITE, 0.7);
+  doc.text("Rapport d'analyse", PW - M - 120, 26, {
+    width: 120,
+    align: "right",
+    lineBreak: false,
+  });
+  doc.restore();
+
+  // Copro name (big, white, bold, centered)
+  doc.font("Helvetica-Bold").fontSize(22).fillColor(WHITE);
+  const nameW = CW - 40;
+  const nameH = doc.heightOfString(data.displayName, { width: nameW });
+  doc.text(data.displayName, (PW - nameW) / 2, 190, {
+    width: nameW,
     align: "center",
   });
 
-  // ── Score gauge (bigger) ──
-  const gaugeY = 270;
-  drawScoreGauge(doc, cx, gaugeY, 75, data.scoreGlobal);
+  // Address + city line
+  const cityPart = [data.codePostal, data.commune].filter(Boolean).join(" ");
+  const addressLine = [data.address, cityPart].filter(Boolean).join(" — ");
+  if (addressLine) {
+    doc.save();
+    doc.font("Helvetica").fontSize(11).fillColor(TEAL_100, 0.85);
+    doc.text(addressLine, 0, 190 + nameH + 6, {
+      width: PW,
+      align: "center",
+    });
+    doc.restore();
+  }
 
-  // Score label
+  // ── Score gauge with white circle background ──
+  const gaugeR = 66;
+  const gaugeCY = headerH;
+  const bgCircleR = gaugeR + 18;
+
+  // Shadow circle (offset slightly down-right)
+  doc.save();
+  doc.fillOpacity(0.06);
+  doc.circle(cx + 1.5, gaugeCY + 2, bgCircleR).fill("#334155");
+  doc.restore();
+
+  // White background circle
+  doc.circle(cx, gaugeCY, bgCircleR).fill(WHITE);
+
+  // Score gauge (arc + number)
+  drawScoreGauge(doc, cx, gaugeCY, gaugeR, data.scoreGlobal);
+
+  // ── Score label + confidence ──
+  const labelY = gaugeCY + bgCircleR + 6;
   doc
     .font("Helvetica-Bold")
-    .fontSize(15)
+    .fontSize(16)
     .fillColor(sc(data.scoreGlobal))
-    .text(sl(data.scoreGlobal), 0, gaugeY + 65, {
+    .text(sl(data.scoreGlobal), 0, labelY, {
       width: PW,
       align: "center",
     });
 
-  // Confidence
+  let nextY = labelY + 22;
   if (data.indiceConfiance != null) {
     doc
       .font("Helvetica")
@@ -606,40 +660,17 @@ function renderCover(doc: Doc, data: ReportInput) {
       .text(
         `Indice de confiance : ${Math.round(data.indiceConfiance)} %`,
         0,
-        gaugeY + 84,
+        nextY,
         { width: PW, align: "center" }
       );
+    nextY += 16;
   }
 
-  // ── Copro info card ──
-  const cardY = gaugeY + 104;
-  doc.font("Helvetica-Bold").fontSize(12);
-  const nameH = doc.heightOfString(data.displayName, { width: CW - 32 });
-  const cityLine = [data.codePostal, data.commune].filter(Boolean).join(" ");
-  const cardH = nameH + (cityLine ? 28 : 16);
-
-  doc.save();
-  doc.lineWidth(0.5);
-  doc.roundedRect(M, cardY, CW, cardH, 6).fillAndStroke(WHITE, BORDER);
-
-  doc.font("Helvetica-Bold").fontSize(12).fillColor(TEXT);
-  doc.text(data.displayName, M + 16, cardY + 8, {
-    width: CW - 32,
-    align: "center",
-  });
-  if (cityLine) {
-    doc.font("Helvetica").fontSize(10).fillColor(TEXT_SEC);
-    doc.text(cityLine, M + 16, cardY + 8 + nameH + 3, {
-      width: CW - 32,
-      align: "center",
-    });
-  }
-  doc.restore();
-
-  // ── Stat cards (bigger) ──
-  const cardsY = cardY + cardH + 14;
+  // ── Stat cards (60px tall) ──
+  const cardsY = nextY + 14;
   const gap = 10;
   const cardW = (CW - 3 * gap) / 4;
+  const cardH = 60;
 
   const stats: { label: string; value: string; accent?: string }[] = [
     {
@@ -673,20 +704,20 @@ function renderCover(doc: Doc, data: ReportInput) {
       sx,
       cardsY,
       cardW,
-      52,
+      cardH,
       stats[i].label,
       stats[i].value,
       stats[i].accent
     );
   }
 
-  // ── Dimension score strip ──
-  const stripY = cardsY + 66;
+  // ── Sous-scores section ──
+  const subDivY = cardsY + cardH + 22;
 
   doc.save();
   doc
-    .moveTo(M + 60, stripY - 6)
-    .lineTo(PW - M - 60, stripY - 6)
+    .moveTo(M, subDivY)
+    .lineTo(PW - M, subDivY)
     .strokeColor(BORDER)
     .lineWidth(0.5)
     .stroke();
@@ -694,57 +725,52 @@ function renderCover(doc: Doc, data: ReportInput) {
 
   doc
     .font("Helvetica-Bold")
-    .fontSize(9)
+    .fontSize(10)
     .fillColor(TEXT)
-    .text("Sous-scores", 0, stripY + 4, { width: PW, align: "center" });
+    .text("Sous-scores", 0, subDivY + 8, { width: PW, align: "center" });
 
-  const dimStripY = stripY + 20;
-  const dimSlotW = CW / 5;
-  const barW = dimSlotW - 24;
+  // Dimension bars (full-width horizontal layout)
+  const dimStartY = subDivY + 28;
+  const dimRowH = 26;
+  const dimLabelW = 90;
+  const dimScoreW = 50;
+  const barX = M + dimLabelW;
+  const barW = CW - dimLabelW - dimScoreW - 10;
 
   for (let i = 0; i < data.dimensions.length; i++) {
     const dim = data.dimensions[i];
-    const dx = M + i * dimSlotW;
+    const dy = dimStartY + i * dimRowH;
     const dimColor = DIM_COLORS[dim.label] || TEAL;
     const pct = dim.score != null ? dim.score / dim.max : 0;
 
-    // Label
-    const shortLabel =
-      dim.label === "Gouvernance"
-        ? "Gouv."
-        : dim.label === "Énergie"
-          ? "Éner."
-          : dim.label === "Marché"
-            ? "March."
-            : dim.label;
-    doc.font("Helvetica").fontSize(7).fillColor(TEXT_SEC);
-    doc.text(shortLabel, dx, dimStripY, {
-      width: dimSlotW,
-      align: "center",
+    // Label (full name, no abbreviation needed)
+    doc.font("Helvetica").fontSize(9).fillColor(TEXT_SEC);
+    doc.text(dim.label, M, dy + 1, {
+      width: dimLabelW,
       lineBreak: false,
     });
 
-    // Mini progress bar
-    const bx = dx + (dimSlotW - barW) / 2;
-    drawProgressBar(doc, bx, dimStripY + 12, barW, 5, pct, BG_CARD, dimColor);
+    // Progress bar (8px tall)
+    drawProgressBar(doc, barX, dy + 2, barW, 8, pct, BG_CARD, dimColor);
 
-    // Score
+    // Score text
     const scoreText =
       dim.score != null ? `${dim.score}/${dim.max}` : "—";
-    doc.font("Helvetica-Bold").fontSize(7).fillColor(TEXT);
-    doc.text(scoreText, dx, dimStripY + 22, {
-      width: dimSlotW,
-      align: "center",
+    doc.font("Helvetica-Bold").fontSize(9).fillColor(TEXT);
+    doc.text(scoreText, M + CW - dimScoreW, dy + 1, {
+      width: dimScoreW,
+      align: "right",
       lineBreak: false,
     });
   }
 
   // ── Footer ──
+  const footerY = dimStartY + data.dimensions.length * dimRowH + 26;
   doc
     .font("Helvetica")
     .fontSize(9)
     .fillColor(TEXT_MUTED)
-    .text(`Rapport généré le ${fmtDate()}`, 0, 720, {
+    .text(`Rapport généré le ${fmtDate()}`, 0, footerY, {
       width: PW,
       align: "center",
     });
@@ -755,7 +781,7 @@ function renderCover(doc: Doc, data: ReportInput) {
     .text(
       "coproscore.fr — Données issues du RNIC, DVF, DPE ADEME",
       0,
-      738,
+      footerY + 16,
       { width: PW, align: "center" }
     );
 }
