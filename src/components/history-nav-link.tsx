@@ -1,16 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { Clock } from "lucide-react";
 import { getHistoryCount } from "@/lib/history";
 
 export function HistoryNavLink() {
+  const { data: session } = useSession();
+  const userId = session?.user?.id;
   const [count, setCount] = useState(0);
 
   useEffect(() => {
-    setCount(getHistoryCount());
-  }, []);
+    setCount(getHistoryCount(userId));
+  }, [userId]);
 
   return (
     <Link

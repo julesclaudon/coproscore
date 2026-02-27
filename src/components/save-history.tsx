@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { useSession } from "next-auth/react";
 import { addToHistory } from "@/lib/history";
 
 export function SaveHistory({
@@ -14,9 +15,12 @@ export function SaveHistory({
   adresse: string;
   score: number | null;
 }) {
+  const { data: session } = useSession();
+  const userId = session?.user?.id;
+
   useEffect(() => {
-    addToHistory({ slug, nom, adresse, score });
-  }, [slug, nom, adresse, score]);
+    addToHistory({ slug, nom, adresse, score }, userId);
+  }, [slug, nom, adresse, score, userId]);
 
   return null;
 }

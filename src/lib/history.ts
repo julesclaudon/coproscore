@@ -6,13 +6,17 @@ export interface HistoryEntry {
   visitedAt: string;
 }
 
-const STORAGE_KEY = "coproscore_history";
+const STORAGE_PREFIX = "coproscore_history";
 const MAX_ENTRIES = 50;
 
-export function getHistory(): HistoryEntry[] {
+function storageKey(userId?: string): string {
+  return userId ? `${STORAGE_PREFIX}_${userId}` : STORAGE_PREFIX;
+}
+
+export function getHistory(userId?: string): HistoryEntry[] {
   if (typeof window === "undefined") return [];
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(storageKey(userId));
     if (!raw) return [];
     return JSON.parse(raw) as HistoryEntry[];
   } catch {
@@ -20,27 +24,27 @@ export function getHistory(): HistoryEntry[] {
   }
 }
 
-export function addToHistory(entry: Omit<HistoryEntry, "visitedAt">): void {
+export function addToHistory(entry: Omit<HistoryEntry, "visitedAt">, userId?: string): void {
   if (typeof window === "undefined") return;
   try {
-    const history = getHistory().filter((e) => e.slug !== entry.slug);
+    const history = getHistory(userId).filter((e) => e.slug !== entry.slug);
     history.unshift({ ...entry, visitedAt: new Date().toISOString() });
     if (history.length > MAX_ENTRIES) history.length = MAX_ENTRIES;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+    localStorage.setItem(storageKey(userId), JSON.stringify(history));
   } catch {
     // localStorage might be full or disabled
   }
 }
 
-export function clearHistory(): void {
+export function clearHistory(userId?: string): void {
   if (typeof window === "undefined") return;
   try {
-    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(storageKey(userId));
   } catch {
     // ignore
   }
 }
 
-export function getHistoryCount(): number {
-  return getHistory().length;
+export function getHistoryCount(userId?: string): number {
+  return getHistory(userId).length;
 }

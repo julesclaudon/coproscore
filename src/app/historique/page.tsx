@@ -48,21 +48,22 @@ function timeAgo(iso: string): string {
 }
 
 export default function HistoriquePage() {
+  const { data: session } = useSession();
+  const userId = session?.user?.id;
+  const role = (session?.user as { role?: string } | undefined)?.role;
+
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setHistory(getHistory());
+    setHistory(getHistory(userId));
     setMounted(true);
-  }, []);
+  }, [userId]);
 
   function handleClear() {
-    clearHistoryStorage();
+    clearHistoryStorage(userId);
     setHistory([]);
   }
-
-  const { data: session } = useSession();
-  const role = (session?.user as { role?: string } | undefined)?.role;
   const isPro = role === "PRO" || role === "ADMIN";
   const isFree = !isPro;
   const visibleCount = isPro ? history.length : 5;
