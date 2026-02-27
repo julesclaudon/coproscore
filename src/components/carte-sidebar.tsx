@@ -138,52 +138,46 @@ export function CarteSidebar({
       </div>
 
       {/* Syndic — toggle pills */}
-      <div className={!isPro ? "relative" : ""}>
-        {!isPro && <FilterLock />}
-        <div className={!isPro ? "opacity-50 pointer-events-none" : ""}>
-          <p className="mb-2 text-xs font-medium text-slate-500">
-            Type de syndic
-          </p>
-          <div className="flex flex-wrap gap-1.5">
-            {SYNDIC_OPTIONS.map((opt) => (
-              <button
-                key={opt.value}
-                onClick={() => selectSyndic(opt.value)}
-                className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
-                  isSyndicActive(opt.value)
-                    ? "border-teal-500 bg-teal-500/10 text-teal-700"
-                    : "border-slate-200 text-slate-500 hover:border-slate-300"
-                }`}
-              >
-                {opt.label}
-              </button>
-            ))}
-          </div>
+      <div>
+        <p className="mb-2 text-xs font-medium text-slate-500">
+          Type de syndic
+        </p>
+        <div className="flex flex-wrap gap-1.5">
+          {SYNDIC_OPTIONS.map((opt) => (
+            <button
+              key={opt.value}
+              onClick={() => selectSyndic(opt.value)}
+              className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
+                isSyndicActive(opt.value)
+                  ? "border-teal-500 bg-teal-500/10 text-teal-700"
+                  : "border-slate-200 text-slate-500 hover:border-slate-300"
+              }`}
+            >
+              {opt.label}
+            </button>
+          ))}
         </div>
       </div>
 
       {/* Période — toggle pills */}
-      <div className={!isPro ? "relative" : ""}>
-        {!isPro && <FilterLock />}
-        <div className={!isPro ? "opacity-50 pointer-events-none" : ""}>
-          <p className="mb-2 text-xs font-medium text-slate-500">
-            Période de construction
-          </p>
-          <div className="flex flex-wrap gap-1.5">
-            {PERIOD_OPTIONS.map((opt) => (
-              <button
-                key={opt.value}
-                onClick={() => selectPeriode(opt.value)}
-                className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
-                  isPeriodeActive(opt.value)
-                    ? "border-teal-500 bg-teal-500/10 text-teal-700"
-                    : "border-slate-200 text-slate-500 hover:border-slate-300"
-                }`}
-              >
-                {opt.label}
-              </button>
-            ))}
-          </div>
+      <div>
+        <p className="mb-2 text-xs font-medium text-slate-500">
+          Période de construction
+        </p>
+        <div className="flex flex-wrap gap-1.5">
+          {PERIOD_OPTIONS.map((opt) => (
+            <button
+              key={opt.value}
+              onClick={() => selectPeriode(opt.value)}
+              className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
+                isPeriodeActive(opt.value)
+                  ? "border-teal-500 bg-teal-500/10 text-teal-700"
+                  : "border-slate-200 text-slate-500 hover:border-slate-300"
+              }`}
+            >
+              {opt.label}
+            </button>
+          ))}
         </div>
       </div>
 
