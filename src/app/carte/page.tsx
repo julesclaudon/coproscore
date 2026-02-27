@@ -27,6 +27,7 @@ const CarteMap = dynamic(() => import("@/components/carte-map"), {
 export default function CartePage() {
   const { data: session } = useSession();
   const role = (session?.user as { role?: string } | undefined)?.role;
+  const isLoggedIn = !!session?.user;
   const isPro = role === "PRO" || role === "ADMIN";
 
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -62,6 +63,7 @@ export default function CartePage() {
             points={points}
             onBoundsChange={handleBoundsChange}
             flyTo={flyTo}
+            isLoggedIn={isLoggedIn}
             isPro={isPro}
           />
         </div>

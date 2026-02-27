@@ -64,6 +64,7 @@ interface CarteMapProps {
   points: CartePoint[];
   onBoundsChange: (bounds: CarteBounds, zoom: number) => void;
   flyTo?: { lat: number; lng: number; zoom: number } | null;
+  isLoggedIn: boolean;
   isPro: boolean;
 }
 
@@ -73,7 +74,7 @@ type HoverInfo =
 
 /* ── Component ─────────────────────────────────────────────────── */
 
-export default function CarteMap({ points, onBoundsChange, flyTo, isPro }: CarteMapProps) {
+export default function CarteMap({ points, onBoundsChange, flyTo, isLoggedIn, isPro }: CarteMapProps) {
   const mapRef = useRef<MapRef>(null);
   const [viewState, setViewState] = useState({
     latitude: 46.6,
@@ -422,7 +423,7 @@ export default function CarteMap({ points, onBoundsChange, flyTo, isPro }: Carte
             </div>
 
             <div className="mt-3 flex items-center gap-2">
-              {isPro ? (
+              {isLoggedIn ? (
                 <>
                   <Link
                     href={`/copropriete/${clicked.point.slug}`}
@@ -430,9 +431,11 @@ export default function CarteMap({ points, onBoundsChange, flyTo, isPro }: Carte
                   >
                     Voir la fiche →
                   </Link>
-                  <button className="rounded-lg border border-slate-200 p-2 text-slate-400 hover:text-amber-500 transition-colors">
-                    <Star className="h-4 w-4" />
-                  </button>
+                  {isPro && (
+                    <button className="rounded-lg border border-slate-200 p-2 text-slate-400 hover:text-amber-500 transition-colors">
+                      <Star className="h-4 w-4" />
+                    </button>
+                  )}
                 </>
               ) : (
                 <Link
