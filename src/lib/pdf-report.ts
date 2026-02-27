@@ -686,7 +686,11 @@ function renderCover(doc: Doc, data: ReportInput) {
     },
     {
       label: "Construction",
-      value: formatPeriod(data.periodeConstruction) || "—",
+      value:
+        formatPeriod(data.periodeConstruction)
+          ?.replace(/^entre (\d+) et (\d+)$/, "$1–$2")
+          .replace(/^avant /, "< ")
+          .replace(/^après /, "> ") || "—",
     },
     {
       label: "DPE",
