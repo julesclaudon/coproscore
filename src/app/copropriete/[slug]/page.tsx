@@ -94,6 +94,7 @@ export async function generateMetadata({
       scoreEnergie: true,
       scoreMarche: true,
       typeSyndic: true,
+      dpeClasseMediane: true,
     },
   });
   if (!copro) return {};
@@ -126,10 +127,16 @@ export async function generateMetadata({
     ? `${displayName} — Score ${copro.scoreGlobal}/100`
     : `${displayName} — Score copropriété`;
 
-  const descParts = [`Score détaillé de ${displayName} à ${ville}`];
-  if (dimensionText) descParts.push(dimensionText);
-  if (details) descParts.push(details);
-  const description = descParts.join(". ") + ".";
+  // Meta description (target 140-160 chars)
+  const metaDetails: string[] = [];
+  if (copro.scoreGlobal != null) metaDetails.push(`score de santé ${copro.scoreGlobal}/100`);
+  if (copro.nbLotsHabitation != null) metaDetails.push(`${copro.nbLotsHabitation} lots`);
+  if (copro.typeSyndic) metaDetails.push(`syndic ${copro.typeSyndic.toLowerCase()}`);
+  if (copro.dpeClasseMediane) metaDetails.push(`DPE ${copro.dpeClasseMediane}`);
+  const metaSuffix = "Analyse complète basée sur données publiques RNIC, DVF, ADEME.";
+  const description = metaDetails.length > 0
+    ? `Copropriété ${adresse} ${ville} : ${metaDetails.join(", ")}. ${metaSuffix}`
+    : `Copropriété ${adresse} ${ville}. ${metaSuffix}`;
 
   return {
     title,
