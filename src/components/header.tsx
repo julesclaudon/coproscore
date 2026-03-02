@@ -16,6 +16,7 @@ import {
   Search,
   BookOpen,
   Scale,
+  Shield,
   LogIn,
   LogOut,
   User,
@@ -144,6 +145,20 @@ export function Header({ variant = "default", rightSlot }: HeaderProps) {
             >
               PRO
             </Link>
+            {!isLoading && isLoggedIn && session.user?.role === "ADMIN" && (
+              <Link
+                href="/admin/stats"
+                aria-current={pathname.startsWith("/admin") ? "page" : undefined}
+                className={`flex items-center gap-1 transition-colors ${
+                  pathname.startsWith("/admin")
+                    ? "text-teal-600 font-semibold"
+                    : "hover:text-teal-700"
+                }`}
+              >
+                <Shield className="h-3.5 w-3.5" />
+                Admin
+              </Link>
+            )}
             {!isLoading && (
               isLoggedIn ? (
                 <div className="flex items-center gap-2 border-l border-slate-200 pl-4">
@@ -240,6 +255,23 @@ export function Header({ variant = "default", rightSlot }: HeaderProps) {
                   </Link>
                 );
               })}
+
+              {/* Admin link (ADMIN only) */}
+              {!isLoading && isLoggedIn && session.user?.role === "ADMIN" && (
+                <Link
+                  href="/admin/stats"
+                  onClick={() => setOpen(false)}
+                  aria-current={pathname.startsWith("/admin") ? "page" : undefined}
+                  className={`flex min-h-[44px] items-center gap-3 px-5 text-sm font-medium transition-colors ${
+                    pathname.startsWith("/admin")
+                      ? "bg-teal-50 text-teal-700"
+                      : "text-slate-600 hover:bg-slate-50 hover:text-teal-700"
+                  }`}
+                >
+                  <Shield className="h-4 w-4 shrink-0" />
+                  Admin
+                </Link>
+              )}
 
               {/* Auth section */}
               <div className="mt-auto border-t border-slate-100 pt-2">
