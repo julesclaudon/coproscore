@@ -194,17 +194,17 @@ export default function Home() {
 
         <div className="relative mx-auto max-w-6xl text-center">
           <div className="mx-auto max-w-3xl">
-            <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-teal-200 bg-teal-50 px-5 py-2 text-base font-medium text-teal-700">
-              <ShieldCheck className="h-5 w-5" />
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-teal-200 bg-teal-50 px-4 py-1.5 text-sm font-medium text-teal-700 sm:mb-8 sm:px-5 sm:py-2 sm:text-base">
+              <ShieldCheck className="h-4 w-4 sm:h-5 sm:w-5" />
               619 402 copropriétés analysées
             </div>
 
-            <h1 className="mb-6 text-5xl leading-tight font-bold tracking-tight text-slate-900 sm:text-6xl lg:text-7xl">
+            <h1 className="mb-5 text-[2.5rem] leading-tight font-bold tracking-tight text-slate-900 sm:mb-6 sm:text-6xl lg:text-7xl">
               Analysez la{" "}
               <span className="text-teal-600">santé</span>{" "}
               de votre copropriété
             </h1>
-            <p className="mx-auto max-w-xl text-lg leading-relaxed text-slate-500 sm:text-xl">
+            <p className="mx-auto max-w-xl text-base leading-relaxed text-slate-500 sm:text-xl">
               Un score de 0 à 100 calculé à partir du registre national, d'1 million
               de transactions immobilières et de 13,5 millions de diagnostics énergétiques.
             </p>
@@ -226,7 +226,7 @@ export default function Home() {
             </div>
             <Button
               type="button"
-              className="h-14 rounded-xl bg-teal-700 px-8 text-lg font-semibold text-white shadow-sm hover:bg-teal-800 sm:h-16 sm:px-10"
+              className="h-12 rounded-xl bg-teal-700 px-6 text-base font-semibold text-white shadow-sm hover:bg-teal-800 sm:h-16 sm:px-10 sm:text-lg"
               onClick={() => {
                 // The autocomplete handles submission internally via onSubmit
                 // This button is just visual — Enter key or suggestion click is the primary UX
@@ -239,7 +239,7 @@ export default function Home() {
             </Button>
           </div>
 
-          <p className="mt-5 text-base text-slate-400">
+          <p className="mt-4 text-sm text-slate-400 sm:mt-5 sm:text-base">
             Exemple :{" "}
             <Link
               href="/copropriete/score-copropriete-45-bd-saint-marcel-75013-paris"
