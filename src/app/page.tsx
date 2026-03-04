@@ -183,28 +183,29 @@ export default function Home() {
       <Header variant="homepage" />
 
       {/* ─── Hero ─── */}
-      <section className="relative flex min-h-svh flex-col overflow-hidden bg-gradient-to-br from-slate-50 via-teal-50/30 to-white px-4 md:min-h-0 md:block md:px-0 md:pt-32 md:pb-20">
+      <section className="relative flex min-h-svh flex-col overflow-hidden bg-gradient-to-br from-[#0a7568] to-[#0d9488] px-4 md:min-h-[85vh]">
+        {/* Subtle geometric pattern overlay */}
+        <div className="pointer-events-none absolute inset-0 opacity-[0.04]" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")" }} />
+        {/* Glow accents */}
         <div className="pointer-events-none absolute inset-0">
-          <div className="absolute -top-24 right-0 h-96 w-96 rounded-full bg-teal-100/40 blur-3xl" />
-          <div className="absolute top-32 -left-24 h-64 w-64 rounded-full bg-teal-50/60 blur-3xl" />
+          <div className="absolute -top-24 right-0 h-96 w-96 rounded-full bg-white/5 blur-3xl" />
+          <div className="absolute bottom-0 -left-24 h-64 w-64 rounded-full bg-white/5 blur-3xl" />
         </div>
 
         {/* Top spacer — mobile only */}
         <div className="flex-1 md:hidden" />
 
-        <div className="relative mx-auto max-w-6xl text-center md:px-4">
+        <div className="relative mx-auto max-w-6xl pt-8 text-center md:pt-24">
           <div className="mx-auto max-w-2xl">
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-teal-200 bg-teal-50 px-4 py-1.5 text-sm font-medium text-teal-700">
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-sm font-medium text-white backdrop-blur-sm">
               <ShieldCheck className="h-4 w-4" />
               619 402 copropriétés analysées
             </div>
 
-            <h1 className="mb-5 text-[2.5rem] leading-tight font-bold tracking-tight text-slate-900 sm:text-5xl lg:text-6xl">
-              Analysez la{" "}
-              <span className="text-teal-600">santé</span>{" "}
-              de votre copropriété
+            <h1 className="mb-5 text-[2.5rem] leading-tight font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
+              Analysez la santé de votre copropriété
             </h1>
-            <p className="mx-auto max-w-lg text-base leading-relaxed text-slate-500 sm:text-lg">
+            <p className="mx-auto max-w-lg text-base leading-relaxed text-white/80 sm:text-lg">
               Un score de 0 à 100 calculé à partir du registre national, d'1 million
               de transactions immobilières et de 13,5 millions de diagnostics énergétiques.
             </p>
@@ -212,11 +213,11 @@ export default function Home() {
         </div>
 
         {/* Middle spacer — mobile only */}
-        <div className="flex-[0.5] md:hidden" />
+        <div className="flex-[0.3] md:hidden" />
 
-        <div className="relative mx-auto max-w-2xl text-center md:mt-10 md:px-4">
+        <div className="relative mx-auto w-full max-w-2xl text-center md:mt-10">
           {/* Search bar */}
-          <div className="mx-auto flex max-w-xl flex-col gap-2 sm:flex-row">
+          <div className="mx-auto flex max-w-xl flex-col gap-2 rounded-2xl bg-white/95 p-2 shadow-2xl backdrop-blur-sm sm:flex-row sm:rounded-full sm:p-1.5">
             <div className="flex-1">
               <AddressAutocomplete
                 onSelect={handleSelect}
@@ -226,7 +227,7 @@ export default function Home() {
             </div>
             <Button
               type="button"
-              className="h-12 rounded-xl bg-teal-700 px-6 text-base font-semibold text-white shadow-sm hover:bg-teal-800 sm:h-14 sm:px-8"
+              className="h-12 rounded-xl bg-teal-700 px-6 text-base font-semibold text-white shadow-sm hover:bg-teal-800 sm:h-11 sm:rounded-full sm:px-8"
               onClick={() => {
                 // The autocomplete handles submission internally via onSubmit
                 // This button is just visual — Enter key or suggestion click is the primary UX
@@ -239,23 +240,41 @@ export default function Home() {
             </Button>
           </div>
 
-          <p className="mt-4 text-sm text-slate-400">
+          <p className="mt-4 text-sm text-white/60">
             Exemple :{" "}
             <Link
               href="/copropriete/score-copropriete-45-bd-saint-marcel-75013-paris"
-              className="text-teal-600 underline decoration-teal-300 underline-offset-2 hover:text-teal-700"
+              className="text-white/80 underline decoration-white/30 underline-offset-2 hover:text-white"
             >
               45 Boulevard Saint-Marcel, 75013 Paris
             </Link>
           </p>
         </div>
 
-        {/* Bottom spacer — mobile only */}
-        <div className="flex-1 md:hidden" />
+        {/* Bottom spacer — push stats to bottom */}
+        <div className="flex-1" />
+
+        {/* Stats badges */}
+        <div className="relative mx-auto flex w-full max-w-3xl flex-wrap items-center justify-center gap-3 pb-8 sm:gap-4 md:pb-10">
+          {[
+            { icon: Building2, label: "619k copropriétés" },
+            { icon: TrendingUp, label: "1M transactions DVF" },
+            { icon: Zap, label: "13,5M diagnostics DPE" },
+            { icon: Map, label: "99,99 % géolocalisés" },
+          ].map((stat) => (
+            <div
+              key={stat.label}
+              className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-medium text-white/90 backdrop-blur-sm"
+            >
+              <stat.icon className="h-4 w-4 text-white/70" />
+              {stat.label}
+            </div>
+          ))}
+        </div>
 
         {/* Scroll indicator — mobile only */}
-        <div className="pb-6 text-center md:hidden">
-          <ChevronDown className="mx-auto h-5 w-5 animate-bounce text-gray-300" />
+        <div className="pb-4 text-center md:hidden">
+          <ChevronDown className="mx-auto h-5 w-5 animate-bounce text-white/40" />
         </div>
       </section>
 
