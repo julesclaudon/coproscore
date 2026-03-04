@@ -13,6 +13,7 @@ export async function GET() {
     total_users,
     free_users,
     pro_users,
+    admin_users,
     total_pdf_purchases,
     revenus_pdf_agg,
     derniers_inscrits,
@@ -21,6 +22,7 @@ export async function GET() {
     prisma.user.count(),
     prisma.user.count({ where: { role: "FREE" } }),
     prisma.user.count({ where: { role: "PRO" } }),
+    prisma.user.count({ where: { role: "ADMIN" } }),
     prisma.pdfPurchase.count(),
     prisma.pdfPurchase.aggregate({ _sum: { amount: true } }),
     prisma.user.findMany({
@@ -55,6 +57,7 @@ export async function GET() {
     total_users,
     free_users,
     pro_users,
+    admin_users,
     total_pdf_purchases,
     revenus_pdf,
     revenus_pro,
