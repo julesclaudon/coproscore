@@ -23,13 +23,8 @@ export const metadata: Metadata = {
   description:
     "Score de santé de 0 à 100 pour 619 402 copropriétés en France. Analyse technique, risques, gouvernance, énergie et marché à partir des données ouvertes RNIC, DVF et DPE ADEME.",
   icons: {
-    icon: [
-      { url: "/favicon.ico", sizes: "32x32" },
-      { url: "/favicon-32.png", type: "image/png", sizes: "32x32" },
-      { url: "/icon-192.png", type: "image/png", sizes: "192x192" },
-      { url: "/icon-512.png", type: "image/png", sizes: "512x512" },
-    ],
-    apple: "/apple-touch-icon.png",
+    icon: "/favicon.png",
+    apple: "/favicon.png",
   },
   openGraph: {
     siteName: "CoproScore",
