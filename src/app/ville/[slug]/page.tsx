@@ -205,18 +205,24 @@ export async function generateMetadata({
     ? `Copropriétés à ${displayName} — Score moyen ${info.avg_score}/100`
     : `Copropriétés à ${displayName} : score, DPE, prix`;
 
+  const totalCount = Number(info.total);
+
   return {
     title: titleText,
-    description: `Découvrez les scores de santé des ${Number(info.total)} copropriétés à ${displayName}. Analyse technique, risques, énergie et marché pour chaque copropriété.`,
+    description: `Découvrez les scores de santé des ${totalCount} copropriétés à ${displayName}. Analyse technique, risques, énergie et marché pour chaque copropriété.`,
+    alternates: {
+      canonical: `https://coproscore.fr/ville/${slug}`,
+    },
+    ...(totalCount < 3 && { robots: { index: false, follow: true } }),
     openGraph: {
       title: ogTitle,
-      description: `${Number(info.total)} copropriétés analysées à ${displayName}. ${scoreText}.`,
+      description: `${totalCount} copropriétés analysées à ${displayName}. ${scoreText}.`,
       images: [{ url: ogImage, width: 1200, height: 630, alt: ogTitle }],
     },
     twitter: {
       card: "summary_large_image",
       title: ogTitle,
-      description: `${Number(info.total)} copropriétés à ${displayName}. ${scoreText}.`,
+      description: `${totalCount} copropriétés à ${displayName}. ${scoreText}.`,
       images: [ogImage],
     },
   };
