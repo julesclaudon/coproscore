@@ -121,6 +121,28 @@ export function welcomeEmail() {
   `);
 }
 
+export function abandonedCartEmail(adresse: string, slug: string) {
+  const ficheUrl = `https://coproscore.fr/copropriete/${slug}`;
+  return emailLayout(`
+    <h2 style="margin:0 0 16px;color:#0f172a;font-size:20px">Votre rapport vous attend</h2>
+    <p style="margin:0 0 24px;color:#475569;font-size:15px;line-height:1.6">
+      Vous avez consulté <strong>${adresse}</strong> — votre rapport PDF est toujours disponible.
+    </p>
+    <table cellpadding="0" cellspacing="0" style="margin:0 auto 24px">
+      <tr><td style="background:#0d9488;border-radius:8px;text-align:center">
+        <a href="${ficheUrl}" style="display:inline-block;padding:12px 32px;color:#ffffff;font-size:15px;font-weight:600;text-decoration:none">
+          Télécharger mon rapport — 4,90€
+        </a>
+      </td></tr>
+    </table>
+    <table cellpadding="0" cellspacing="0" style="margin:0 auto 24px">
+      <tr><td style="padding:0 0 8px;color:#94a3b8;font-size:13px;line-height:1.5;text-align:center">
+        🔒 Paiement sécurisé · ⚡ Disponible immédiatement · 📊 Données officielles RNIC
+      </td></tr>
+    </table>
+  `);
+}
+
 export function onboardingEmail(name?: string | null) {
   const greeting = name ? `Bienvenue ${name} !` : "Bienvenue !";
   return emailLayout(`

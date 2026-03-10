@@ -47,6 +47,12 @@ export async function POST(request: NextRequest) {
             update: {},
           });
 
+          // Mark any checkout intents as completed
+          await prisma.pdfCheckoutIntent.updateMany({
+            where: { userId, slug, completed: false },
+            data: { completed: true },
+          });
+
           // Send post-purchase email with Pro upsell
           try {
             const [user, copro] = await Promise.all([

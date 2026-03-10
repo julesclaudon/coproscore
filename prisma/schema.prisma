@@ -39,6 +39,7 @@ model User {
   accounts            Account[]
   sessions            Session[]
   pdfPurchases        PdfPurchase[]
+  pdfCheckoutIntents  PdfCheckoutIntent[]
   passwordResetTokens PasswordResetToken[]
   @@map("users")
 }
@@ -312,4 +313,18 @@ model PdfPurchase {
   @@unique([userId, slug])
   @@index([userId])
   @@map("pdf_purchases")
+}
+
+model PdfCheckoutIntent {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  slug      String   @map("slug")
+  createdAt DateTime @default(now()) @map("created_at")
+  emailSent Boolean  @default(false) @map("email_sent")
+  completed Boolean  @default(false) @map("completed")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, slug])
+  @@index([emailSent, completed, createdAt])
+  @@map("pdf_checkout_intents")
 }

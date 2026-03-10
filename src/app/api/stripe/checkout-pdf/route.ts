@@ -35,6 +35,11 @@ export async function POST(request: NextRequest) {
 
   const customerId = await getOrCreateStripeCustomer(session.user.id);
 
+  // Record checkout intent for abandoned cart emails
+  await prisma.pdfCheckoutIntent.create({
+    data: { userId: session.user.id, slug },
+  });
+
   const checkoutSession = await stripe.checkout.sessions.create({
     customer: customerId,
     mode: "payment",
