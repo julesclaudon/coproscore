@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
+import { sendEmail, pdfPurchaseEmail } from "@/lib/mail";
 import type Stripe from "stripe";
 
 /** Get the current_period_end from the first subscription item */
@@ -45,6 +46,26 @@ export async function POST(request: NextRequest) {
             },
             update: {},
           });
+
+          // Send post-purchase email with Pro upsell
+          try {
+            const [user, copro] = await Promise.all([
+              prisma.user.findUnique({ where: { id: userId }, select: { email: true } }),
+              prisma.copropriete.findUnique({ where: { slug }, select: { adresseReference: true, communeAdresse: true } }),
+            ]);
+            if (user?.email) {
+              const adresse = copro
+                ? [copro.adresseReference, copro.communeAdresse].filter(Boolean).join(", ")
+                : slug;
+              await sendEmail({
+                to: user.email,
+                subject: "Votre rapport CoproScore est prêt 🏠",
+                html: pdfPurchaseEmail(adresse, slug),
+              });
+            }
+          } catch (emailErr) {
+            console.error("[stripe webhook] Failed to send PDF purchase email:", emailErr);
+          }
         }
         // Save stripeCustomerId so the billing portal works
         if (session.customer) {

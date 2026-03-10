@@ -72,6 +72,35 @@ export function resetPasswordEmail(resetUrl: string) {
   `);
 }
 
+export function pdfPurchaseEmail(adresse: string, slug: string) {
+  const ficheUrl = `https://coproscore.fr/copropriete/${slug}`;
+  return emailLayout(`
+    <h2 style="margin:0 0 16px;color:#0f172a;font-size:20px">Merci pour votre achat !</h2>
+    <p style="margin:0 0 24px;color:#475569;font-size:15px;line-height:1.6">
+      Votre rapport PDF pour <strong>${adresse}</strong> est disponible dans votre espace.
+    </p>
+    <table cellpadding="0" cellspacing="0" style="margin:0 auto 24px">
+      <tr><td style="background:#0d9488;border-radius:8px;text-align:center">
+        <a href="${ficheUrl}" style="display:inline-block;padding:12px 32px;color:#ffffff;font-size:15px;font-weight:600;text-decoration:none">
+          Accéder à mon rapport
+        </a>
+      </td></tr>
+    </table>
+    <hr style="border:none;border-top:1px solid #e2e8f0;margin:24px 0">
+    <h3 style="margin:0 0 12px;color:#0f172a;font-size:17px">Vous analysez plusieurs biens ?</h3>
+    <p style="margin:0 0 20px;color:#475569;font-size:15px;line-height:1.6">
+      Passez <strong>Pro</strong> pour 29&euro;/mois et accédez à toutes les fiches en illimité.
+    </p>
+    <table cellpadding="0" cellspacing="0" style="margin:0 auto 24px">
+      <tr><td style="background:#0f172a;border-radius:8px;text-align:center">
+        <a href="https://coproscore.fr/tarifs" style="display:inline-block;padding:12px 32px;color:#ffffff;font-size:15px;font-weight:600;text-decoration:none">
+          Découvrir l'offre Pro
+        </a>
+      </td></tr>
+    </table>
+  `);
+}
+
 export function welcomeEmail() {
   return emailLayout(`
     <h2 style="margin:0 0 16px;color:#0f172a;font-size:20px">Bienvenue sur CoproScore !</h2>
