@@ -87,6 +87,11 @@ export function Footer() {
                   Professionnels
                 </Link>
               </li>
+              <li>
+                <Link href="/guides" className="transition-colors hover:text-teal-400 hover:underline">
+                  Guides
+                </Link>
+              </li>
             </ul>
           </div>
 

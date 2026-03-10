@@ -52,6 +52,11 @@ export async function GET(
     xml += urlEntry(`${BASE_URL}/villes`, { changefreq: "monthly", priority: 0.8 });
     xml += urlEntry(`${BASE_URL}/pro`, { changefreq: "monthly", priority: 0.7 });
     xml += urlEntry(`${BASE_URL}/departements`, { changefreq: "monthly", priority: 0.8 });
+    xml += urlEntry(`${BASE_URL}/guides`, { changefreq: "monthly", priority: 0.7 });
+    xml += urlEntry(`${BASE_URL}/guides/comment-lire-score-copropriete`, { changefreq: "monthly", priority: 0.7 });
+    xml += urlEntry(`${BASE_URL}/guides/syndic-professionnel-benevole-differences`, { changefreq: "monthly", priority: 0.7 });
+    xml += urlEntry(`${BASE_URL}/guides/dpe-copropriete-tout-comprendre`, { changefreq: "monthly", priority: 0.7 });
+    xml += urlEntry(`${BASE_URL}/guides/acheter-appartement-copropriete-risques`, { changefreq: "monthly", priority: 0.7 });
 
     const depts = await prisma.$queryRawUnsafe<
       { code: string; nom: string }[]
