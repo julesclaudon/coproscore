@@ -116,6 +116,7 @@ export function EstimationTravauxSection({
   const ctaText = accessLevel === "visitor"
     ? "Créez un compte gratuit pour voir le détail"
     : "Passez Pro pour voir le détail";
+  const ctaUmamiEvent = accessLevel === "visitor" ? "signup-click" : "pro-cta-click";
 
   return (
     <section className="rounded-2xl bg-amber-50/50 p-5 sm:p-6">
@@ -158,6 +159,7 @@ export function EstimationTravauxSection({
               <Link
                 href={ctaHref}
                 className="flex items-center gap-1.5 rounded-lg bg-teal-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-teal-700"
+                data-umami-event={ctaUmamiEvent}
               >
                 <Lock className="h-4 w-4 text-teal-200" />
                 {ctaText}

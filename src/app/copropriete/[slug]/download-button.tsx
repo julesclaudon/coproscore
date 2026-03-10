@@ -77,7 +77,7 @@ export function DownloadButton({ slug, className, children, accessLevel, hasPurc
   }
 
   return (
-    <Button onClick={handleDownload} disabled={loading} className={className}>
+    <Button onClick={handleDownload} disabled={loading} className={className} data-umami-event="pdf-click" data-umami-event-copro={slug}>
       {loading ? (
         <>
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />

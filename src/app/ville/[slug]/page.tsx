@@ -799,7 +799,7 @@ export default async function VillePage({
                 Accédez à toutes les données avec l'offre Pro.
               </p>
             </div>
-            <Link href="/tarifs">
+            <Link href="/tarifs" data-umami-event="pro-cta-click">
               <Button className="bg-white text-teal-700 hover:bg-teal-50">
                 Découvrir l'offre Pro →
               </Button>

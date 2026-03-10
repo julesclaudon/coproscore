@@ -161,6 +161,7 @@ export function TimelineSection({
   const ctaText = accessLevel === "visitor"
     ? "Créez un compte pour voir l'historique complet"
     : "Passez Pro pour voir l'historique complet";
+  const ctaUmamiEvent = accessLevel === "visitor" ? "signup-click" : "pro-cta-click";
 
   return (
     <section>
@@ -211,6 +212,7 @@ export function TimelineSection({
               <Link
                 href={ctaHref}
                 className="flex items-center gap-1.5 rounded-lg bg-teal-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-teal-700"
+                data-umami-event={ctaUmamiEvent}
               >
                 <Lock className="h-3.5 w-3.5 text-teal-200" />
                 {ctaText}

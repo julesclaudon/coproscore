@@ -41,6 +41,7 @@ export function ScoreQuartierSection({
   const ctaText = accessLevel === "visitor"
     ? "Créez un compte pour voir l'analyse"
     : "Passez Pro pour voir l'analyse";
+  const ctaUmamiEvent = accessLevel === "visitor" ? "signup-click" : "pro-cta-click";
 
   return (
     <section>
@@ -132,6 +133,7 @@ export function ScoreQuartierSection({
               <Link
                 href={ctaHref}
                 className="flex items-center gap-1.5 rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-teal-700"
+                data-umami-event={ctaUmamiEvent}
               >
                 <Lock className="h-3.5 w-3.5 text-teal-200" />
                 {ctaText}

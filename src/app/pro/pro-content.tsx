@@ -273,7 +273,7 @@ export function ProContent() {
 
             {/* CTAs */}
             <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row lg:justify-start">
-              <Link href="/tarifs" className="pro-cta-glow inline-flex items-center gap-2 rounded-xl bg-teal-500 px-6 py-3.5 text-base font-semibold text-white shadow-lg shadow-teal-500/25 transition-all duration-200 hover:scale-[1.03] hover:bg-teal-400 hover:shadow-teal-500/40 active:scale-[0.98]">
+              <Link href="/tarifs" className="pro-cta-glow inline-flex items-center gap-2 rounded-xl bg-teal-500 px-6 py-3.5 text-base font-semibold text-white shadow-lg shadow-teal-500/25 transition-all duration-200 hover:scale-[1.03] hover:bg-teal-400 hover:shadow-teal-500/40 active:scale-[0.98]" data-umami-event="pro-cta-click">
                 <Crown className="h-4 w-4" />
                 Découvrir l'offre Pro
               </Link>
@@ -439,7 +439,7 @@ export function ProContent() {
                   ))}
                 </ul>
 
-                <Link href="/tarifs" className="mt-6 flex items-center justify-center gap-2 rounded-xl bg-teal-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:scale-[1.02] hover:bg-teal-700 hover:shadow-md active:scale-[0.98]">
+                <Link href="/tarifs" className="mt-6 flex items-center justify-center gap-2 rounded-xl bg-teal-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:scale-[1.02] hover:bg-teal-700 hover:shadow-md active:scale-[0.98]" data-umami-event="pro-cta-click">
                   <Crown className="h-4 w-4" /> S'abonner
                 </Link>
                 <p className="mt-2.5 text-center text-[11px] text-slate-400">14 jours d'essai gratuit · Résiliation à tout moment</p>
@@ -464,7 +464,7 @@ export function ProContent() {
             Rejoignez les professionnels qui fiabilisent leurs dossiers et gagnent du temps avec CoproScore.
           </p>
           <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Link href="/tarifs" className="inline-flex items-center gap-2 rounded-xl bg-white px-8 py-4 text-base font-semibold text-teal-700 shadow-lg shadow-black/10 transition-all duration-200 hover:scale-[1.03] hover:bg-teal-50 hover:shadow-xl active:scale-[0.98]">
+            <Link href="/tarifs" className="inline-flex items-center gap-2 rounded-xl bg-white px-8 py-4 text-base font-semibold text-teal-700 shadow-lg shadow-black/10 transition-all duration-200 hover:scale-[1.03] hover:bg-teal-50 hover:shadow-xl active:scale-[0.98]" data-umami-event="pro-cta-click">
               <Crown className="h-4 w-4" /> Voir les tarifs et s'abonner
             </Link>
             <Link href="mailto:contact@coproscore.fr" className="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-8 py-4 text-base font-medium text-white backdrop-blur-sm transition-all duration-200 hover:scale-[1.02] hover:bg-white/20 active:scale-[0.98]">

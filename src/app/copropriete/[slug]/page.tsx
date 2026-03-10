@@ -633,6 +633,7 @@ export default async function CoproprietePage({
   const dvfExportEnabled = accessLevel === "pro";
   const ctaHref = accessLevel === "visitor" ? "/inscription" : "/tarifs";
   const ctaLabel = accessLevel === "visitor" ? "Créez un compte gratuit" : "Passez Pro";
+  const ctaUmamiEvent = accessLevel === "visitor" ? "signup-click" : "pro-cta-click";
 
   return (
     <div className="flex min-h-screen flex-col overflow-x-hidden bg-slate-50/50">
@@ -836,6 +837,7 @@ export default async function CoproprietePage({
                             <Link
                               href="/inscription"
                               className="inline-flex items-center gap-1.5 rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-teal-700"
+                              data-umami-event="signup-click"
                             >
                               <Lock className="h-3.5 w-3.5 text-teal-200" />
                               Créez un compte gratuit pour voir le détail
@@ -1063,6 +1065,7 @@ export default async function CoproprietePage({
                           <Link
                             href="/inscription"
                             className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-teal-700"
+                            data-umami-event="signup-click"
                           >
                             <Lock className="h-3.5 w-3.5 text-teal-200" />
                             Créez un compte pour voir le détail

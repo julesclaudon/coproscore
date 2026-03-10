@@ -398,6 +398,7 @@ function TarifsContent() {
                       onClick={handleProCheckout}
                       disabled={proLoading}
                       className="w-full bg-teal-500 py-5 text-sm font-semibold text-white hover:bg-teal-600"
+                      data-umami-event="pro-cta-click"
                     >
                       {proLoading ? (
                         <>

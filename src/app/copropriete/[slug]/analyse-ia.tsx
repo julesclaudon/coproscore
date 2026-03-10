@@ -144,6 +144,7 @@ export function AnalyseIA({ slug, accessLevel }: { slug: string; accessLevel: Ac
             <Link
               href="/tarifs"
               className="group inline-flex items-center gap-2 rounded-xl bg-teal-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-teal-200 transition-all hover:bg-teal-700 hover:shadow-xl hover:shadow-teal-200"
+              data-umami-event="pro-cta-click"
             >
               <Lock className="h-4 w-4 text-teal-200 transition-transform group-hover:scale-110" />
               Passer Pro — Découvrir les offres

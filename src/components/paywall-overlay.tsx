@@ -21,6 +21,7 @@ export function PaywallOverlay({
 }: PaywallOverlayProps) {
   const ctaText = level === "visitor" ? ctaFreeText : ctaProText;
   const ctaHref = level === "visitor" ? ctaFreeHref : ctaProHref;
+  const umamiEvent = level === "visitor" ? "signup-click" : "pro-cta-click";
 
   return (
     <div className="relative">
@@ -31,6 +32,7 @@ export function PaywallOverlay({
         <Link
           href={ctaHref}
           className="flex items-center gap-1.5 rounded-lg bg-teal-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-teal-700"
+          data-umami-event={umamiEvent}
         >
           <Lock className="h-3.5 w-3.5 text-teal-200" />
           {ctaText}
