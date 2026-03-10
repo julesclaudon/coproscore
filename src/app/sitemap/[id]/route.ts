@@ -51,6 +51,7 @@ export async function GET(
     xml += urlEntry(`${BASE_URL}/methodologie`, { changefreq: "monthly", priority: 0.6 });
     xml += urlEntry(`${BASE_URL}/villes`, { changefreq: "monthly", priority: 0.8 });
     xml += urlEntry(`${BASE_URL}/pro`, { changefreq: "monthly", priority: 0.7 });
+    xml += urlEntry(`${BASE_URL}/departements`, { changefreq: "monthly", priority: 0.8 });
 
     const depts = await prisma.$queryRawUnsafe<
       { code: string; nom: string }[]
@@ -64,6 +65,10 @@ export async function GET(
     );
     for (const d of depts) {
       xml += urlEntry(`${BASE_URL}/villes/${makeDeptSlug(d.nom, d.code)}`, {
+        changefreq: "monthly",
+        priority: 0.8,
+      });
+      xml += urlEntry(`${BASE_URL}/departement/${makeDeptSlug(d.nom, d.code)}`, {
         changefreq: "monthly",
         priority: 0.8,
       });
