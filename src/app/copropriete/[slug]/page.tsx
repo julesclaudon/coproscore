@@ -57,6 +57,7 @@ import {
   type DvfQuarterlyRow,
 } from "@/lib/dvf-queries";
 import { PaywallOverlay } from "@/components/paywall-overlay";
+import { FaqSection } from "./faq-section";
 import { AutoDownload } from "./auto-download";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
@@ -629,6 +630,64 @@ export default async function CoproprietePage({
     ],
   };
 
+  // ---------- FAQ ----------
+  const adresseLabel = copro.adresseReference ?? "cette copropriété";
+  const faqItems: { question: string; answer: string }[] = [];
+
+  if (copro.scoreGlobal != null) {
+    const niveau = copro.scoreGlobal >= 70 ? "Bon" : copro.scoreGlobal >= 40 ? "Moyen" : "Attention requise";
+    faqItems.push({
+      question: `Quel est le score de santé de ${adresseLabel} ?`,
+      answer: `La copropriété ${adresseLabel} obtient un score de ${copro.scoreGlobal}/100, ce qui correspond à un niveau ${niveau}. Ce score est calculé à partir des données officielles RNIC, DVF et ADEME.`,
+    });
+  }
+
+  if (copro.nbTotalLots != null) {
+    const habPart = copro.nbLotsHabitation != null ? `, dont ${copro.nbLotsHabitation} lots d'habitation` : "";
+    faqItems.push({
+      question: "Combien y a-t-il de lots dans cette copropriété ?",
+      answer: `La copropriété compte ${copro.nbTotalLots} lots au total${habPart}.`,
+    });
+  }
+
+  if (copro.marchePrixM2 != null) {
+    const prixStr = Math.round(copro.marchePrixM2).toLocaleString("fr-FR");
+    const evoPart = copro.marcheEvolution != null
+      ? `, avec une évolution de ${copro.marcheEvolution >= 0 ? "+" : ""}${copro.marcheEvolution.toFixed(1)} % sur les dernières années`
+      : "";
+    faqItems.push({
+      question: `Quel est le prix au m² à ${adresseLabel} ?`,
+      answer: `Le prix moyen au m² est de ${prixStr} €/m²${evoPart}.`,
+    });
+  }
+
+  faqItems.push({
+    question: "Quel est le diagnostic énergétique (DPE) de cette copropriété ?",
+    answer: copro.dpeClasseMediane
+      ? `Le DPE médian de la copropriété est de classe ${copro.dpeClasseMediane}.`
+      : "Aucun diagnostic énergétique n'est disponible pour cette copropriété.",
+  });
+
+  if (copro.typeSyndic) {
+    faqItems.push({
+      question: "Qui gère le syndic de cette copropriété ?",
+      answer: `La copropriété est gérée par un syndic ${copro.typeSyndic.toLowerCase()}.`,
+    });
+  }
+
+  const jsonLdFaq = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqItems.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.answer,
+      },
+    })),
+  };
+
   // CTA links based on access
   const dvfExportEnabled = accessLevel === "pro";
   const ctaHref = accessLevel === "visitor" ? "/inscription" : "/tarifs";
@@ -644,6 +703,10 @@ export default async function CoproprietePage({
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdBreadcrumb) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdFaq) }}
       />
       {sp.pdf === "success" && hasPurchased && <AutoDownload slug={slug} />}
       <SaveHistory
@@ -1353,6 +1416,8 @@ export default async function CoproprietePage({
           </div>
         </div>
       </main>
+
+      <FaqSection items={faqItems} />
 
       <Footer />
 
