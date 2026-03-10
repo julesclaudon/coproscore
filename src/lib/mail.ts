@@ -120,3 +120,43 @@ export function welcomeEmail() {
     </p>
   `);
 }
+
+export function onboardingEmail(name?: string | null) {
+  const greeting = name ? `Bienvenue ${name} !` : "Bienvenue !";
+  return emailLayout(`
+    <h2 style="margin:0 0 16px;color:#0f172a;font-size:20px">${greeting} Votre compte est prêt.</h2>
+    <p style="margin:0 0 20px;color:#475569;font-size:15px;line-height:1.6">
+      CoproScore analyse la santé des <strong>619&nbsp;402 copropriétés françaises</strong> à partir de données publiques.
+    </p>
+    <table cellpadding="0" cellspacing="0" style="margin:0 0 24px">
+      <tr><td style="padding:0 0 10px;color:#475569;font-size:15px;line-height:1.6">
+        ✅ <strong>Score global /100</strong> pour chaque copropriété
+      </td></tr>
+      <tr><td style="padding:0 0 10px;color:#475569;font-size:15px;line-height:1.6">
+        ✅ <strong>5 dimensions d'analyse</strong> : technique, risques, gouvernance, énergie, marché
+      </td></tr>
+      <tr><td style="padding:0 0 10px;color:#475569;font-size:15px;line-height:1.6">
+        ✅ <strong>Rapport PDF complet</strong> avec données détaillées
+      </td></tr>
+    </table>
+    <table cellpadding="0" cellspacing="0" style="margin:0 auto 24px">
+      <tr><td style="background:#0d9488;border-radius:8px;text-align:center">
+        <a href="https://coproscore.fr" style="display:inline-block;padding:12px 32px;color:#ffffff;font-size:15px;font-weight:600;text-decoration:none">
+          Rechercher ma copropriété
+        </a>
+      </td></tr>
+    </table>
+    <hr style="border:none;border-top:1px solid #e2e8f0;margin:24px 0">
+    <h3 style="margin:0 0 12px;color:#0f172a;font-size:17px">Vous êtes professionnel de l'immobilier ?</h3>
+    <p style="margin:0 0 20px;color:#475569;font-size:15px;line-height:1.6">
+      Découvrez l'offre Pro : accès illimité à toutes les fiches et rapports PDF.
+    </p>
+    <table cellpadding="0" cellspacing="0" style="margin:0 auto 24px">
+      <tr><td style="background:#0f172a;border-radius:8px;text-align:center">
+        <a href="https://coproscore.fr/tarifs" style="display:inline-block;padding:12px 32px;color:#ffffff;font-size:15px;font-weight:600;text-decoration:none">
+          Voir l'offre Pro
+        </a>
+      </td></tr>
+    </table>
+  `);
+}
