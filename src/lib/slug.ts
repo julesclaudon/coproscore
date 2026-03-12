@@ -30,8 +30,8 @@ export function makeVilleSlug(
 }
 
 export function parseVilleSlug(slug: string): string | null {
-  const match = slug.match(/-((?:2[AB])?\d{2,5})$/);
-  return match ? match[1] : null;
+  const match = slug.match(/-((2[AB])\d{3}|\d{2,5})$/i);
+  return match ? match[1].toUpperCase() : null;
 }
 
 export function makeDeptSlug(
@@ -42,6 +42,6 @@ export function makeDeptSlug(
 }
 
 export function parseDeptSlug(slug: string): string | null {
-  const match = slug.match(/-((?:2[AB])?\d{1,3})$/);
-  return match ? match[1] : null;
+  const match = slug.match(/-(2[AB]|\d{1,3})$/i);
+  return match ? match[1].toUpperCase() : null;
 }
