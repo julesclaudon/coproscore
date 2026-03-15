@@ -142,6 +142,9 @@ export async function generateMetadata({
   return {
     title,
     description,
+    alternates: {
+      canonical: `/copropriete/${slug}`,
+    },
     openGraph: {
       title: ogTitle,
       description: `Score détaillé de ${displayName} à ${ville} : technique, risques, gouvernance, énergie, marché.`,

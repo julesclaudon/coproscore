@@ -4,6 +4,9 @@ export const metadata: Metadata = {
   title: "Tarifs — Offres Free, Pro et Admin",
   description:
     "Découvrez les offres CoproScore : consultation gratuite des scores, rapports PDF détaillés et accès Pro pour les professionnels de l'immobilier.",
+  alternates: {
+    canonical: "/tarifs",
+  },
 };
 
 export default function TarifsLayout({

@@ -40,6 +40,9 @@ export const metadata: Metadata = {
       },
     ],
   },
+  alternates: {
+    canonical: "/",
+  },
   twitter: {
     card: "summary_large_image",
   },

@@ -20,6 +20,9 @@ export const metadata: Metadata = {
   title: "Méthodologie du score — Comment ça marche",
   description:
     "Découvrez comment CoproScore calcule le score de santé des copropriétés : 5 dimensions, 4 sources de données publiques, méthodologie transparente.",
+  alternates: {
+    canonical: "/methodologie",
+  },
   openGraph: {
     title: "Méthodologie | CoproScore",
   },
