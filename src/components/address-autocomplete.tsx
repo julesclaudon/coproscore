@@ -165,7 +165,7 @@ export function AddressAutocomplete({
       </div>
 
       {open && (
-        <ul className="absolute z-50 mt-2 w-full rounded-xl border border-slate-200 bg-white shadow-lg">
+        <ul className="absolute z-[9999] mt-2 w-full rounded-xl border border-slate-200 bg-white shadow-lg">
           {loading && suggestions.length === 0 ? (
             <li className="flex items-center gap-3 px-4 py-3 text-sm text-slate-400">
               <Loader2 className="h-4 w-4 animate-spin" />

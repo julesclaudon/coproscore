@@ -183,8 +183,8 @@ export default function Home() {
       <Header variant="homepage" />
 
       {/* ─── Hero ─── */}
-      <section className="relative flex min-h-svh flex-col overflow-hidden bg-gradient-to-br from-slate-50 via-teal-50/30 to-white px-4">
-        <div className="pointer-events-none absolute inset-0">
+      <section className="relative z-10 flex min-h-svh flex-col bg-gradient-to-br from-slate-50 via-teal-50/30 to-white px-4">
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
           <div className="absolute -top-24 right-0 h-96 w-96 rounded-full bg-teal-100/40 blur-3xl" />
           <div className="absolute top-32 -left-24 h-64 w-64 rounded-full bg-teal-50/60 blur-3xl" />
         </div>
@@ -260,7 +260,7 @@ export default function Home() {
       </section>
 
       {/* ─── Comment ça marche ─── */}
-      <section className="border-t bg-white py-20">
+      <section className="relative z-[1] border-t bg-white py-20">
         <div className="mx-auto max-w-6xl px-4">
           <h2 className="mb-4 text-center text-3xl font-bold text-slate-900">
             Comment ça marche
