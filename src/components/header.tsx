@@ -103,7 +103,7 @@ export function Header({ variant = "default", rightSlot }: HeaderProps) {
       <header
         className={
           isHomepage
-            ? "absolute top-0 z-10 w-full bg-white/80 backdrop-blur-md"
+            ? "absolute top-0 z-20 w-full bg-white/80 backdrop-blur-md"
             : "sticky top-0 z-30 border-b bg-white/90 backdrop-blur-sm"
         }
       >
