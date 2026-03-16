@@ -214,7 +214,7 @@ export default function Home() {
         {/* Middle spacer */}
         <div className="flex-[0.5]" />
 
-        <div className="relative mx-auto max-w-3xl text-center">
+        <div className="relative z-10 mx-auto max-w-3xl text-center">
           {/* Search bar */}
           <div className="mx-auto flex max-w-2xl flex-col gap-2 sm:flex-row">
             <div className="flex-1">
