@@ -753,10 +753,6 @@ export default async function CoproprietePage({
             <div className="min-w-0 flex-1">
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
                 <h1 className="break-words text-2xl font-bold text-slate-900 sm:text-3xl">{displayName}</h1>
-                <Badge variant="secondary" className="w-fit bg-teal-50 text-teal-700 border border-teal-200">
-                  <FileText className="mr-1 h-3 w-3" />
-                  Rapport PDF disponible
-                </Badge>
                 <div className="flex gap-3">
                   <AlertModal slug={slug} coproName={displayName} accessLevel={accessLevel} />
                   <FavoriteButton
@@ -830,26 +826,29 @@ export default async function CoproprietePage({
         </div>
       </section>
 
-      {/* --- PDF CTA Banner --- */}
-      <section className="border-b bg-gradient-to-r from-teal-600 to-teal-700">
-        <div className="mx-auto flex max-w-6xl flex-col items-center gap-4 px-3 py-5 sm:flex-row sm:justify-between sm:px-4">
-          <div className="text-center sm:text-left">
-            <h2 className="text-lg font-bold text-white">Télécharger le rapport complet</h2>
-            <p className="text-sm text-teal-100">Analyse détaillée, historique et comparatif du quartier en PDF.</p>
-          </div>
-          <div className="flex flex-col items-center gap-1.5">
-            <DownloadButton slug={slug} accessLevel={accessLevel} hasPurchased={hasPurchased} className="h-12 rounded-xl bg-white px-8 text-base font-bold text-teal-700 shadow-md hover:bg-teal-50">
-              <Download className="mr-2 h-5 w-5" />
-              Télécharger le rapport complet — 4,90€
-            </DownloadButton>
-            <p className="text-xs text-teal-200">Paiement sécurisé · Disponible immédiatement</p>
-          </div>
-        </div>
-      </section>
-
       {/* Content */}
       <main className="flex-1">
         <div className="mx-auto max-w-6xl px-3 py-6 sm:px-4 sm:py-8">
+          {/* --- PDF CTA Card --- */}
+          <div className="mb-6 flex flex-col items-center gap-4 rounded-xl border border-teal-200 bg-white p-4 shadow-sm sm:mb-8 sm:flex-row sm:justify-between sm:p-5">
+            <div className="flex items-center gap-4">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-teal-50">
+                <FileText className="h-5 w-5 text-teal-600" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-slate-900">Rapport complet PDF</p>
+                <p className="text-xs text-slate-500">Analyse détaillée, historique, comparatif quartier</p>
+              </div>
+            </div>
+            <div className="flex flex-col items-center gap-1">
+              <DownloadButton slug={slug} accessLevel={accessLevel} hasPurchased={hasPurchased} className="h-10 rounded-lg bg-teal-600 px-6 text-sm font-semibold text-white shadow-sm hover:bg-teal-700">
+                <Download className="mr-2 h-4 w-4" />
+                Télécharger — 4,90€
+              </DownloadButton>
+              <p className="text-[11px] text-slate-400">Paiement sécurisé · Disponible immédiatement</p>
+            </div>
+          </div>
+
           <div className="grid gap-6 sm:gap-8 lg:grid-cols-[1fr_360px]">
             {/* ===== LEFT COLUMN ===== */}
             <div className="min-w-0 space-y-8">
