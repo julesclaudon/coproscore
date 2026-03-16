@@ -753,6 +753,10 @@ export default async function CoproprietePage({
             <div className="min-w-0 flex-1">
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
                 <h1 className="break-words text-2xl font-bold text-slate-900 sm:text-3xl">{displayName}</h1>
+                <Badge variant="secondary" className="w-fit bg-teal-50 text-teal-700 border border-teal-200">
+                  <FileText className="mr-1 h-3 w-3" />
+                  Rapport PDF disponible
+                </Badge>
                 <div className="flex gap-3">
                   <AlertModal slug={slug} coproName={displayName} accessLevel={accessLevel} />
                   <FavoriteButton
@@ -822,6 +826,23 @@ export default async function CoproprietePage({
                 )}
               </div>
             )}
+          </div>
+        </div>
+      </section>
+
+      {/* --- PDF CTA Banner --- */}
+      <section className="border-b bg-gradient-to-r from-teal-600 to-teal-700">
+        <div className="mx-auto flex max-w-6xl flex-col items-center gap-4 px-3 py-5 sm:flex-row sm:justify-between sm:px-4">
+          <div className="text-center sm:text-left">
+            <h2 className="text-lg font-bold text-white">Télécharger le rapport complet</h2>
+            <p className="text-sm text-teal-100">Analyse détaillée, historique et comparatif du quartier en PDF.</p>
+          </div>
+          <div className="flex flex-col items-center gap-1.5">
+            <DownloadButton slug={slug} accessLevel={accessLevel} hasPurchased={hasPurchased} className="h-12 rounded-xl bg-white px-8 text-base font-bold text-teal-700 shadow-md hover:bg-teal-50">
+              <Download className="mr-2 h-5 w-5" />
+              Télécharger le rapport complet — 4,90€
+            </DownloadButton>
+            <p className="text-xs text-teal-200">Paiement sécurisé · Disponible immédiatement</p>
           </div>
         </div>
       </section>

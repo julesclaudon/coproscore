@@ -23,7 +23,7 @@ export function DownloadButton({ slug, className, children, accessLevel, hasPurc
 
   async function handleDownload() {
     if (accessLevel === "visitor") {
-      router.push("/connexion");
+      router.push(`/inscription?redirect=/copropriete/${slug}`);
       return;
     }
 
